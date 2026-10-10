@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מאגר השיעורים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ef;--card:#ffffff;--text:#1d2125;--muted:#676c73;--line:#e3dfd5;
+  --accent:#1c5a8c;--accent-soft:#e6eef6;--gold:#b98a2a;--danger:#b3261e;--ok:#2e7d4f;
+  --chip:#eef1f4;--shadow:0 1px 3px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#15181b;--card:#1e2226;--text:#e9ecef;--muted:#9aa1a9;--line:#2e343a;
+    --accent:#6fa8dc;--accent-soft:#22313f;--gold:#d9ad55;--chip:#272c32;--shadow:none;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Heebo,Arial,sans-serif;font-size:16px;line-height:1.55}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 12px;width:100%}
+textarea{min-height:90px;resize:vertical}
+label{display:block;font-weight:500;margin:12px 0 4px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:500;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.sm{padding:5px 10px;font-size:14px}
+.btn.danger{background:var(--danger);border-color:var(--danger)}
+.btn:disabled{opacity:.5;cursor:default}
+header{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line)}
+.hwrap{max-width:1120px;margin:auto;display:flex;align-items:center;gap:14px;padding:10px 16px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:20px;color:var(--text)}
+.logo span{color:var(--gold)}
+nav{display:flex;gap:4px;flex-wrap:wrap;flex:1}
+nav a{padding:6px 10px;border-radius:8px;color:var(--text);font-weight:500}
+nav a.on{background:var(--accent-soft);color:var(--accent)}
+.userbox{font-size:14px;color:var(--muted)}
+main{max-width:1120px;margin:auto;padding:18px 16px 170px}
+h1{font-size:26px;margin:4px 0 12px}
+h2{font-size:20px;margin:26px 0 10px}
+h3{font-size:16px;margin:0 0 2px}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.card-main{display:flex;gap:12px;color:var(--text)}
+.card-main:hover{text-decoration:none}
+.card-main:hover h3{color:var(--accent)}
+.card img,.avatar{width:56px;height:56px;border-radius:12px;object-fit:cover;flex:none;background:var(--chip)}
+.meta{font-size:13px;color:var(--muted)}
+.card-foot{display:flex;align-items:center;gap:10px;margin-top:auto}
+.bar{flex:1;height:5px;background:var(--chip);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--chip);border:1px solid transparent;border-radius:999px;padding:3px 11px;font-size:14px;cursor:pointer}
+.chip.sm{font-size:12px;padding:1px 8px;cursor:default}
+.chip.on{background:var(--accent);color:#fff}
+.snip{font-size:13px;background:var(--accent-soft);border-radius:8px;padding:6px 9px}
+mark{background:#f3d98b;color:#1d2125;border-radius:3px}
+.search{display:flex;flex-direction:column;gap:10px}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hero{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.hero img{width:96px;height:96px;border-radius:18px;object-fit:cover}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.two{grid-template-columns:1fr}}
+.banner{background:linear-gradient(135deg,var(--accent),#2c7a9e);color:#fff;border-radius:14px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.banner .btn{background:#fff;color:var(--accent);border-color:#fff}
+.hscroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px}
+.hscroll .card{min-width:260px;max-width:280px}
+.source{max-height:520px;overflow:auto;font-family:"Frank Ruhl Libre","David",serif;font-size:18px;line-height:1.8}
+.source p{margin:0 0 10px}
+.bm{display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line)}
+.bm:last-child{border:0}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th,.tbl td{text-align:right;padding:8px;border-bottom:1px solid var(--line)}
+.stars button{background:none;border:0;font-size:22px;cursor:pointer;color:var(--line);padding:0 1px}
+.stars button.on{color:var(--gold)}
+.notice{background:#fff6dd;color:#5b4a14;border:1px solid #ecd9a0;border-radius:10px;padding:9px 12px;font-size:14px}
+.tagbox{position:relative}
+.tagbox .tagwrap{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:6px;background:var(--card)}
+.tagbox .tagwrap input{border:0;flex:1;min-width:120px;padding:4px}
+.tagbox .tagwrap input:focus{outline:none}
+.tagbox .chip{cursor:default}
+.tagbox .chip b{cursor:pointer;margin-inline-start:4px}
+.sugg{position:absolute;inset-inline:0;top:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;margin-top:4px;z-index:5;max-height:220px;overflow:auto;box-shadow:var(--shadow)}
+.sugg div{padding:7px 12px;cursor:pointer}
+.sugg div.hl,.sugg div:hover{background:var(--accent-soft)}
+.sugg .new{color:var(--accent);font-weight:500}
+/* dock player */
+#dock{position:fixed;bottom:0;inset-inline:0;z-index:30;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -4px 18px rgba(0,0,0,.08);display:none}
+#dock.on{display:block}
+#dockMedia{max-width:1120px;margin:auto}
+#dockMedia .vid{position:relative;width:100%;max-width:520px;aspect-ratio:16/9;margin:8px auto 0;background:#000;border-radius:10px;overflow:hidden}
+#dockMedia .vid video,#dockMedia .vid iframe,#dockMedia .vid #ytp{position:absolute;inset:0;width:100%;height:100%;border:0}
+#dock.minvid #dockMedia .vid{height:0;aspect-ratio:auto;margin:0}
+.dock-row{max-width:1120px;margin:auto;display:flex;align-items:center;gap:12px;padding:8px 16px 0}
+.dock-row img{width:44px;height:44px;border-radius:10px;object-fit:cover}
+.dinfo{flex:1;min-width:0}
+.dinfo a{font-weight:700;color:var(--text);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dctl{display:flex;align-items:center;gap:6px}
+.ib{background:var(--chip);border:0;border-radius:999px;height:38px;min-width:38px;padding:0 10px;cursor:pointer;font-weight:700;font-size:14px}
+.ib.play{background:var(--accent);color:#fff;min-width:46px;height:46px;font-size:18px}
+.dctl select{width:auto;padding:6px;border-radius:999px}
+.dprog{max-width:1120px;margin:auto;display:flex;align-items:center;gap:10px;padding:4px 16px 10px;font-size:13px;color:var(--muted);direction:ltr}
+.dprog input{flex:1;padding:0;border:0;accent-color:var(--accent)}
+@media(max-width:600px){.dctl .hide-m{display:none}.dock-row img{display:none}}
+#toast{position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:40}
+#toast.on{opacity:1}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
+details summary{cursor:pointer;font-weight:500}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <a class="logo" href="#/" id="logo"></a>
+    <nav id="nav"></nav>
+    <div class="userbox" id="userbox"></div>
+  </div>
+</header>
+<main id="app"></main>
+<footer id="footer"></footer>
+
+<div id="dock">
+  <div id="dockMedia"></div>
+  <div class="dock-row">
+    <img id="dImg" alt="">
+    <div class="dinfo"><a id="dTitle" href="#/"></a><div class="meta" id="dSub"></div></div>
+    <div class="dctl">
+      <button class="ib" data-act="back15" title="15 שניות אחורה">−15</button>
+      <button class="ib play" data-act="toggle" id="dPlay" title="נגן / השהה">▶</button>
+      <button class="ib" data-act="fwd15" title="15 שניות קדימה">+15</button>
+      <select id="dRate" title="מהירות">
+        <option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option>
+        <option value="1.5">1.5x</option><option value="1.75">1.75x</option><option value="2">2x</option>
+      </select>
+      <button class="ib hide-m" data-act="vidToggle" id="dVid" title="הצג / הסתר וידאו">▣</button>
+      <button class="ib" data-act="closeDock" title="סגור נגן">✕</button>
+    </div>
+  </div>
+  <div class="dprog"><span id="dCur">0:00</span><input type="range" id="dSeek" min="0" max="1000" value="0"><span id="dDur">0:00</span></div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* =========================================================
+   הגדרות כלליות — לשנות כאן את שם האתר וקישור התרומה
+   ========================================================= */
+const CONFIG = {
+  siteName: 'מאגר השיעורים',
+  siteDonateUrl: '',          // קישור לתרומה לאתר (למשל עמוד בנדרים פלוס). ריק = לא מוצג
+  hebcalGeonameId: 281184     // ירושלים — לחישוב פרשת השבוע
+};
+
+/* ---------- נתוני יסוד ---------- */
+const PARSHIOT=['בראשית','נח','לך לך','וירא','חיי שרה','תולדות','ויצא','וישלח','וישב','מקץ','ויגש','ויחי','שמות','וארא','בא','בשלח','יתרו','משפטים','תרומה','תצוה','כי תשא','ויקהל','פקודי','ויקרא','צו','שמיני','תזריע','מצורע','אחרי מות','קדושים','אמור','בהר','בחוקותי','במדבר','נשא','בהעלותך','שלח','קרח','חוקת','בלק','פנחס','מטות','מסעי','דברים','ואתחנן','עקב','ראה','שופטים','כי תצא','כי תבוא','נצבים','וילך','האזינו','וזאת הברכה'];
+const CATS=[
+  {id:'parasha',name:'פרשת שבוע',tags:PARSHIOT},
+  {id:'halacha',name:'הלכה',tags:['שבת','בישול בשבת','כשרות','תפילה','ברכות','חושן משפט','טהרת המשפחה','אבלות','צדקה','בין אדם לחברו','מצוות התלויות בארץ']},
+  {id:'gemara',name:'גמרא',tags:['ברכות','שבת','עירובין','פסחים','יומא','סוכה','ביצה','ראש השנה','תענית','מגילה','מועד קטן','חגיגה','יבמות','כתובות','נדרים','נזיר','סוטה','גיטין','קידושין','בבא קמא','בבא מציעא','בבא בתרא','סנהדרין','מכות','שבועות','עבודה זרה','זבחים','מנחות','חולין','בכורות','נדה']},
+  {id:'emuna',name:'אמונה ומחשבה',tags:['גאולה','ארץ ישראל','תשובה','אורות','כוזרי','מהר"ל','נצח ישראל']},
+  {id:'moadim',name:'מועדים',tags:['ראש השנה','יום כיפור','סוכות','חנוכה','פורים','פסח','שבועות','ספירת העומר','בין המצרים','יום העצמאות','יום ירושלים']},
+  {id:'tanach',name:'תנ"ך',tags:['יהושע','שופטים','שמואל','מלכים','ישעיהו','ירמיהו','יחזקאל','תרי עשר','תהילים','משלי','איוב','חמש מגילות']},
+  {id:'musar',name:'מוסר ומידות',tags:['מסילת ישרים','אורחות צדיקים','שמירת הלשון','ענווה','עבודת המידות']}
+];
+const STYLES=['עיוני','מוסרי','הלכה למעשה','חסידי','מחשבתי','קליל ונגיש','למתחילים'];
+const SAMPLE='https://www.soundhelix.com/examples/mp3/SoundHelix-Song-';
+
+function seed(){
+  return {
+    orgs:[
+      {id:'y1',type:'yeshiva',name:'ישיבת דוגמה',parent:null,image:'',showOnLessons:false,donate:'',
+       about:'דף דוגמה של ישיבה. כאן נציג הישיבה כותב על המוסד, דרך הלימוד והרבנים. אפשר לערוך את הטקסט, להעלות תמונה ולהוסיף קישור לתרומה.',
+       styles:['עיוני'],defaults:{category:'',tags:[]}},
+      {id:'r1',type:'rabbi',name:'הרב א׳ דוגמה',parent:'y1',image:'',showOnLessons:true,donate:'',about:'ראש הישיבה (דמות לדוגמה).',styles:['עיוני','מחשבתי'],defaults:{category:'',tags:[]}},
+      {id:'r2',type:'rabbi',name:'הרב ב׳ דוגמה',parent:'y1',image:'',showOnLessons:true,donate:'',about:'ר״מ בישיבה (דמות לדוגמה).',styles:['הלכה למעשה','למתחילים'],defaults:{category:'halacha',tags:['שבת']}},
+      {id:'r3',type:'rabbi',name:'הרב ג׳ דוגמה',parent:null,image:'',showOnLessons:true,donate:'',about:'מגיד שיעור עצמאי (דמות לדוגמה).',styles:['הלכה למעשה','מחשבתי'],defaults:{category:'',tags:[]}}
+    ],
+    lessons:[
+      L('l1','פרשת וירא — סוד הכנסת האורחים','r1','y1','parasha',['וירא','חסד'],22,{type:'file',media:'audio',url:SAMPLE+'1.mp3'},true,
+        'שיעור דוגמה על פרשת השבוע.','אברהם אבינו יושב בפתח האוהל בחום היום, ודווקא אז הוא מחפש אורחים. הכנסת אורחים גדולה מהקבלת פני השכינה.',''),
+      L('l2','הלכות שבת — מלאכת בישול, שיעור 1','r2','y1','halacha',['שבת','בישול בשבת'],35,{type:'file',media:'audio',url:SAMPLE+'2.mp3'},true,
+        'פתיחה לסדרה על מלאכת בישול.','מלאכת מבשל היא אחת מל״ט מלאכות. נלמד מה נחשב בישול, כלי ראשון וכלי שני, ודין דבר שכבר התבשל.',''),
+      L('l3','הלכות שבת — מלאכת בישול, שיעור 2','r2','y1','halacha',['שבת','בישול בשבת'],31,{type:'file',media:'audio',url:SAMPLE+'3.mp3'},true,
+        'המשך הסדרה: יש בישול אחר בישול.','בשיעור הקודם ראינו את יסודות המלאכה. היום נעסוק ביש בישול אחר בישול בלח, ובדין חימום אוכל על הפלטה.',''),
+      L('l4','חושן משפט סימן י״ג — בחירת דיינים בזבל״א','r3',null,'halacha',['חושן משפט','דיינים'],48,{type:'file',media:'audio',url:SAMPLE+'4.mp3'},false,
+        'שיעור עם טקסט המקור לצידו. ההורדה חסומה בשיעור זה לפי בחירת המעלה.','כל אחד מבעלי הדין בורר לו דיין אחד, ושני הדיינים בוררים את השלישי. זה נקרא זה בורר לו אחד.','Shulchan Arukh, Choshen Mishpat 13'),
+      L('l5','אמונה בדורנו — שיעור וידאו','r3',null,'emuna',['גאולה','ארץ ישראל'],15,{type:'file',media:'video',url:'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4'},true,
+        'דוגמה לשיעור וידאו בנגן העצמאי.','שיבת ציון בדורנו היא תהליך של גאולה שמתגלה קמעא קמעא.',''),
+      L('l6','מסכת ברכות דף ב׳ — מאימתי קורין','r1','y1','gemara',['ברכות'],40,{type:'file',media:'audio',url:SAMPLE+'5.mp3'},true,
+        'פתיחת המסכת.','מאימתי קורין את שמע בערבין, משעה שהכהנים נכנסים לאכול בתרומתן.','')
+    ],
+    permissions:[{email:'admin@demo.com',role:'admin',orgId:null},{email:'rep@demo.com',role:'rep',orgId:'y1'}],
+    user:null,
+    playlists:[{id:'pl1',name:'מסלול: הלכות שבת — מלאכת בישול',lessonIds:['l2','l3'],official:true,owner:null}],
+    positions:{},bookmarks:{},ratings:{},history:[],daily:null,extraTags:{},dedications:{}
+  };
+}
+function L(id,title,rabbiId,orgId,category,tags,mins,src,allowDownload,desc,transcript,sourceRef){
+  return {id,title,rabbiId,orgId,category,tags,duration:mins*60,src,allowDownload,desc,transcript,sourceRef,sourceText:'',date:'2026-10-01',demo:true};
+}
+
+/* ---------- אחסון ---------- */
+const LS='torah_platform_v1';
+let S=null;
+try{S=JSON.parse(localStorage.getItem(LS))}catch(e){}
+if(!S||!S.lessons) S=seed();
+function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
+
+/* ---------- עזרים ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=p=>p+Math.random().toString(36).slice(2,9);
+const org=id=>S.orgs.find(o=>o.id===id);
+const lesson=id=>S.lessons.find(l=>l.id===id);
+const catName=id=>(CATS.find(c=>c.id===id)||{}).name||'';
+function fmt(t){t=Math.max(0,Math.floor(t||0));const h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(s).padStart(2,'0');}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2200);}
+function copy(text,msg){(navigator.clipboard?navigator.clipboard.writeText(text):Promise.reject()).then(()=>toast(msg||'הקישור הועתק')).catch(()=>prompt('העתק את הקישור:',text));}
+function baseUrl(){return location.href.split('#')[0];}
+function avatar(name){
+  const clean=(name||'?').replace(/^(הרב|ישיבת|ישיבה|מכון)\s*/,'');
+  const ch=clean[0]||'?';const hue=[...name].reduce((a,c)=>a+c.charCodeAt(0),0)%360;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="hsl(${hue},42%,40%)"/><text x="50" y="66" font-size="46" text-anchor="middle" fill="#fff" font-family="Arial">${ch}</text></svg>`;
+  return 'data:image/svg+xml,'+encodeURIComponent(svg);
+}
+const orgImg=o=>o?(o.image||avatar(o.name)):avatar('?');
+function lessonImg(l){
+  const r=org(l.rabbiId),o=org(l.orgId);
+  if(r&&r.showOnLessons) return orgImg(r);
+  if(o&&o.showOnLessons) return orgImg(o);
+  return orgImg(r||o);
+}
+function ytId(u){const m=String(u).match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([\w-]{11})/);return m?m[1]:null;}
+function allTagsFor(cat){
+  const set=new Set();
+  const c=CATS.find(x=>x.id===cat);
+  if(c) c.tags.forEach(t=>set.add(t));
+  (S.extraTags[cat]||[]).forEach(t=>set.add(t));
+  S.lessons.filter(l=>!cat||l.category===cat).forEach(l=>l.tags.forEach(t=>set.add(t)));
+  if(!cat) CATS.forEach(c=>c.tags.forEach(t=>set.add(t)));
+  return [...set];
+}
+
+/* ---------- משתמש והרשאות (הדמיה עד חיבור Google אמיתי) ---------- */
+function perm(){return S.user?S.permissions.find(p=>p.email===S.user.email):null;}
+function role(){if(!S.user) return 'guest';const p=perm();return p?p.role:'user';}
+const isAdmin=()=>role()==='admin';
+const canUpload=()=>role()==='admin'||role()==='rep';
+function canEditOrg(o){
+  if(isAdmin()) return true;
+  const p=perm();if(!p||p.role!=='rep') return false;
+  return o.id===p.orgId||o.parent===p.orgId;
+}
+const ROLE_NAMES={guest:'אורח',user:'משתמש',rep:'נציג מוסד',admin:'מנהל'};
+
+/* =========================================================
+   הנגן המאוחד — אודיו, וידאו ויוטיוב, ממשיך לנגן בזמן גלישה
+   ========================================================= */
+const P={l:null,el:null,yt:null,rate:1,queue:[],qi:-1,dragging:false};
+function ytApi(){
+  if(window.YT&&YT.Player) return Promise.resolve();
+  if(!ytApi.p) ytApi.p=new Promise(r=>{window.onYouTubeIframeAPIReady=r;const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s);});
+  return ytApi.p;
+}
+P.time=()=>P.el?P.el.currentTime:(P.yt&&P.yt.getCurrentTime?P.yt.getCurrentTime():0);
+P.dur=()=>P.el?(isFinite(P.el.duration)?P.el.duration:0):(P.yt&&P.yt.getDuration?P.yt.getDuration():0)||(P.l?P.l.duration:0);
+P.playing=()=>P.el?!P.el.paused:(P.yt&&P.yt.getPlayerState?P.yt.getPlayerState()===1:false);
+P.seek=t=>{t=Math.max(0,t);if(P.el)P.el.currentTime=t;else if(P.yt&&P.yt.seekTo)P.yt.seekTo(t,true);};
+P.toggle=()=>{if(P.el){P.el.paused?P.el.play():P.el.pause();}else if(P.yt){P.playing()?P.yt.pauseVideo():P.yt.playVideo();}};
+P.setRate=r=>{P.rate=r;if(P.el)P.el.playbackRate=r;else if(P.yt&&P.yt.setPlaybackRate)P.yt.setPlaybackRate(r);};
+
+function stopMedia(){
+  savePos();
+  if(P.el){P.el.pause();P.el.removeAttribute('src');P.el.load();}
+  if(P.yt){try{P.yt.destroy()}catch(e){}}
+  P.el=null;P.yt=null;$('#dockMedia').innerHTML='';
+}
+async function play(id,start,queue){
+  const l=lesson(id);if(!l) return;
+  stopMedia();P.l=l;
+  if(queue){P.queue=queue;P.qi=queue.indexOf(id);}
+  else if(P.queue.includes(id)) P.qi=P.queue.indexOf(id);
+  else {P.queue=[id];P.qi=0;}
+  if(start==null){const p=S.positions[id];start=p&&!p.done?p.t:0;}
+  const dock=$('#dock'),box=$('#dockMedia');dock.classList.add('on');
+  let isVideo=false;
+  if(l.src.type==='youtube'){
+    isVideo=true;
+    box.innerHTML='<div class="vid"><div id="ytp"></div></div>';
+    await ytApi();
+    if(P.l!==l) return;
+    P.yt=new YT.Player('ytp',{videoId:l.src.ytId,playerVars:{start:Math.floor(start),autoplay:1,playsinline:1,rel:0},
+      events:{onReady:e=>{e.target.setPlaybackRate(P.rate);e.target.playVideo();},onStateChange:e=>{if(e.data===0)onEnded();}}});
+  }else{
+    isVideo=l.src.media==='video';
+    const el=document.createElement(isVideo?'video':'audio');
+    el.src=l.src.url;el.preload='metadata';el.playsInline=true;
+    if(!l.allowDownload){el.setAttribute('controlsList','nodownload');el.addEventListener('contextmenu',e=>e.preventDefault());}
+    if(isVideo){const w=document.createElement('div');w.className='vid';w.appendChild(el);box.appendChild(w);}else box.appendChild(el);
+    el.addEventListener('loadedmetadata',()=>{if(start)el.currentTime=start;el.playbackRate=P.rate;},{once:true});
+    el.addEventListener('ended',onEnded);
+    P.el=el;el.play().catch(()=>{});
+  }
+  $('#dVid').style.display=isVideo?'':'none';
+  dock.classList.remove('minvid');
+  S.history=[id,...S.history.filter(x=>x!==id)].slice(0,60);save();
+  setMediaSession(l);updDock();
+}
+function onEnded(){
+  if(P.l){S.positions[P.l.id]={t:P.dur(),d:P.dur(),done:true};save();}
+  if(P.qi>-1&&P.qi<P.queue.length-1) play(P.queue[P.qi+1],0);
+}
+function savePos(){
+  if(!P.l) return;const t=P.time(),d=P.dur();
+  if(t>3) {S.positions[P.l.id]={t,d,done:d>0&&t>d*0.95};save();}
+}
+setInterval(()=>{if(P.l&&P.playing())savePos();},5000);
+window.addEventListener('pagehide',savePos);
+
+function setMediaSession(l){
+  if(!('mediaSession' in navigator)) return;
+  const r=org(l.rabbiId);
+  navigator.mediaSession.metadata=new MediaMetadata({title:l.title,artist:r?r.name:'',album:CONFIG.siteName});
+  const h=(a,f)=>{try{navigator.mediaSession.setActionHandler(a,f)}catch(e){}};
+  h('play',()=>P.toggle());h('pause',()=>P.toggle());
+  h('seekbackward',()=>P.seek(P.time()-15));h('seekforward',()=>P.seek(P.time()+15));
+  h('nexttrack',P.qi<P.queue.length-1?()=>play(P.queue[P.qi+1],0):null);
+}
+function updDock(){
+  if(!P.l) return;
+  const l=P.l,r=org(l.rabbiId);
+  $('#dImg').src=lessonImg(l);
+  $('#dTitle').textContent=l.title;$('#dTitle').href='#/lesson/'+l.id;
+  $('#dSub').textContent=(r?r.name:'')+(P.queue.length>1?` · ${P.qi+1}/${P.queue.length} בסדרה`:'');
+  const t=P.time(),d=P.dur();
+  $('#dCur').textContent=fmt(t);$('#dDur').textContent=fmt(d);
+  if(!P.dragging) $('#dSeek').value=d?Math.round(t/d*1000):0;
+  $('#dPlay').textContent=P.playing()?'❚❚':'▶';
+  const cur=document.getElementById('curTime');if(cur) cur.textContent=fmt(t);
+}
+setInterval(updDock,500);
+$('#dSeek').addEventListener('input',()=>{P.dragging=true;$('#dCur').textContent=fmt($('#dSeek').value/1000*P.dur());});
+$('#dSeek').addEventListener('change',()=>{P.seek($('#dSeek').value/1000*P.dur());P.dragging=false;});
+$('#dRate').addEventListener('change',e=>P.setRate(+e.target.value));
+
+/* =========================================================
+   ניתוב
+   ========================================================= */
+let F={q:'',cat:'',tags:[],rabbi:'',org:'',dur:'',media:''};
+function route(){
+  const h=location.hash.slice(1)||'/';
+  const [path,qs]=h.split('?');const parts=path.split('/').filter(Boolean);const q=new URLSearchParams(qs||'');
+  const v=parts[0]||'';
+  renderChrome(v);
+  const app=$('#app');
+  if(v==='lesson') vLesson(parts[1],q);
+  else if(v==='org') vOrg(parts[1]);
+  else if(v==='upload') vUpload();
+  else if(v==='admin') vAdmin();
+  else if(v==='me') vMe();
+  else if(v==='playlist') vPlaylist(parts[1]);
+  else vHome();
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+
+function renderChrome(v){
+  document.title=CONFIG.siteName;
+  $('#logo').innerHTML=esc(CONFIG.siteName).replace(/^(\S+)/,'$1<span>')+'</span>';
+  const links=[['','בית'],['me','האזור האישי']];
+  if(canUpload()) links.push(['upload','העלאת שיעור']);
+  if(isAdmin()) links.push(['admin','ניהול']);
+  $('#nav').innerHTML=links.map(([k,n])=>`<a href="#/${k}" class="${v===k?'on':''}">${n}</a>`).join('');
+  $('#userbox').innerHTML=S.user?`${esc(S.user.email)} · ${ROLE_NAMES[role()]}`:`<a class="btn sm" href="#/me">התחברות</a>`;
+  $('#footer').innerHTML=`${esc(CONFIG.siteName)} · גרסת ניסיון${CONFIG.siteDonateUrl?` · <a href="${esc(CONFIG.siteDonateUrl)}" target="_blank" rel="noopener">תרומה לאתר</a>`:''}<br>השיעורים בגרסה זו הם דוגמאות טכניות בלבד.`;
+}
+
+/* =========================================================
+   דף הבית — חיפוש וסינון
+   ========================================================= */
+function vHome(){
+  const cont=S.history.map(lesson).filter(l=>l&&S.positions[l.id]&&!S.positions[l.id].done).slice(0,8);
+  const daily=S.daily?S.playlists.find(p=>p.id===S.daily):null;
+  let dailyNext=null;if(daily) dailyNext=daily.lessonIds.map(lesson).find(l=>l&&!(S.positions[l.id]||{}).done);
+  const official=S.playlists.filter(p=>p.official);
+  $('#app').innerHTML=`
+    <div id="shabbat"></div>
+    ${dailyNext?`<h2>השיעור היומי שלך</h2><div class="grid">${card(dailyNext)}</div><div class="muted small">מתוך: ${esc(daily.name)}</div>`:''}
+    ${cont.length?`<h2>המשך האזנה</h2><div class="hscroll">${cont.map(card).join('')}</div>`:''}
+    ${official.length?`<h2>מסלולי לימוד</h2><div class="hscroll">${official.map(plCard).join('')}</div>`:''}
+    <h2>חיפוש שיעורים</h2>
+    <section class="panel search">
+      <input id="fq" placeholder="חפשו שיעור, רב, נושא, או מילה שנאמרה בשיעור…" value="${esc(F.q)}">
+      <div class="filters">
+        <select id="fcat"><option value="">כל הקטגוריות</option>${CATS.map(c=>`<option value="${c.id}" ${F.cat===c.id?'selected':''}>${c.name}</option>`).join('')}</select>
+        <select id="frabbi"><option value="">כל הרבנים</option>${S.orgs.filter(o=>o.type==='rabbi').map(o=>`<option value="${o.id}" ${F.rabbi===o.id?'selected':''}>${esc(o.name)}</option>`).join('')}</select>
+        <select id="forg"><option value="">כל המוסדות</option>${S.orgs.filter(o=>o.type!=='rabbi').map(o=>`<option value="${o.id}" ${F.org===o.id?'selected':''}>${esc(o.name)}</option>`).join('')}</select>
+        <select id="fdur"><option value="">כל אורך</option>${[['10','עד 10 דקות'],['20','עד 20 דקות'],['30','עד 30 דקות'],['45','עד 45 דקות'],['46','מעל 45 דקות']].map(([v,n])=>`<option value="${v}" ${F.dur===v?'selected':''}>${n}</option>`).join('')}</select>
+        <select id="fmedia"><option value="">אודיו ווידאו</option><option value="audio" ${F.media==='audio'?'selected':''}>אודיו בלבד</option><option value="video" ${F.media==='video'?'selected':''}>וידאו בלבד</option></select>
+      </div>
+      <div id="ftags" class="chips"></div>
+    </section>
+    <div class="row" style="justify-content:space-between;margin-top:14px"><div id="rcount" class="muted small"></div><button class="btn ghost sm" data-act="clearF">ניקוי סינון</button></div>
+    <div id="results" class="grid" style="margin-top:8px"></div>`;
+  ['fq','fcat','frabbi','forg','fdur','fmedia'].forEach(id=>{
+    const el=$('#'+id);el.addEventListener(id==='fq'?'input':'change',()=>{
+      const k={fq:'q',fcat:'cat',frabbi:'rabbi',forg:'org',fdur:'dur',fmedia:'media'}[id];
+      if(k==='cat') F.tags=[];F[k]=el.value;renderResults();
+    });
+  });
+  renderResults();loadShabbat();
+}
+function plCard(p){
+  const ls=p.lessonIds.map(lesson).filter(Boolean);const first=ls[0];
+  return `<article class="card"><a class="card-main" href="#/playlist/${p.id}"><img src="${first?lessonImg(first):avatar(p.name)}" alt=""><div><h3>${esc(p.name)}</h3><div class="meta">${ls.length} שיעורים · ${Math.round(ls.reduce((a,l)=>a+l.duration,0)/60)} דק׳</div></div></a>
+  <div class="card-foot"><button class="btn sm" data-act="playList" data-id="${p.id}">▶ נגן מההתחלה</button></div></article>`;
+}
+function filterLessons(){
+  const q=F.q.trim();
+  return S.lessons.filter(l=>{
+    if(F.cat&&l.category!==F.cat) return false;
+    if(F.rabbi&&l.rabbiId!==F.rabbi) return false;
+    if(F.org&&l.orgId!==F.org&&org(l.rabbiId)?.parent!==F.org) return false;
+    if(F.tags.length&&!F.tags.every(t=>l.tags.includes(t))) return false;
+    const m=l.duration/60;
+    if(F.dur==='46'){if(m<=45) return false;} else if(F.dur&&m>+F.dur) return false;
+    const media=l.src.type==='youtube'?'video':l.src.media;
+    if(F.media&&media!==F.media) return false;
+    if(q){
+      const hay=[l.title,l.desc,l.transcript,org(l.rabbiId)?.name,org(l.orgId)?.name,catName(l.category),...l.tags].join(' ');
+      if(!q.split(/\s+/).every(w=>hay.includes(w))) return false;
+    }
+    return true;
+  });
+}
+function renderResults(){
+  const used=[...new Set(S.lessons.filter(l=>!F.cat||l.category===F.cat).flatMap(l=>l.tags))];
+  $('#ftags').innerHTML=used.map(t=>`<span class="chip ${F.tags.includes(t)?'on':''}" data-act="ftag" data-t="${esc(t)}">${esc(t)}</span>`).join('');
+  const res=filterLessons();
+  $('#rcount').textContent=`נמצאו ${res.length} שיעורים`;
+  $('#results').innerHTML=res.length?res.map(l=>card(l,F.q)).join(''):'<div class="muted">לא נמצאו שיעורים. נסו לשנות את הסינון.</div>';
+}
+function snippet(text,q){
+  if(!q||!text) return '';
+  const w=q.trim().split(/\s+/)[0];const i=text.indexOf(w);if(i<0) return '';
+  const s=Math.max(0,i-40),part=text.slice(s,i+w.length+60);
+  return `<div class="snip">מתוך התמלול: …${esc(part).split(esc(w)).join('<mark>'+esc(w)+'</mark>')}…</div>`;
+}
+function card(l,q){
+  const r=org(l.rabbiId),o=org(l.orgId);const pos=S.positions[l.id];
+  const pct=pos&&pos.d?Math.min(100,pos.t/pos.d*100):0;
+  const media=l.src.type==='youtube'?'יוטיוב':(l.src.media==='video'?'וידאו':'אודיו');
+  return `<article class="card">
+    <a class="card-main" href="#/lesson/${l.id}"><img src="${lessonImg(l)}" alt=""><div><h3>${esc(l.title)}</h3>
+    <div class="meta">${catName(l.category)} · ${Math.round(l.duration/60)} דק׳ · ${media}</div></div></a>
+    <div class="meta">${r?`<a href="#/org/${r.id}">${esc(r.name)}</a>`:''}${o?` · <a href="#/org/${o.id}">${esc(o.name)}</a>`:''}</div>
+    <div class="chips">${l.tags.map(t=>`<span class="chip sm">${esc(t)}</span>`).join('')}</div>
+    ${snippet(l.transcript,q)}
+    <div class="card-foot"><button class="btn sm" data-act="play" data-id="${l.id}">▶ ${pct&&!pos.done?'המשך':'השמע'}</button>${pct?`<div class="bar" title="${Math.round(pct)}%"><i style="width:${pct}%"></i></div>`:''}</div>
+  </article>`;
+}
+/* פרשת השבוע — הפניה לפי זמן */
+function loadShabbat(){
+  if(loadShabbat.data) return showShabbat(loadShabbat.data);
+  fetch(`https://www.hebcal.com/shabbat?cfg=json&geonameid=${CONFIG.hebcalGeonameId}&M=on&lg=he`).then(r=>r.json()).then(d=>{
+    const p=(d.items||[]).find(i=>i.category==='parashat');const hol=(d.items||[]).find(i=>i.category==='holiday');
+    loadShabbat.data={parsha:p?(p.hebrew||p.title).replace(/^פרשת\s*/,''):'',holiday:hol?(hol.hebrew||hol.title):''};
+    showShabbat(loadShabbat.data);
+  }).catch(()=>{});
+}
+function showShabbat(d){
+  const el=$('#shabbat');if(!el||!d.parsha) return;
+  const names=d.parsha.split('-').map(s=>s.trim());
+  const match=S.lessons.filter(l=>l.category==='parasha'&&l.tags.some(t=>names.some(n=>n.includes(t)||t.includes(n))));
+  const fri=new Date().getDay()===5;
+  el.innerHTML=`<div class="banner"><div><div style="font-size:14px;opacity:.85">${fri?'ערב שבת — לקראת שבת':'פרשת השבוע'}${d.holiday?' · '+esc(d.holiday):''}</div><div style="font-size:21px;font-weight:800">פרשת ${esc(d.parsha)}</div><div style="font-size:14px;opacity:.85">${match.length} שיעורים על הפרשה</div></div>
+  <button class="btn" data-act="parsha" data-p="${esc(names[0])}">לשיעורים על הפרשה</button></div>`;
+}
+
+/* =========================================================
+   דף שיעור
+   ========================================================= */
+function vLesson(id,q){
+  const l=lesson(id);if(!l){$('#app').innerHTML='<p>השיעור לא נמצא.</p>';return;}
+  const r=org(l.rabbiId),o=org(l.orgId);
+  const pos=S.positions[id];const t=q.get('t');
+  const myPl=S.playlists.filter(p=>!p.official&&S.user&&p.owner===S.user.email);
+  const rate=S.ratings[id]||0;
+  const ded=S.dedications[id]||[];
+  const bms=S.bookmarks[id]||[];
+  const isCur=P.l&&P.l.id===id;
+  const hasSource=l.sourceRef||l.sourceText;
+  $('#app').innerHTML=`
+    <section class="hero">
+      <img src="${lessonImg(l)}" alt="">
+      <div style="flex:1;min-width:240px">
+        <h1 style="margin:0">${esc(l.title)}</h1>
+        <div class="muted">${r?`<a href="#/org/${r.id}">${esc(r.name)}</a>`:''}${o?` · <a href="#/org/${o.id}">${esc(o.name)}</a>`:''} · ${catName(l.category)} · ${Math.round(l.duration/60)} דק׳</div>
+        <div class="chips" style="margin-top:6px">${l.tags.map(x=>`<span class="chip sm">${esc(x)}</span>`).join('')}</div>
+      </div>
+    </section>
+    ${ded.length?`<div class="notice" style="margin-top:12px">${ded.map(d=>`השיעור מוקדש ${esc(d.kind)} ${esc(d.name)}`).join(' · ')}</div>`:''}
+    <div class="row" style="margin-top:14px">
+      <button class="btn" data-act="play" data-id="${id}" ${t?`data-t="${+t}"`:''}>▶ ${t?`נגן מדקה ${fmt(+t)}`:(pos&&!pos.done?`המשך מ-${fmt(pos.t)}`:'השמע שיעור')}</button>
+      ${pos&&!pos.done&&!t?`<button class="btn ghost" data-act="play" data-id="${id}" data-t="0">מההתחלה</button>`:''}
+      <button class="btn ghost" data-act="shareAt" data-id="${id}">שיתוף מהרגע הנוכחי</button>
+      <button class="btn ghost" data-act="chavruta" data-id="${id}">הזמנת חברותא</button>
+      ${l.allowDownload&&l.src.type==='file'?`<a class="btn ghost" href="${esc(l.src.url)}" download target="_blank" rel="noopener">הורדה</a>`:''}
+    </div>
+    ${!l.allowDownload?'<div class="muted small" style="margin-top:6px">מעלה השיעור בחר שלא לאפשר הורדה.</div>':''}
+    <div class="row" style="margin-top:12px">
+      <div class="stars" title="דירוג">${[1,2,3,4,5].map(n=>`<button class="${n<=rate?'on':''}" data-act="rate" data-id="${id}" data-n="${n}">★</button>`).join('')}</div>
+      ${S.user?`<select id="addPl" style="width:auto"><option value="">+ הוספה לפלייליסט</option>${myPl.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}<option value="__new">פלייליסט חדש…</option></select>`:'<span class="muted small">התחברו כדי לשמור לפלייליסט</span>'}
+    </div>
+    ${l.desc?`<p>${esc(l.desc)}</p>`:''}
+    <div class="${hasSource?'two':''}" style="margin-top:8px">
+      <div>
+        <section class="panel">
+          <h3>סימניות והערות שלי</h3>
+          <div class="muted small">${isCur?`הזמן בנגן: <b id="curTime">${fmt(P.time())}</b>`:'הפעילו את השיעור כדי לסמן רגע.'}</div>
+          <div class="row" style="margin-top:8px"><input id="bmNote" placeholder="למשל: כאן הרב אמר חידוש יפה על רש״י" style="flex:1"><button class="btn sm" data-act="addBm" data-id="${id}" ${isCur?'':'disabled'}>סמן רגע</button></div>
+          <div style="margin-top:8px">${bms.length?bms.map((b,i)=>`<div class="bm"><button class="btn ghost sm" data-act="goBm" data-id="${id}" data-t="${b.t}">${fmt(b.t)}</button><span style="flex:1">${esc(b.note)}</span><button class="ib" data-act="delBm" data-id="${id}" data-i="${i}" title="מחיקה">✕</button></div>`).join(''):'<div class="muted small">אין סימניות עדיין.</div>'}</div>
+        </section>
+        ${l.transcript?`<section class="panel" style="margin-top:14px"><details><summary>תמלול השיעור</summary><p>${esc(l.transcript)}</p></details></section>`:''}
+        <section class="panel" style="margin-top:14px">
+          <details><summary>הקדשת השיעור</summary>
+            <div class="row" style="margin-top:8px">
+              <select id="dedKind" style="width:auto"><option>לעילוי נשמת</option><option>לרפואת</option><option>להצלחת</option><option>לזכר</option></select>
+              <input id="dedName" placeholder="שם" style="flex:1"><button class="btn sm" data-act="dedicate" data-id="${id}">הקדש</button>
+            </div>
+            <div class="muted small" style="margin-top:6px">בגרסה המלאה ההקדשה תחובר לתשלום — פתוח להחלטה.</div>
+          </details>
+        </section>
+      </div>
+      ${hasSource?`<section class="panel"><h3>טקסט המקור${l.sourceRef?` <span class="muted small">— ${esc(l.sourceRef)}</span>`:''}</h3><div class="source" id="srcText">${l.sourceText?l.sourceText.split('\n').map(p=>`<p>${esc(p)}</p>`).join(''):'<p class="muted">טוען מספריא…</p>'}</div></section>`:''}
+    </div>
+    <h2>רבנים בסגנון דומה</h2><div class="grid" id="simRabbis"></div>
+    <h2>שיעורים נוספים שיכולים לעניין</h2><div class="grid" id="simLessons"></div>`;
+  if(l.sourceRef&&!l.sourceText) loadSource(l.sourceRef);
+  const pl=$('#addPl');
+  if(pl) pl.addEventListener('change',()=>{
+    let pid=pl.value;if(!pid) return;
+    if(pid==='__new'){const n=prompt('שם הפלייליסט:');if(!n){pl.value='';return;}pid=uid('pl');S.playlists.push({id:pid,name:n,lessonIds:[],official:false,owner:S.user.email});}
+    const p=S.playlists.find(x=>x.id===pid);if(!p.lessonIds.includes(id))p.lessonIds.push(id);save();toast('נוסף לפלייליסט: '+p.name);route();
+  });
+  renderRecs(l);
+}
+function loadSource(ref){
+  fetch('https://www.sefaria.org/api/v3/texts/'+encodeURIComponent(ref)+'?version=hebrew').then(r=>r.json()).then(d=>{
+    const v=(d.versions||[])[0];let t=v?v.text:null;
+    const flat=x=>Array.isArray(x)?x.flatMap(flat):[x];
+    const paras=t?flat(t).filter(Boolean).map(s=>String(s).replace(/<[^>]+>/g,'')):[];
+    const el=$('#srcText');if(!el) return;
+    el.innerHTML=paras.length?paras.map((p,i)=>`<p><b>${i+1}.</b> ${esc(p)}</p>`).join('')+`<div class="muted small">מקור: <a href="https://www.sefaria.org/${encodeURIComponent(ref)}" target="_blank" rel="noopener">ספריא</a></div>`:'<p class="muted">לא נמצא טקסט עבור ההפניה.</p>';
+  }).catch(()=>{const el=$('#srcText');if(el)el.innerHTML='<p class="muted">לא ניתן לטעון את הטקסט כרגע.</p>';});
+}
+/* מנוע המלצות — שלב א׳: תיוג ידני של סגנון הרב + קטגוריות משותפות */
+function renderRecs(l){
+  const r=org(l.rabbiId);
+  const catsOf=id=>new Set(S.lessons.filter(x=>x.rabbiId===id).map(x=>x.category));
+  const myCats=catsOf(l.rabbiId);
+  const sims=S.orgs.filter(o=>o.type==='rabbi'&&o.id!==l.rabbiId).map(o=>{
+    let s=0;(o.styles||[]).forEach(st=>{if(r&&(r.styles||[]).includes(st))s+=2;});
+    catsOf(o.id).forEach(c=>{if(myCats.has(c))s+=1;});return {o,s};
+  }).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,4);
+  $('#simRabbis').innerHTML=sims.length?sims.map(({o})=>`<article class="card"><a class="card-main" href="#/org/${o.id}"><img src="${orgImg(o)}" alt=""><div><h3>${esc(o.name)}</h3><div class="meta">${(o.styles||[]).join(' · ')}</div><div class="meta">${S.lessons.filter(x=>x.rabbiId===o.id).length} שיעורים</div></div></a></article>`).join(''):'<div class="muted small">עדיין אין מספיק נתונים.</div>';
+  const rel=S.lessons.filter(x=>x.id!==l.id).map(x=>({x,s:(x.category===l.category?2:0)+x.tags.filter(t=>l.tags.includes(t)).length*3+(x.rabbiId===l.rabbiId?1:0)})).filter(a=>a.s>0).sort((a,b)=>b.s-a.s).slice(0,4);
+  $('#simLessons').innerHTML=rel.length?rel.map(a=>card(a.x)).join(''):'<div class="muted small">אין המלצות כרגע.</div>';
+}
+
+/* =========================================================
+   דף רב / מוסד
+   ========================================================= */
+function vOrg(id){
+  const o=org(id);if(!o){$('#app').innerHTML='<p>הדף לא נמצא.</p>';return;}
+  const kids=S.orgs.filter(x=>x.parent===o.id);
+  const parent=org(o.parent);
+  const ls=S.lessons.filter(l=>l.rabbiId===o.id||l.orgId===o.id);
+  const series=S.playlists.filter(p=>p.official&&p.lessonIds.some(i=>ls.find(l=>l.id===i)));
+  const edit=canEditOrg(o);
+  const pageUrl=baseUrl()+'#/org/'+o.id;
+  $('#app').innerHTML=`
+    <section class="hero">
+      <img src="${orgImg(o)}" alt="">
+      <div style="flex:1;min-width:240px">
+        <div class="muted small">${o.type==='rabbi'?'דף רב':'דף מוסד'}${parent?` · <a href="#/org/${parent.id}">${esc(parent.name)}</a>`:''}</div>
+        <h1 style="margin:0">${esc(o.name)}</h1>
+        <div class="chips" style="margin-top:6px">${(o.styles||[]).map(s=>`<span class="chip sm">${esc(s)}</span>`).join('')}</div>
+      </div>
+      <div class="row">
+        ${o.donate?`<a class="btn" href="${esc(o.donate)}" target="_blank" rel="noopener">תרומה ל${esc(o.name)}</a>`:''}
+        <button class="btn ghost" data-act="copy" data-url="${esc(pageUrl)}">העתקת קישור לדף</button>
+      </div>
+    </section>
+    ${o.about?`<p style="white-space:pre-line">${esc(o.about)}</p>`:''}
+    ${kids.length?`<h2>${o.type==='rabbi'?'':'רבני המוסד'}</h2><div class="grid">${kids.map(k=>`<article class="card"><a class="card-main" href="#/org/${k.id}"><img src="${orgImg(k)}" alt=""><div><h3>${esc(k.name)}</h3><div class="meta">${S.lessons.filter(l=>l.rabbiId===k.id).length} שיעורים</div></div></a></article>`).join('')}</div>`:''}
+    ${series.length?`<h2>סדרות</h2><div class="grid">${series.map(plCard).join('')}</div>`:''}
+    <h2>שיעורים (${ls.length})</h2>
+    <div class="grid">${ls.map(l=>card(l)).join('')||'<div class="muted">אין שיעורים עדיין.</div>'}</div>
+    ${edit?`
+    <h2>עריכת הדף</h2>
+    <section class="panel">
+      <label>שם</label><input id="oName" value="${esc(o.name)}">
+      <label>קישור לתמונה (כתובת URL של תמונה)</label><input id="oImg" value="${esc(o.image)}" placeholder="https://…/image.jpg">
+      <label class="row" style="font-weight:400"><input type="checkbox" id="oShow" style="width:auto" ${o.showOnLessons?'checked':''}> להציג את התמונה בכל השיעורים של ${o.type==='rabbi'?'הרב':'המוסד'}</label>
+      <label>טקסט על ${o.type==='rabbi'?'הרב':'המוסד'}</label><textarea id="oAbout">${esc(o.about)}</textarea>
+      <label>קישור לתרומה</label><input id="oDonate" value="${esc(o.donate)}" placeholder="https://…">
+      <label>סגנון (לתיוג ולמנוע ההמלצות)</label>
+      <div class="chips" id="oStyles">${STYLES.map(s=>`<span class="chip ${(o.styles||[]).includes(s)?'on':''}" data-act="toggleStyle" data-s="${s}">${s}</span>`).join('')}</div>
+      ${o.type!=='rabbi'||true?`<label>ברירת מחדל להעלאות: קטגוריה</label><select id="oDefCat"><option value="">ללא</option>${CATS.map(c=>`<option value="${c.id}" ${o.defaults?.category===c.id?'selected':''}>${c.name}</option>`).join('')}</select>`:''}
+      <div style="margin-top:14px"><button class="btn" data-act="saveOrg" data-id="${o.id}">שמירה</button></div>
+    </section>`:''}`;
+}
+
+/* =========================================================
+   רכיב תגיות עם השלמה אוטומטית ויצירת תגית חדשה
+   ========================================================= */
+function tagInput(host,getSugg,initial,onNew){
+  let tags=[...(initial||[])],hl=0,items=[];
+  host.innerHTML='<div class="tagbox"><div class="tagwrap"><span class="tg"></span><input placeholder="הקלידו תגית…"></div><div class="sugg" hidden></div></div>';
+  const inp=host.querySelector('input'),box=host.querySelector('.sugg'),tg=host.querySelector('.tg');
+  const draw=()=>{tg.innerHTML=tags.map((t,i)=>`<span class="chip">${esc(t)}<b data-i="${i}">×</b></span>`).join(' ');};
+  const add=t=>{t=t.trim();if(!t||tags.includes(t))return;tags.push(t);if(!getSugg().includes(t)&&onNew)onNew(t);inp.value='';draw();list();};
+  const list=()=>{
+    const v=inp.value.trim();if(!v){box.hidden=true;return;}
+    const all=getSugg().filter(t=>!tags.includes(t));
+    const m=all.filter(t=>t.startsWith(v)).concat(all.filter(t=>!t.startsWith(v)&&t.includes(v))).slice(0,10);
+    items=m.map(t=>({t,n:false}));if(!all.includes(v)&&!tags.includes(v))items.push({t:v,n:true});
+    hl=0;box.innerHTML=items.map((x,i)=>`<div data-i="${i}" class="${x.n?'new':''} ${i===0?'hl':''}">${x.n?'+ יצירת תגית חדשה: ':''}${esc(x.t)}</div>`).join('');box.hidden=!items.length;
+  };
+  inp.addEventListener('input',list);
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();if(items[hl])add(items[hl].t);else add(inp.value);}
+    else if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();hl=(hl+(e.key==='ArrowDown'?1:-1)+items.length)%items.length;[...box.children].forEach((c,i)=>c.classList.toggle('hl',i===hl));}
+    else if(e.key==='Backspace'&&!inp.value&&tags.length){tags.pop();draw();}
+  });
+  box.addEventListener('mousedown',e=>{const d=e.target.closest('[data-i]');if(d){e.preventDefault();add(items[+d.dataset.i].t);}});
+  tg.addEventListener('click',e=>{if(e.target.dataset.i!=null){tags.splice(+e.target.dataset.i,1);draw();}});
+  inp.addEventListener('blur',()=>setTimeout(()=>box.hidden=true,150));
+  draw();
+  return {get:()=>tags,set:t=>{tags=[...t];draw();}};
+}
+
+/* =========================================================
+   העלאת שיעורים — לנציגי מוסדות ולמנהל
+   ========================================================= */
+function vUpload(){
+  if(!canUpload()){$('#app').innerHTML=`<h1>העלאת שיעור</h1><div class="notice">העלאה זמינה רק למשתמשים שקיבלו הרשאה מהמנהל. <a href="#/me">התחברות</a></div>`;return;}
+  const p=perm();const admin=isAdmin();
+  const myOrg=admin?null:org(p.orgId);
+  const orgs=admin?S.orgs.filter(o=>o.type!=='rabbi'):[myOrg];
+  const rabbisFor=oid=>S.orgs.filter(o=>o.type==='rabbi'&&(admin||o.parent===oid||o.id===oid));
+  const def=(myOrg&&myOrg.defaults)||{category:'',tags:[]};
+  $('#app').innerHTML=`
+    <h1>העלאת שיעור</h1>
+    ${myOrg?`<div class="notice">כל השיעורים שתעלו ישויכו אוטומטית ל<b>${esc(myOrg.name)}</b> ולהגדרות שלו.</div>`:'<div class="notice">כמנהל, אפשר להעלות לכל מוסד ולכל רב בפלטפורמה.</div>'}
+    <section class="panel" style="margin-top:12px">
+      <label>קישורים לשיעורים — שורה לכל שיעור (יוטיוב או קובץ ישיר)</label>
+      <textarea id="uLinks" placeholder="https://www.youtube.com/watch?v=…&#10;https://example.org/shiur.mp3"></textarea>
+      <div class="muted small">כמה שורות = קליטה באצווה. העלו רק תוכן שיש עליו אישור מפורש מבעליו.</div>
+      <div class="two">
+        <div><label>כותרת</label><input id="uTitle" placeholder="בכמה שורות יתווסף: — חלק 1, 2…"></div>
+        <div><label>אורך משוער (דקות)</label><input id="uDur" type="number" min="1" value="30"></div>
+      </div>
+      <div class="two">
+        <div><label>מוסד</label><select id="uOrg" ${admin?'':'disabled'}>${admin?'<option value="">ללא מוסד</option>':''}${orgs.map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')}</select></div>
+        <div><label>רב</label><select id="uRabbi"></select><input id="uNewRabbi" placeholder="שם הרב החדש" style="margin-top:6px;display:none"></div>
+      </div>
+      <div class="two">
+        <div><label>קטגוריה כללית</label><select id="uCat">${CATS.map(c=>`<option value="${c.id}" ${def.category===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div>
+        <div><label>סוג מדיה (לקבצים ישירים)</label><select id="uMedia"><option value="auto">זיהוי אוטומטי</option><option value="audio">אודיו</option><option value="video">וידאו</option></select></div>
+      </div>
+      <label>תגיות</label><div id="uTags"></div>
+      <div class="muted small">הקלידו — המערכת תציע תגיות קיימות. אם אין, אפשר ליצור תגית חדשה.</div>
+      <label>תיאור</label><textarea id="uDesc"></textarea>
+      <div class="two">
+        <div><label>טקסט מקור — הפניה לספריא (לא חובה)</label><input id="uRef" placeholder="Shulchan Arukh, Choshen Mishpat 13"></div>
+        <div><label>או הדבקת טקסט מקור חופשי</label><textarea id="uSrcText" style="min-height:44px"></textarea></div>
+      </div>
+      <label>תמלול (לא חובה — בגרסה המלאה ייווצר אוטומטית)</label><textarea id="uTrans"></textarea>
+      <label class="row" style="font-weight:400"><input type="checkbox" id="uDl" style="width:auto" checked> לאפשר למשתמשים להוריד את השיעור</label>
+      <div style="margin-top:14px"><button class="btn" data-act="doUpload">העלאה</button></div>
+    </section>`;
+  const fillRabbis=()=>{const oid=$('#uOrg').value;$('#uRabbi').innerHTML=rabbisFor(oid).map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')+'<option value="__new">+ רב חדש…</option>'+(oid?'<option value="__org">שיעור כללי של המוסד</option>':'');$('#uNewRabbi').style.display='none';};
+  $('#uOrg').addEventListener('change',fillRabbis);fillRabbis();
+  $('#uRabbi').addEventListener('change',()=>{$('#uNewRabbi').style.display=$('#uRabbi').value==='__new'?'':'none';const r=org($('#uRabbi').value);if(r&&r.defaults&&r.defaults.category){$('#uCat').value=r.defaults.category;tagUi.set(r.defaults.tags||[]);}});
+  const tagUi=tagInput($('#uTags'),()=>allTagsFor($('#uCat').value),def.tags,t=>{const c=$('#uCat').value;(S.extraTags[c]=S.extraTags[c]||[]).push(t);save();});
+  window._tagUi=tagUi;
+}
+function doUpload(){
+  const links=$('#uLinks').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!links.length) return toast('הדביקו לפחות קישור אחד');
+  const title=$('#uTitle').value.trim()||'שיעור';
+  let orgId=$('#uOrg').value||null;let rabbiId=$('#uRabbi').value;
+  if(!isAdmin()) orgId=perm().orgId;
+  if(rabbiId==='__new'){const n=$('#uNewRabbi').value.trim();if(!n)return toast('הזינו שם לרב החדש');rabbiId=uid('r');S.orgs.push({id:rabbiId,type:'rabbi',name:n,parent:orgId,image:'',showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});}
+  if(rabbiId==='__org') rabbiId=null;
+  const created=[];
+  links.forEach((u,i)=>{
+    const y=ytId(u);let src;
+    if(y) src={type:'youtube',ytId:y};
+    else{let m=$('#uMedia').value;if(m==='auto')m=/\.(mp4|webm|mov|m4v)(\?|$)/i.test(u)?'video':'audio';src={type:'file',media:m,url:u};}
+    const l={id:uid('l'),title:links.length>1?`${title} — חלק ${i+1}`:title,rabbiId,orgId,category:$('#uCat').value,tags:window._tagUi.get(),
+      duration:(+$('#uDur').value||30)*60,src,allowDownload:$('#uDl').checked&&!y,desc:$('#uDesc').value.trim(),transcript:$('#uTrans').value.trim(),
+      sourceRef:$('#uRef').value.trim(),sourceText:$('#uSrcText').value.trim(),date:new Date().toISOString().slice(0,10),uploadedBy:S.user.email};
+    S.lessons.unshift(l);created.push(l.id);
+  });
+  if(created.length>1&&confirm('ליצור מהשיעורים האלה סדרה (מסלול לימוד)?')) S.playlists.push({id:uid('pl'),name:title,lessonIds:created,official:true,owner:S.user.email});
+  save();toast(`נקלטו ${created.length} שיעורים`);location.hash='#/lesson/'+created[0];
+}
+
+/* =========================================================
+   ניהול — הרשאות, מוסדות ומסלולי לימוד
+   ========================================================= */
+function vAdmin(){
+  if(!isAdmin()){$('#app').innerHTML='<h1>ניהול</h1><div class="notice">אזור זה למנהל בלבד.</div>';return;}
+  $('#app').innerHTML=`
+    <h1>ניהול הפלטפורמה</h1>
+    <h2>הרשאות</h2>
+    <section class="panel">
+      <table class="tbl"><tr><th>חשבון Google</th><th>תפקיד</th><th>מוסד</th><th></th></tr>
+      ${S.permissions.map((p,i)=>`<tr><td>${esc(p.email)}</td><td>${ROLE_NAMES[p.role]}</td><td>${p.orgId?esc(org(p.orgId)?.name):'—'}</td><td><button class="ib" data-act="delPerm" data-i="${i}" title="הסרה">✕</button></td></tr>`).join('')}
+      </table>
+      <div class="filters" style="margin-top:12px">
+        <input id="pEmail" placeholder="כתובת Gmail">
+        <select id="pRole"><option value="rep">נציג מוסד</option><option value="admin">מנהל</option></select>
+        <select id="pOrg">${S.orgs.map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')}</select>
+        <button class="btn" data-act="addPerm">הוספת הרשאה</button>
+      </div>
+    </section>
+    <h2>מוסדות ורבנים</h2>
+    <section class="panel">
+      <table class="tbl"><tr><th>שם</th><th>סוג</th><th>שייך ל</th><th>שיעורים</th></tr>
+      ${S.orgs.map(o=>`<tr><td><a href="#/org/${o.id}">${esc(o.name)}</a></td><td>${o.type==='rabbi'?'רב':'מוסד'}</td><td>${o.parent?esc(org(o.parent)?.name):'—'}</td><td>${S.lessons.filter(l=>l.rabbiId===o.id||l.orgId===o.id).length}</td></tr>`).join('')}
+      </table>
+      <div class="filters" style="margin-top:12px">
+        <input id="nName" placeholder="שם הרב או המוסד">
+        <select id="nType"><option value="yeshiva">מוסד / ישיבה</option><option value="rabbi">רב</option></select>
+        <select id="nParent"><option value="">ללא שיוך</option>${S.orgs.filter(o=>o.type!=='rabbi').map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')}</select>
+        <button class="btn" data-act="addOrg">יצירת דף</button>
+      </div>
+    </section>
+    <h2>מסלול לימוד רשמי חדש</h2>
+    <section class="panel">
+      <input id="olName" placeholder="שם המסלול, למשל: הלכות שבת לפי הסדר">
+      <div style="margin-top:10px;max-height:220px;overflow:auto">${S.lessons.map(l=>`<label class="row" style="font-weight:400;margin:4px 0"><input type="checkbox" class="olChk" value="${l.id}" style="width:auto"> ${esc(l.title)}</label>`).join('')}</div>
+      <button class="btn" data-act="addOfficial" style="margin-top:10px">יצירת מסלול</button>
+    </section>
+    <h2>נתוני הדגמה</h2>
+    <section class="panel"><div class="muted small">כל הנתונים בגרסה זו נשמרים בדפדפן שלכם בלבד.</div><button class="btn danger" data-act="reset" style="margin-top:8px">איפוס לנתוני הדוגמה</button></section>`;
+}
+
+/* =========================================================
+   אזור אישי — התחברות, פלייליסטים, שיעור יומי, סימניות
+   ========================================================= */
+function vMe(){
+  if(!S.user){
+    $('#app').innerHTML=`<h1>התחברות</h1>
+    <section class="panel" style="max-width:460px">
+      <div class="notice">בגרסת הניסיון ההתחברות מדומה. בגרסה המלאה תהיה התחברות אמיתית עם חשבון Google.</div>
+      <label>כתובת Gmail</label><input id="lEmail" placeholder="name@gmail.com">
+      <button class="btn" data-act="login" style="margin-top:12px">התחברות עם Google (הדמיה)</button>
+      <div class="muted small" style="margin-top:14px">חשבונות לבדיקה:</div>
+      <div class="row" style="margin-top:6px"><button class="btn ghost sm" data-act="loginAs" data-e="admin@demo.com">מנהל</button><button class="btn ghost sm" data-act="loginAs" data-e="rep@demo.com">נציג ישיבה</button><button class="btn ghost sm" data-act="loginAs" data-e="user@demo.com">משתמש רגיל</button></div>
+    </section>`;return;
+  }
+  const mine=S.playlists.filter(p=>p.owner===S.user.email&&!p.official);
+  const allPl=S.playlists.filter(p=>p.official||p.owner===S.user.email);
+  const bms=Object.entries(S.bookmarks).flatMap(([id,arr])=>arr.map(b=>({...b,id}))).filter(b=>lesson(b.id));
+  $('#app').innerHTML=`
+    <h1>האזור האישי</h1>
+    <div class="row"><span>${esc(S.user.email)} · ${ROLE_NAMES[role()]}</span><button class="btn ghost sm" data-act="logout">התנתקות</button></div>
+    <h2>השיעור היומי</h2>
+    <section class="panel"><div class="muted small">בחרו סדרה, ובכל יום יוצע לכם השיעור הבא בה בדף הבית.</div>
+      <select id="dailySel" style="margin-top:8px"><option value="">ללא</option>${allPl.map(p=>`<option value="${p.id}" ${S.daily===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></section>
+    <h2>הפלייליסטים שלי</h2>
+    <div class="row"><input id="newPl" placeholder="שם לפלייליסט חדש" style="flex:1;max-width:340px"><button class="btn" data-act="newPl">יצירה</button></div>
+    <div class="grid" style="margin-top:10px">${mine.map(plCard).join('')||'<div class="muted">אין פלייליסטים עדיין. אפשר להוסיף שיעורים מדף השיעור.</div>'}</div>
+    <h2>הסימניות שלי</h2>
+    <section class="panel">${bms.length?bms.map(b=>`<div class="bm"><button class="btn ghost sm" data-act="goBm" data-id="${b.id}" data-t="${b.t}">${fmt(b.t)}</button><a href="#/lesson/${b.id}" style="flex:1">${esc(lesson(b.id).title)}</a><span class="muted">${esc(b.note)}</span></div>`).join(''):'<div class="muted small">אין סימניות.</div>'}</section>
+    <h2>היסטוריית האזנה</h2>
+    <div class="grid">${S.history.map(lesson).filter(Boolean).slice(0,12).map(l=>card(l)).join('')||'<div class="muted">עוד לא האזנתם לשיעורים.</div>'}</div>`;
+  $('#dailySel').addEventListener('change',e=>{S.daily=e.target.value||null;save();toast('נשמר');});
+}
+function vPlaylist(id){
+  const p=S.playlists.find(x=>x.id===id);if(!p){$('#app').innerHTML='<p>הפלייליסט לא נמצא.</p>';return;}
+  const ls=p.lessonIds.map(lesson).filter(Boolean);
+  const own=S.user&&p.owner===S.user.email;
+  $('#app').innerHTML=`<div class="muted small">${p.official?'מסלול לימוד':'פלייליסט אישי'}</div><h1>${esc(p.name)}</h1>
+    <div class="row"><button class="btn" data-act="playList" data-id="${p.id}">▶ נגן הכל לפי הסדר</button><button class="btn ghost" data-act="copy" data-url="${esc(baseUrl()+'#/playlist/'+p.id)}">שיתוף</button>${own?`<button class="btn ghost" data-act="delPl" data-id="${p.id}">מחיקה</button>`:''}</div>
+    ${!p.official?'<div class="muted small" style="margin-top:6px">שיתוף פלייליסט אישי יעבוד בין משתמשים אחרי חיבור לשרת.</div>':''}
+    <div style="margin-top:14px" class="grid">${ls.map((l,i)=>card(l).replace('<article class="card">',`<article class="card"><div class="meta">${i+1}.${own?` <a href="#" data-act="rmFromPl" data-pl="${p.id}" data-id="${l.id}">הסרה</a>`:''}</div>`)).join('')}</div>`;
+}
+
+/* =========================================================
+   פעולות
+   ========================================================= */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b) return;
+  const a=b.dataset.act,id=b.dataset.id;
+  const A={
+    play:()=>play(id,b.dataset.t!=null?+b.dataset.t:null),
+    toggle:()=>P.toggle(),
+    back15:()=>P.seek(P.time()-15),
+    fwd15:()=>P.seek(P.time()+15),
+    vidToggle:()=>$('#dock').classList.toggle('minvid'),
+    closeDock:()=>{stopMedia();P.l=null;$('#dock').classList.remove('on');},
+    playList:()=>{const p=S.playlists.find(x=>x.id===id);if(p&&p.lessonIds.length)play(p.lessonIds[0],0,[...p.lessonIds]);},
+    ftag:()=>{const t=b.dataset.t;F.tags=F.tags.includes(t)?F.tags.filter(x=>x!==t):[...F.tags,t];renderResults();},
+    clearF:()=>{F={q:'',cat:'',tags:[],rabbi:'',org:'',dur:'',media:''};vHome();},
+    parsha:()=>{F={q:'',cat:'parasha',tags:[],rabbi:'',org:'',dur:'',media:''};const p=b.dataset.p;const used=S.lessons.flatMap(l=>l.tags);const t=used.find(x=>p.includes(x)||x.includes(p));if(t)F.tags=[t];vHome();document.getElementById('results').scrollIntoView({behavior:'smooth'});},
+    shareAt:()=>{const t=P.l&&P.l.id===id?Math.floor(P.time()):0;copy(baseUrl()+'#/lesson/'+id+(t?'?t='+t:''),t?`קישור מדקה ${fmt(t)} הועתק`:'קישור לשיעור הועתק');},
+    chavruta:()=>{const t=P.l&&P.l.id===id?Math.floor(P.time()):0;const url=baseUrl()+'#/lesson/'+id+(t?'?t='+t:'');window.open('https://wa.me/?text='+encodeURIComponent(`בוא נלמד יחד: ${lesson(id).title}\n${url}`),'_blank');},
+    rate:()=>{S.ratings[id]=+b.dataset.n;save();route();},
+    addBm:()=>{(S.bookmarks[id]=S.bookmarks[id]||[]).push({t:Math.floor(P.time()),note:$('#bmNote').value.trim()||'סימנייה'});S.bookmarks[id].sort((x,y)=>x.t-y.t);save();route();},
+    goBm:()=>{if(P.l&&P.l.id===id)P.seek(+b.dataset.t);else play(id,+b.dataset.t);},
+    delBm:()=>{S.bookmarks[id].splice(+b.dataset.i,1);save();route();},
+    dedicate:()=>{const n=$('#dedName').value.trim();if(!n)return toast('הזינו שם');(S.dedications[id]=S.dedications[id]||[]).push({kind:$('#dedKind').value,name:n});save();route();},
+    copy:()=>copy(b.dataset.url),
+    toggleStyle:()=>b.classList.toggle('on'),
+    saveOrg:()=>{const o=org(id);o.name=$('#oName').value.trim()||o.name;o.image=$('#oImg').value.trim();o.showOnLessons=$('#oShow').checked;o.about=$('#oAbout').value;o.donate=$('#oDonate').value.trim();o.styles=[...document.querySelectorAll('#oStyles .chip.on')].map(c=>c.dataset.s);o.defaults={category:$('#oDefCat').value,tags:o.defaults?.tags||[]};save();toast('הדף נשמר');route();},
+    doUpload,
+    addPerm:()=>{const em=$('#pEmail').value.trim().toLowerCase();if(!em.includes('@'))return toast('כתובת לא תקינה');S.permissions=S.permissions.filter(p=>p.email!==em);const r=$('#pRole').value;S.permissions.push({email:em,role:r,orgId:r==='rep'?$('#pOrg').value:null});save();route();},
+    delPerm:()=>{S.permissions.splice(+b.dataset.i,1);save();route();},
+    addOrg:()=>{const n=$('#nName').value.trim();if(!n)return toast('הזינו שם');const oid=uid('o');S.orgs.push({id:oid,type:$('#nType').value,name:n,parent:$('#nParent').value||null,image:'',showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});save();location.hash='#/org/'+oid;},
+    addOfficial:()=>{const n=$('#olName').value.trim();const ids=[...document.querySelectorAll('.olChk:checked')].map(c=>c.value);if(!n||!ids.length)return toast('בחרו שם ושיעורים');S.playlists.push({id:uid('pl'),name:n,lessonIds:ids,official:true,owner:S.user.email});save();toast('המסלול נוצר');route();},
+    reset:()=>{if(confirm('לאפס את כל הנתונים?')){const u=S.user;S=seed();S.user=u;save();route();}},
+    login:()=>{const em=$('#lEmail').value.trim().toLowerCase();if(!em.includes('@'))return toast('הזינו כתובת');S.user={email:em};save();route();},
+    loginAs:()=>{S.user={email:b.dataset.e};save();route();},
+    logout:()=>{S.user=null;save();route();},
+    newPl:()=>{const n=$('#newPl').value.trim();if(!n)return;S.playlists.push({id:uid('pl'),name:n,lessonIds:[],official:false,owner:S.user.email});save();route();},
+    delPl:()=>{if(confirm('למחוק את הפלייליסט?')){S.playlists=S.playlists.filter(p=>p.id!==id);if(S.daily===id)S.daily=null;save();location.hash='#/me';}},
+    rmFromPl:()=>{e.preventDefault();const p=S.playlists.find(x=>x.id===b.dataset.pl);p.lessonIds=p.lessonIds.filter(x=>x!==id);save();route();}
+  };
+  if(A[a]){if(b.tagName==='A'&&a!=='rmFromPl')e.preventDefault();A[a]();}
+});
+
+route();
+</script>
+</body>
+</html>
