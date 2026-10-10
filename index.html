@@ -151,6 +151,9 @@ details summary{cursor:pointer;font-weight:500}
 </div>
 <div id="toast"></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 /* =========================================================
    הגדרות כלליות — לשנות כאן את שם האתר וקישור התרומה
@@ -158,7 +161,18 @@ details summary{cursor:pointer;font-weight:500}
 const CONFIG = {
   siteName: 'מאגר השיעורים',
   siteDonateUrl: '',          // קישור לתרומה לאתר (למשל עמוד בנדרים פלוס). ריק = לא מוצג
-  hebcalGeonameId: 281184     // ירושלים — לחישוב פרשת השבוע
+  hebcalGeonameId: 281184,    // ירושלים — לחישוב פרשת השבוע
+  ownerEmail: 'arye.minkov@gmail.com', // המנהל הראשי — תמיד מנהל, גם בלי הרשאה ברשימה
+  /* הדביקו כאן את ההגדרות מ-Firebase (Project settings → Your apps → Config).
+     כל עוד apiKey ריק — האתר עובד במצב הדגמה, והנתונים נשמרים רק בדפדפן. */
+  firebase: {
+    apiKey: 'AIzaSyAVsjHR8CSu7Qis0eacR0AyJIIQMU-8vaM',
+    authDomain: 'tora-24762.firebaseapp.com',
+    projectId: 'tora-24762',
+    storageBucket: 'tora-24762.firebasestorage.app',
+    messagingSenderId: '418344471337',
+    appId: '1:418344471337:web:c0c7229fb47a50ca0a4538'
+  }
 };
 
 /* ---------- נתוני יסוד ---------- */
@@ -209,12 +223,126 @@ function L(id,title,rabbiId,orgId,category,tags,mins,src,allowDownload,desc,tran
   return {id,title,rabbiId,orgId,category,tags,duration:mins*60,src,allowDownload,desc,transcript,sourceRef,sourceText:'',date:'2026-10-01',demo:true};
 }
 
-/* ---------- אחסון ---------- */
+/* ---------- אחסון וסנכרון ---------- */
 const LS='torah_platform_v1';
+const PRIV_KEYS=['positions','bookmarks','ratings','history','daily'];
+const FB=(CONFIG.firebase&&CONFIG.firebase.apiKey&&window.firebase)?(()=>{
+  try{const app=firebase.initializeApp(CONFIG.firebase);return {auth:firebase.auth(),db:firebase.firestore()};}catch(e){console.error(e);return null;}
+})():null;
 let S=null;
 try{S=JSON.parse(localStorage.getItem(LS))}catch(e){}
-if(!S||!S.lessons) S=seed();
-function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
+if(FB){
+  /* במצב Firebase: התוכן הציבורי מגיע מהשרת, ורק הנתונים האישיים של אורח נשמרים בדפדפן */
+  const priv={};PRIV_KEYS.forEach(k=>priv[k]=S&&S[k]!=null?S[k]:(k==='daily'?null:(k==='history'?[]:{})));
+  S={orgs:[],lessons:[],permissions:[],playlists:[],extraTags:{},dedications:{},user:null,...priv};
+}else if(!S||!S.lessons) S=seed();
+
+/* מיפוי בין הנתונים בזיכרון לאוספים ב-Firestore */
+const COLS={
+  lessons:{get:()=>S.lessons,key:x=>x.id},
+  orgs:{get:()=>S.orgs,key:x=>x.id},
+  playlists:{get:()=>S.playlists,key:x=>x.id},
+  permissions:{get:()=>S.permissions,key:x=>x.email},
+  tags:{get:()=>Object.entries(S.extraTags).map(([cat,list])=>({cat,list})),key:x=>x.cat},
+  dedications:{get:()=>Object.entries(S.dedications).map(([lessonId,items])=>({lessonId,items})),key:x=>x.lessonId}
+};
+const SYNC={};Object.keys(COLS).forEach(c=>SYNC[c]={});
+const clean=o=>JSON.parse(JSON.stringify(o));
+let userWriteT=null,userLastJson='';
+
+function save(){
+  try{
+    const local=FB?Object.fromEntries(PRIV_KEYS.map(k=>[k,S[k]])):S;
+    localStorage.setItem(LS,JSON.stringify(local));
+  }catch(e){}
+  if(!FB) return;
+  /* כתיבה לשרת רק של מה שהשתנה */
+  const batch=FB.db.batch();let n=0;
+  for(const [col,def] of Object.entries(COLS)){
+    const cur={};def.get().forEach(x=>cur[def.key(x)]=x);
+    for(const [id,x] of Object.entries(cur)){
+      const j=JSON.stringify(x);
+      if(SYNC[col][id]!==j){batch.set(FB.db.collection(col).doc(id),clean(x));SYNC[col][id]=j;n++;}
+    }
+    for(const id of Object.keys(SYNC[col])) if(!(id in cur)){batch.delete(FB.db.collection(col).doc(id));delete SYNC[col][id];n++;}
+  }
+  if(n) batch.commit().catch(e=>{console.error(e);toast(e.code==='permission-denied'?'אין לך הרשאה לפעולה הזו':'השמירה נכשלה, נסו שוב');});
+  if(S.user&&S.user.uid) scheduleUserWrite();
+}
+function scheduleUserWrite(now){
+  if(userWriteT&&!now) return;
+  clearTimeout(userWriteT);
+  userWriteT=setTimeout(flushUser,now?0:20000);
+}
+function flushUser(){
+  userWriteT=null;if(!FB||!S.user||!S.user.uid) return;
+  const data=Object.fromEntries(PRIV_KEYS.map(k=>[k,S[k]]));const j=JSON.stringify(data);
+  if(j===userLastJson) return;userLastJson=j;
+  FB.db.collection('users').doc(S.user.uid).set(clean(data)).catch(e=>console.error(e));
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushUser();});
+
+/* האזנה לשינויים בשרת */
+let rerenderT=null;
+function rerender(){
+  clearTimeout(rerenderT);
+  rerenderT=setTimeout(()=>{
+    const a=document.activeElement;const v=(location.hash.slice(2).split(/[/?]/)[0])||'';
+    if(v==='upload'||(a&&a.closest&&a.closest('#app')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))){renderChrome(v);return;}
+    route(true);
+  },120);
+}
+function applySnap(col,docs){
+  SYNC[col]={};docs.forEach(d=>SYNC[col][COLS[col].key(d)]=JSON.stringify(d));
+  if(col==='tags'){S.extraTags={};docs.forEach(d=>S.extraTags[d.cat]=d.list||[]);}
+  else if(col==='dedications'){S.dedications={};docs.forEach(d=>S.dedications[d.lessonId]=d.items||[]);}
+  else S[col]=docs;
+}
+const PL_PARTS={official:[],own:[]};
+function setPlaylists(){
+  const m=new Map();[...PL_PARTS.official,...PL_PARTS.own].forEach(p=>m.set(p.id,p));
+  applySnap('playlists',[...m.values()]);
+}
+const docsOf=snap=>snap.docs.map(d=>d.data());
+let userUnsubs=[];
+let loaded=false;
+function startSync(){
+  const onErr=e=>console.error(e);
+  FB.db.collection('lessons').onSnapshot(sn=>{applySnap('lessons',docsOf(sn).sort((a,b)=>String(b.date).localeCompare(String(a.date))));loaded=true;rerender();},onErr);
+  FB.db.collection('orgs').onSnapshot(sn=>{applySnap('orgs',docsOf(sn));rerender();},onErr);
+  FB.db.collection('tags').onSnapshot(sn=>{applySnap('tags',docsOf(sn));},onErr);
+  FB.db.collection('dedications').onSnapshot(sn=>{applySnap('dedications',docsOf(sn));rerender();},onErr);
+  FB.db.collection('playlists').where('official','==',true).onSnapshot(sn=>{PL_PARTS.official=docsOf(sn);setPlaylists();rerender();},onErr);
+
+  FB.auth.onAuthStateChanged(async u=>{
+    userUnsubs.forEach(f=>f());userUnsubs=[];PL_PARTS.own=[];setPlaylists();applySnap('permissions',[]);
+    if(!u){S.user=null;rerender();return;}
+    const email=(u.email||'').toLowerCase();
+    S.user={email,uid:u.uid,name:u.displayName||''};
+    /* נתונים אישיים: מיזוג מה שנשמר בדפדפן עם מה שבשרת */
+    try{
+      const d=await FB.db.collection('users').doc(u.uid).get();const srv=d.exists?d.data():{};
+      S.positions={...S.positions,...(srv.positions||{})};
+      const bm={...(srv.bookmarks||{})};Object.entries(S.bookmarks||{}).forEach(([k,arr])=>{const have=bm[k]||[];bm[k]=[...have,...arr.filter(b=>!have.some(h=>h.t===b.t&&h.note===b.note))].sort((a,b)=>a.t-b.t);});S.bookmarks=bm;
+      S.ratings={...S.ratings,...(srv.ratings||{})};
+      S.history=[...new Set([...(srv.history||[]),...(S.history||[])])].slice(0,60);
+      S.daily=srv.daily||S.daily||null;
+      scheduleUserWrite(true);
+    }catch(e){console.error(e);}
+    userUnsubs.push(FB.db.collection('playlists').where('owner','==',email).onSnapshot(sn=>{PL_PARTS.own=docsOf(sn);setPlaylists();rerender();},onErr));
+    const listenAll=()=>userUnsubs.push(FB.db.collection('permissions').onSnapshot(sn=>{applySnap('permissions',docsOf(sn));rerender();},onErr));
+    if(email===CONFIG.ownerEmail.toLowerCase()) listenAll();
+    else{
+      let all=false;
+      userUnsubs.push(FB.db.collection('permissions').doc(email).onSnapshot(d=>{
+        const p=d.exists?d.data():null;
+        if(p&&p.role==='admin'&&!all){all=true;listenAll();return;}
+        if(!all){applySnap('permissions',p?[p]:[]);rerender();}
+      },onErr));
+    }
+    rerender();
+  });
+}
 
 /* ---------- עזרים ---------- */
 const $=s=>document.querySelector(s);
@@ -253,7 +381,7 @@ function allTagsFor(cat){
 
 /* ---------- משתמש והרשאות (הדמיה עד חיבור Google אמיתי) ---------- */
 function perm(){return S.user?S.permissions.find(p=>p.email===S.user.email):null;}
-function role(){if(!S.user) return 'guest';const p=perm();return p?p.role:'user';}
+function role(){if(!S.user) return 'guest';if(CONFIG.ownerEmail&&S.user.email===CONFIG.ownerEmail.toLowerCase()) return 'admin';const p=perm();return p?p.role:'user';}
 const isAdmin=()=>role()==='admin';
 const canUpload=()=>role()==='admin'||role()==='rep';
 function canEditOrg(o){
@@ -261,6 +389,7 @@ function canEditOrg(o){
   const p=perm();if(!p||p.role!=='rep') return false;
   return o.id===p.orgId||o.parent===p.orgId;
 }
+function canDeleteLesson(l){if(isAdmin())return true;const p=perm();return !!(p&&p.role==='rep'&&l.orgId&&l.orgId===p.orgId);}
 const ROLE_NAMES={guest:'אורח',user:'משתמש',rep:'נציג מוסד',admin:'מנהל'};
 
 /* =========================================================
@@ -357,7 +486,7 @@ $('#dRate').addEventListener('change',e=>P.setRate(+e.target.value));
    ניתוב
    ========================================================= */
 let F={q:'',cat:'',tags:[],rabbi:'',org:'',dur:'',media:''};
-function route(){
+function route(keepScroll){
   const h=location.hash.slice(1)||'/';
   const [path,qs]=h.split('?');const parts=path.split('/').filter(Boolean);const q=new URLSearchParams(qs||'');
   const v=parts[0]||'';
@@ -370,7 +499,7 @@ function route(){
   else if(v==='me') vMe();
   else if(v==='playlist') vPlaylist(parts[1]);
   else vHome();
-  window.scrollTo(0,0);
+  if(!keepScroll) window.scrollTo(0,0);
 }
 window.addEventListener('hashchange',route);
 
@@ -381,7 +510,7 @@ function renderChrome(v){
   if(canUpload()) links.push(['upload','העלאת שיעור']);
   if(isAdmin()) links.push(['admin','ניהול']);
   $('#nav').innerHTML=links.map(([k,n])=>`<a href="#/${k}" class="${v===k?'on':''}">${n}</a>`).join('');
-  $('#userbox').innerHTML=S.user?`${esc(S.user.email)} · ${ROLE_NAMES[role()]}`:`<a class="btn sm" href="#/me">התחברות</a>`;
+  $('#userbox').innerHTML=S.user?`<a href="#/me">${esc(S.user.name||S.user.email)}</a> · ${ROLE_NAMES[role()]}`:`<a class="btn sm" href="#/me">התחברות</a>`;
   $('#footer').innerHTML=`${esc(CONFIG.siteName)} · גרסת ניסיון${CONFIG.siteDonateUrl?` · <a href="${esc(CONFIG.siteDonateUrl)}" target="_blank" rel="noopener">תרומה לאתר</a>`:''}<br>השיעורים בגרסה זו הם דוגמאות טכניות בלבד.`;
 }
 
@@ -448,7 +577,7 @@ function renderResults(){
   $('#ftags').innerHTML=used.map(t=>`<span class="chip ${F.tags.includes(t)?'on':''}" data-act="ftag" data-t="${esc(t)}">${esc(t)}</span>`).join('');
   const res=filterLessons();
   $('#rcount').textContent=`נמצאו ${res.length} שיעורים`;
-  $('#results').innerHTML=res.length?res.map(l=>card(l,F.q)).join(''):'<div class="muted">לא נמצאו שיעורים. נסו לשנות את הסינון.</div>';
+  $('#results').innerHTML=res.length?res.map(l=>card(l,F.q)).join(''):(FB&&!loaded?'<div class="muted">טוען שיעורים…</div>':(S.lessons.length?'<div class="muted">לא נמצאו שיעורים. נסו לשנות את הסינון.</div>':'<div class="muted">עדיין אין שיעורים במאגר.'+(isAdmin()?' אפשר להתחיל ב<a href="#/upload">העלאת שיעור</a> או לייבא שיעורי דוגמה מ<a href="#/admin">דף הניהול</a>.':'')+'</div>'));
 }
 function snippet(text,q){
   if(!q||!text) return '';
@@ -516,6 +645,7 @@ function vLesson(id,q){
       <button class="btn ghost" data-act="shareAt" data-id="${id}">שיתוף מהרגע הנוכחי</button>
       <button class="btn ghost" data-act="chavruta" data-id="${id}">הזמנת חברותא</button>
       ${l.allowDownload&&l.src.type==='file'?`<a class="btn ghost" href="${esc(l.src.url)}" download target="_blank" rel="noopener">הורדה</a>`:''}
+      ${canDeleteLesson(l)?`<button class="btn ghost" data-act="delLesson" data-id="${id}" style="color:var(--danger);border-color:var(--danger)">מחיקת שיעור</button>`:''}
     </div>
     ${!l.allowDownload?'<div class="muted small" style="margin-top:6px">מעלה השיעור בחר שלא לאפשר הורדה.</div>':''}
     <div class="row" style="margin-top:12px">
@@ -658,6 +788,7 @@ function vUpload(){
   if(!canUpload()){$('#app').innerHTML=`<h1>העלאת שיעור</h1><div class="notice">העלאה זמינה רק למשתמשים שקיבלו הרשאה מהמנהל. <a href="#/me">התחברות</a></div>`;return;}
   const p=perm();const admin=isAdmin();
   const myOrg=admin?null:org(p.orgId);
+  if(!admin&&!myOrg){$('#app').innerHTML='<h1>העלאת שיעור</h1><div class="notice">ההרשאה שלכם משויכת למוסד שלא נמצא. פנו למנהל האתר.</div>';return;}
   const orgs=admin?S.orgs.filter(o=>o.type!=='rabbi'):[myOrg];
   const rabbisFor=oid=>S.orgs.filter(o=>o.type==='rabbi'&&(admin||o.parent===oid||o.id===oid));
   const def=(myOrg&&myOrg.defaults)||{category:'',tags:[]};
@@ -756,8 +887,10 @@ function vAdmin(){
       <div style="margin-top:10px;max-height:220px;overflow:auto">${S.lessons.map(l=>`<label class="row" style="font-weight:400;margin:4px 0"><input type="checkbox" class="olChk" value="${l.id}" style="width:auto"> ${esc(l.title)}</label>`).join('')}</div>
       <button class="btn" data-act="addOfficial" style="margin-top:10px">יצירת מסלול</button>
     </section>
-    <h2>נתוני הדגמה</h2>
-    <section class="panel"><div class="muted small">כל הנתונים בגרסה זו נשמרים בדפדפן שלכם בלבד.</div><button class="btn danger" data-act="reset" style="margin-top:8px">איפוס לנתוני הדוגמה</button></section>`;
+    <h2>נתונים</h2>
+    ${FB?`<section class="panel"><div class="muted small">האתר מחובר ל-Firebase: כל השינויים נשמרים בשרת ומשותפים לכל המשתמשים.</div>
+      <button class="btn ghost" data-act="importDemo" style="margin-top:8px">ייבוא שיעורי דוגמה לבדיקה</button></section>`
+    :`<section class="panel"><div class="muted small">מצב הדגמה: הנתונים נשמרים בדפדפן שלכם בלבד.</div><button class="btn danger" data-act="reset" style="margin-top:8px">איפוס לנתוני הדוגמה</button></section>`}`;
 }
 
 /* =========================================================
@@ -765,11 +898,16 @@ function vAdmin(){
    ========================================================= */
 function vMe(){
   if(!S.user){
-    $('#app').innerHTML=`<h1>התחברות</h1>
+    $('#app').innerHTML=FB?`<h1>התחברות</h1>
     <section class="panel" style="max-width:460px">
-      <div class="notice">בגרסת הניסיון ההתחברות מדומה. בגרסה המלאה תהיה התחברות אמיתית עם חשבון Google.</div>
+      <p>התחברו עם חשבון Google כדי לשמור את מקום ההאזנה, פלייליסטים וסימניות בכל המכשירים.</p>
+      <button class="btn" data-act="login">התחברות עם Google</button>
+      <div class="muted small" style="margin-top:12px">נציגי מוסדות: לאחר ההתחברות, המנהל יוכל לתת לחשבון שלכם הרשאת העלאה.</div>
+    `:`<h1>התחברות</h1>
+    <section class="panel" style="max-width:460px">
+      <div class="notice">מצב הדגמה: Firebase עוד לא מחובר, ולכן ההתחברות מדומה.</div>
       <label>כתובת Gmail</label><input id="lEmail" placeholder="name@gmail.com">
-      <button class="btn" data-act="login" style="margin-top:12px">התחברות עם Google (הדמיה)</button>
+      <button class="btn" data-act="login" style="margin-top:12px">התחברות (הדמיה)</button>
       <div class="muted small" style="margin-top:14px">חשבונות לבדיקה:</div>
       <div class="row" style="margin-top:6px"><button class="btn ghost sm" data-act="loginAs" data-e="admin@demo.com">מנהל</button><button class="btn ghost sm" data-act="loginAs" data-e="rep@demo.com">נציג ישיבה</button><button class="btn ghost sm" data-act="loginAs" data-e="user@demo.com">משתמש רגיל</button></div>
     </section>`;return;
@@ -825,7 +963,7 @@ document.addEventListener('click',e=>{
     addBm:()=>{(S.bookmarks[id]=S.bookmarks[id]||[]).push({t:Math.floor(P.time()),note:$('#bmNote').value.trim()||'סימנייה'});S.bookmarks[id].sort((x,y)=>x.t-y.t);save();route();},
     goBm:()=>{if(P.l&&P.l.id===id)P.seek(+b.dataset.t);else play(id,+b.dataset.t);},
     delBm:()=>{S.bookmarks[id].splice(+b.dataset.i,1);save();route();},
-    dedicate:()=>{const n=$('#dedName').value.trim();if(!n)return toast('הזינו שם');(S.dedications[id]=S.dedications[id]||[]).push({kind:$('#dedKind').value,name:n});save();route();},
+    dedicate:()=>{if(FB&&!S.user)return toast('יש להתחבר כדי להקדיש שיעור');const n=$('#dedName').value.trim();if(!n)return toast('הזינו שם');(S.dedications[id]=S.dedications[id]||[]).push({kind:$('#dedKind').value,name:n});save();route();},
     copy:()=>copy(b.dataset.url),
     toggleStyle:()=>b.classList.toggle('on'),
     saveOrg:()=>{const o=org(id);o.name=$('#oName').value.trim()||o.name;o.image=$('#oImg').value.trim();o.showOnLessons=$('#oShow').checked;o.about=$('#oAbout').value;o.donate=$('#oDonate').value.trim();o.styles=[...document.querySelectorAll('#oStyles .chip.on')].map(c=>c.dataset.s);o.defaults={category:$('#oDefCat').value,tags:o.defaults?.tags||[]};save();toast('הדף נשמר');route();},
@@ -835,9 +973,11 @@ document.addEventListener('click',e=>{
     addOrg:()=>{const n=$('#nName').value.trim();if(!n)return toast('הזינו שם');const oid=uid('o');S.orgs.push({id:oid,type:$('#nType').value,name:n,parent:$('#nParent').value||null,image:'',showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});save();location.hash='#/org/'+oid;},
     addOfficial:()=>{const n=$('#olName').value.trim();const ids=[...document.querySelectorAll('.olChk:checked')].map(c=>c.value);if(!n||!ids.length)return toast('בחרו שם ושיעורים');S.playlists.push({id:uid('pl'),name:n,lessonIds:ids,official:true,owner:S.user.email});save();toast('המסלול נוצר');route();},
     reset:()=>{if(confirm('לאפס את כל הנתונים?')){const u=S.user;S=seed();S.user=u;save();route();}},
-    login:()=>{const em=$('#lEmail').value.trim().toLowerCase();if(!em.includes('@'))return toast('הזינו כתובת');S.user={email:em};save();route();},
+    login:()=>{if(FB){FB.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(err=>{if(err.code!=='auth/popup-closed-by-user'&&err.code!=='auth/cancelled-popup-request')toast(err.code==='auth/unauthorized-domain'?'הדומיין לא מאושר ב-Firebase (ראו הדרכה)':'ההתחברות נכשלה');});return;}const em=$('#lEmail').value.trim().toLowerCase();if(!em.includes('@'))return toast('הזינו כתובת');S.user={email:em};save();route();},
     loginAs:()=>{S.user={email:b.dataset.e};save();route();},
-    logout:()=>{S.user=null;save();route();},
+    logout:()=>{if(FB){flushUser();FB.auth.signOut();location.hash='#/';return;}S.user=null;save();route();},
+    importDemo:()=>{if(!confirm('לייבא שיעורי דוגמה? אפשר למחוק אותם אחר כך.'))return;const d=seed();d.orgs.forEach(o=>{if(!org(o.id))S.orgs.push(o);});d.lessons.forEach(l=>{if(!lesson(l.id))S.lessons.push(l);});d.playlists.forEach(p=>{if(!S.playlists.find(x=>x.id===p.id))S.playlists.push({...p,owner:S.user.email});});save();toast('שיעורי הדוגמה יובאו');},
+    delLesson:()=>{if(!confirm('למחוק את השיעור לצמיתות?'))return;S.lessons=S.lessons.filter(x=>x.id!==id);S.playlists.forEach(p=>{if(isAdmin()||p.owner===S.user.email)p.lessonIds=p.lessonIds.filter(x=>x!==id);});save();toast('השיעור נמחק');location.hash='#/';},
     newPl:()=>{const n=$('#newPl').value.trim();if(!n)return;S.playlists.push({id:uid('pl'),name:n,lessonIds:[],official:false,owner:S.user.email});save();route();},
     delPl:()=>{if(confirm('למחוק את הפלייליסט?')){S.playlists=S.playlists.filter(p=>p.id!==id);if(S.daily===id)S.daily=null;save();location.hash='#/me';}},
     rmFromPl:()=>{e.preventDefault();const p=S.playlists.find(x=>x.id===b.dataset.pl);p.lessonIds=p.lessonIds.filter(x=>x!==id);save();route();}
@@ -845,6 +985,7 @@ document.addEventListener('click',e=>{
   if(A[a]){if(b.tagName==='A'&&a!=='rmFromPl')e.preventDefault();A[a]();}
 });
 
+if(FB) startSync();
 route();
 </script>
 </body>
