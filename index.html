@@ -9,25 +9,25 @@
 <style>
 :root{
   --bg:#f2f8fd;--card:#ffffff;--text:#16293d;--muted:#56697d;--line:#d3e5f3;
-  --accent:#1f73b0;--accent-2:#4fa3dc;--accent-soft:#e1f0fb;--gold:#c99a2e;--gold-text:#9a7414;--gold-soft:#fbf3dc;
+  --accent:#1b6aa3;--on-accent:#ffffff;--accent-2:#4fa3dc;--accent-soft:#e1f0fb;--gold:#c99a2e;--gold-text:#806010;--gold-soft:#fbf3dc;
   --danger:#b3261e;--ok:#2e7d4f;--chip:#e8f2fa;--shadow:0 1px 3px rgba(22,60,100,.06),0 4px 14px rgba(22,60,100,.06);
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --bg:#0f1a25;--card:#162433;--text:#e6eff7;--muted:#97abbf;--line:#24384c;
-    --accent:#5fb0e8;--accent-2:#3a8cc6;--accent-soft:#1b3349;--gold:#e0b84f;--gold-text:#e0b84f;--gold-soft:#33291a;
+    --accent:#5fb0e8;--on-accent:#0f1a25;--accent-2:#3a8cc6;--accent-soft:#1b3349;--gold:#e0b84f;--gold-text:#e0b84f;--gold-soft:#33291a;
     --chip:#1d2f42;--shadow:none;
   }
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Heebo,Arial,sans-serif;font-size:16px;line-height:1.55}
+body{overflow-x:clip;margin:0;background:var(--bg);color:var(--text);font-family:Heebo,Arial,sans-serif;font-size:16px;line-height:1.55}
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
 button,input,select,textarea{font:inherit;color:inherit}
 input,select,textarea{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 12px;width:100%}
 textarea{min-height:90px;resize:vertical}
 label{display:block;font-weight:500;margin:12px 0 4px}
-.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:500;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);min-height:40px;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:500;white-space:nowrap}
 .btn.ghost{background:transparent;color:var(--accent)}
 .btn.sm{padding:5px 10px;font-size:14px}
 .btn.danger{background:var(--danger);border-color:var(--danger)}
@@ -49,7 +49,7 @@ h3{font-size:16px;margin:0 0 2px}
 .small{font-size:14px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .card-main{display:flex;gap:12px;color:var(--text)}
 .card-main:hover{text-decoration:none}
 .card-main:hover h3{color:var(--accent)}
@@ -61,7 +61,7 @@ h3{font-size:16px;margin:0 0 2px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{background:var(--chip);border:1px solid transparent;border-radius:999px;padding:3px 11px;font-size:14px;cursor:pointer}
 .chip.sm{font-size:12px;padding:1px 8px;cursor:default}
-.chip.on{background:var(--accent);color:#fff}
+.chip.on{background:var(--accent);color:var(--on-accent)}
 .chip.sm{background:var(--gold-soft);color:var(--gold-text)}
 .snip{font-size:13px;background:var(--accent-soft);border-radius:8px;padding:6px 9px}
 mark{background:#f3dc95;color:#1d2125;border-radius:3px}
@@ -107,53 +107,154 @@ mark{background:#f3dc95;color:#1d2125;border-radius:3px}
 .dinfo{flex:1;min-width:0}
 .dinfo a{font-weight:700;color:var(--text);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dctl{display:flex;align-items:center;gap:6px}
-.ib{background:var(--chip);border:0;border-radius:999px;height:38px;min-width:38px;padding:0 10px;cursor:pointer;font-weight:700;font-size:14px}
-.ib.play{background:var(--gold);color:#16293d;min-width:46px;height:46px;font-size:18px}
+.ib{background:var(--chip);border:0;border-radius:999px;height:44px;min-width:44px;color:var(--text);padding:0 10px;cursor:pointer;font-weight:700;font-size:14px}
+.ib.play{background:var(--gold);color:#16293d;min-width:54px;height:54px;font-size:20px}
 .dctl select{width:auto;padding:6px;border-radius:999px}
 .dprog{max-width:1120px;margin:auto;display:flex;align-items:center;gap:10px;padding:4px 16px 10px;font-size:13px;color:var(--muted);direction:ltr}
 .dprog input{flex:1;padding:0;border:0;accent-color:var(--accent)}
 @media(max-width:600px){.dctl .hide-m{display:none}.dock-row img{display:none}}
 #toast{position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:40}
 #toast.on{opacity:1}
+
+
+/* ===== עיצוב חדש: כרטיסי תמונה, עטיפות, שורות ===== */
+.row-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:30px 0 12px}
+.row-h h2{margin:0}
+.row-h .all{font-weight:700;font-size:14px;background:none;border:0;color:var(--accent);cursor:pointer;padding:6px 4px}
+.shelf{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(168px,188px);gap:18px;overflow-x:auto;padding:4px 2px 12px;scroll-snap-type:x proximity;scrollbar-width:thin}
+.shelf>*{scroll-snap-align:start}
+.gridm{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:24px 18px}
+.mcard{display:flex;flex-direction:column;gap:10px;min-width:0;position:relative}
+.mcard h3{font-size:15.5px;line-height:1.35;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mcard h3 a{color:var(--text)}
+.mcard .meta{font-size:13px;line-height:1.5}
+.mcard .meta a{color:var(--muted)}
+.cwrap{display:block;border-radius:14px}
+.cover{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:var(--cc,#1b6aa3);color:#fff;display:block;isolation:isolate;transition:transform .2s, box-shadow .2s}
+.cwrap:hover .cover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(22,60,100,.18)}
+.cover img.ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.cover::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,color-mix(in srgb,var(--cc) 94%,#000) 0%,color-mix(in srgb,var(--cc) 60%,transparent) 42%,transparent 72%)}
+.cover.noimg{background:radial-gradient(130% 100% at 90% 0%,color-mix(in srgb,var(--cc) 62%,#fff) 0%,var(--cc) 50%,color-mix(in srgb,var(--cc) 70%,#000) 100%)}
+.cover.noimg::after{background:repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 2px,transparent 2px 14px)}
+.cover .band{position:absolute;top:10px;inset-inline-start:10px;background:rgba(0,0,0,.28);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.2px}
+.cover .ct{position:absolute;inset-inline:12px;bottom:14px;font-weight:800;font-size:17px;line-height:1.22;text-shadow:0 1px 10px rgba(0,0,0,.35)}
+.cover .ct::before{content:"";display:block;width:28px;height:3px;background:var(--gold);border-radius:2px;margin-bottom:8px}
+.cover .ct small{display:block;font-weight:500;font-size:12.5px;opacity:.92;margin-top:5px}
+.cover.lg .ct{font-size:24px;inset-inline:18px;bottom:20px}
+.cover .prog{position:absolute;bottom:0;inset-inline:0;height:5px;background:rgba(255,255,255,.3)}
+.cover .prog i{display:block;height:100%;background:var(--gold)}
+.cover .done{position:absolute;top:10px;inset-inline-end:10px;background:var(--gold);color:#16293d;border-radius:999px;font-size:11px;font-weight:800;padding:2px 8px}
+.pbtn{position:absolute;top:calc(100% - 0px);width:46px;height:46px;border-radius:50%;background:var(--gold);color:#16293d;border:0;font-size:17px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:0;transform:translateY(6px);transition:opacity .18s,transform .18s;inset-inline-end:10px}
+.mcard .pbtn{top:auto;bottom:auto}
+.mcard .pslot{position:relative}
+.mcard .pslot .pbtn{position:absolute;bottom:12px;inset-inline-end:12px}
+.mcard:hover .pbtn,.mcard:focus-within .pbtn{opacity:1;transform:none}
+@media (hover:none){.pbtn{opacity:1;transform:none}}
+.mcard .pslot .cover .ct{inset-inline-end:66px}
+.rabbi-c{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;color:var(--text);min-width:0}
+.rabbi-c:hover{text-decoration:none}
+.rabbi-c img{width:132px;height:132px;border-radius:50%;object-fit:cover;background:var(--chip);transition:transform .2s}
+.rabbi-c:hover img{transform:scale(1.04)}
+.rabbi-c b{font-size:15px}
+.shelf.rabbis{grid-auto-columns:minmax(140px,150px)}
+.heroRec{--cc:#1b6aa3;display:grid;grid-template-columns:220px 1fr;gap:26px;align-items:center;background:linear-gradient(120deg,color-mix(in srgb,var(--cc) 16%,var(--card)) 0%,var(--card) 70%);border-radius:22px;padding:22px;margin-top:6px}
+@media(max-width:640px){.heroRec{grid-template-columns:1fr;padding:16px}.heroRec .cover{max-width:260px}}
+.eyebrow{font-size:13px;font-weight:800;color:var(--gold-text);letter-spacing:.3px}
+.heroRec h1{font-size:30px;line-height:1.2;margin:6px 0 8px}
+.bigplay{font-size:18px;padding:12px 26px;border-radius:999px;background:var(--gold);border-color:var(--gold);color:#16293d;font-weight:800;min-height:52px}
+.streak{display:inline-flex;align-items:center;gap:6px;background:var(--gold-soft);color:var(--gold-text);border-radius:999px;padding:5px 12px;font-weight:800;font-size:14px}
+.streak svg{width:16px;height:16px}
+.lhead{--cc:#1b6aa3;margin:-18px calc(50% - 50vw) 0;padding:30px max(16px,calc(50vw - 544px)) 22px;background:linear-gradient(180deg,color-mix(in srgb,var(--cc) 30%,var(--bg)) 0%,var(--bg) 100%)}
+.lhead .hero{align-items:flex-end;gap:24px}
+.lhead .cover{width:210px;flex:none}
+@media(max-width:600px){.lhead .cover{width:150px}}
+.lhead h1{font-size:30px;line-height:1.2}
+.sprog{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:14px;color:var(--muted)}
+.sprog .bar{max-width:220px}
+.slist{display:flex;flex-direction:column}
+.slist .it{display:flex;align-items:center;gap:14px;padding:12px 4px;border-bottom:1px solid var(--line)}
+.slist .n{width:28px;text-align:center;font-weight:800;color:var(--muted)}
+.slist .it.d .n{color:var(--gold-text)}
+.slist .t{flex:1;min-width:0}
+.slist .t a{color:var(--text);font-weight:700}
+.siyum{position:fixed;inset:0;z-index:90;background:rgba(10,25,40,.55);display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden}
+.siyum .sbox{background:var(--card);border-radius:22px;padding:28px 26px;max-width:420px;width:100%;text-align:center;position:relative;border-top:6px solid var(--gold);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.siyum h2{justify-content:center;font-size:26px;margin:8px 0}
+.siyum h2::before{display:none}
+.cf{position:absolute;top:-10px;width:9px;height:14px;border-radius:2px;animation:cf 2.6s linear forwards}
+@keyframes cf{to{transform:translateY(105vh) rotate(540deg);opacity:.9}}
+@media(max-width:600px){.hwrap{gap:6px 10px;padding:8px 12px}.logo{font-size:18px}nav a{padding:5px 8px;font-size:14.5px}.userbox{font-size:12px;flex-basis:100%}.hbtns .btn.sm{padding:4px 9px;min-height:34px}.heroRec h1{font-size:24px}.lhead h1{font-size:24px}.lhead .cover.lg .ct{font-size:16px;inset-inline:12px;bottom:12px}.lhead .cover .band{font-size:10px}}
+@media (prefers-reduced-motion:reduce){.cf{display:none}.cover,.rabbi-c img,.pbtn{transition:none}}
+
+/* --- נגישות --- */
+.skip{position:absolute;inset-inline-start:8px;top:-60px;z-index:100;background:var(--accent);color:var(--on-accent);padding:8px 14px;border-radius:8px;font-weight:700}
+.skip:focus{top:8px}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+button.chip{border:1px solid transparent;font:inherit;color:inherit}
+img.round{border-radius:50% !important}
+.hero img.round{border-radius:50%}
+.kicker{font-size:12px;font-weight:700;color:var(--gold-text);letter-spacing:.2px}
+.hdate{white-space:nowrap}
+.dedic{background:linear-gradient(90deg,var(--gold-soft),transparent);border-inline-start:4px solid var(--gold);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-weight:500}
+.hbtns{display:flex;gap:6px;align-items:center}
+.a11y-pop{position:absolute;inset-inline-end:16px;top:100%;margin-top:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:12px;width:250px;z-index:50}
+.a11y-pop .row{margin:6px 0}
+.a11y-pop .btn{flex:1;justify-content:center}
+.hwrap{position:relative}
+.wa{background:#1f8f4e;border-color:#1f8f4e;color:#fff}
+html.links-u a{text-decoration:underline !important}
+html.hc{--bg:#ffffff;--card:#ffffff;--text:#000000;--muted:#1a1a1a;--line:#444;--accent:#00427a;--on-accent:#fff;--accent-soft:#dbe9f6;--gold:#8a6200;--gold-text:#5c4100;--gold-soft:#fff3cf;--chip:#eeeeee}
+html.hc img{filter:none}
 footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 details summary{cursor:pointer;font-weight:500}
 </style>
 </head>
 <body>
+<a class="skip" href="#app" id="skipLink">דלג לתוכן</a>
 <header>
   <div class="hwrap">
     <a class="logo" href="#/" id="logo"></a>
-    <nav id="nav"></nav>
+    <nav id="nav" aria-label="תפריט ראשי"></nav>
+    <div class="hbtns" id="hbtns"></div>
     <div class="userbox" id="userbox"></div>
+    <div class="a11y-pop" id="a11yPop" hidden role="dialog" aria-label="הגדרות נגישות">
+      <b>נגישות</b>
+      <div class="row"><button class="btn ghost sm" data-act="a11yZoom" data-z="-1" aria-label="הקטנת טקסט">א-</button><button class="btn ghost sm" data-act="a11yZoom" data-z="0">רגיל</button><button class="btn ghost sm" data-act="a11yZoom" data-z="1" aria-label="הגדלת טקסט">א+</button></div>
+      <label class="row" style="font-weight:400"><input type="checkbox" id="a11yHc" style="width:auto"> ניגודיות גבוהה</label>
+      <label class="row" style="font-weight:400"><input type="checkbox" id="a11yLinks" style="width:auto"> הדגשת קישורים</label>
+      <div class="row"><a href="#/accessibility">הצהרת נגישות</a></div>
+    </div>
   </div>
 </header>
-<main id="app"></main>
+<main id="app" tabindex="-1"></main>
 <footer id="footer"></footer>
 
-<div id="dock">
+<div id="dock" role="region" aria-label="נגן">
   <div id="dockMedia"></div>
   <div class="dock-row">
     <img id="dImg" alt="">
     <div class="dinfo"><a id="dTitle" href="#/"></a><div class="meta" id="dSub"></div></div>
     <div class="dctl">
-      <button class="ib" data-act="back15" title="15 שניות אחורה">−15</button>
-      <button class="ib play" data-act="toggle" id="dPlay" title="נגן / השהה">▶</button>
-      <button class="ib" data-act="fwd15" title="15 שניות קדימה">+15</button>
-      <select id="dRate" title="מהירות">
+      <button class="ib" data-act="back15" title="15 שניות אחורה" aria-label="15 שניות אחורה">−15</button>
+      <button class="ib play" data-act="toggle" id="dPlay" title="נגן / השהה" aria-label="נגן">▶</button>
+      <button class="ib" data-act="fwd15" title="15 שניות קדימה" aria-label="15 שניות קדימה">+15</button>
+      <select id="dRate" title="מהירות" aria-label="מהירות השמעה">
         <option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option>
         <option value="1.5">1.5x</option><option value="1.75">1.75x</option><option value="2">2x</option>
       </select>
-      <button class="ib hide-m" data-act="vidToggle" id="dVid" title="הצג / הסתר וידאו">▣</button>
-      <button class="ib" data-act="closeDock" title="סגור נגן">✕</button>
+      <button class="ib hide-m" data-act="vidToggle" id="dVid" title="הצג / הסתר וידאו" aria-label="הצג או הסתר וידאו">▣</button>
+      <button class="ib" data-act="closeDock" title="סגור נגן" aria-label="סגור נגן">✕</button>
     </div>
   </div>
-  <div class="dprog"><span id="dCur">0:00</span><input type="range" id="dSeek" min="0" max="1000" value="0"><span id="dDur">0:00</span></div>
+  <div class="dprog"><span id="dCur">0:00</span><input type="range" id="dSeek" min="0" max="1000" value="0" aria-label="מיקום בשיעור"><span id="dDur">0:00</span></div>
 </div>
 <div id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
 <script>
 /* =========================================================
    הגדרות כלליות — לשנות כאן את שם האתר וקישור התרומה
@@ -161,8 +262,12 @@ details summary{cursor:pointer;font-weight:500}
 const CONFIG = {
   siteName: 'מאגר השיעורים',
   siteDonateUrl: '',          // קישור לתרומה לאתר (למשל עמוד בנדרים פלוס). ריק = לא מוצג
+  whatsappChannel: '',        // קישור לערוץ/קבוצת ווטסאפ של השיעור היומי. ריק = לא מוצג
+  contactEmail: '',           // מייל ליצירת קשר ולפניות נגישות (מוצג בהצהרת הנגישות)
   hebcalGeonameId: 281184,    // ירושלים — לחישוב פרשת השבוע
   ownerEmail: 'arye.minkov@gmail.com', // המנהל הראשי — תמיד מנהל, גם בלי הרשאה ברשימה
+  // העלאה אוטומטית של קבצים למאגר GitHub (למנהל שהדביק מפתח גישה בדף הניהול)
+  github: { owner: 'aryeminkov-maker', repo: 'tora', branch: 'main', folder: 'audio' },
   /* הדביקו כאן את ההגדרות מ-Firebase (Project settings → Your apps → Config).
      כל עוד apiKey ריק — האתר עובד במצב הדגמה, והנתונים נשמרים רק בדפדפן. */
   firebase: {
@@ -202,9 +307,9 @@ function seed(){
     lessons:[
       L('l1','פרשת וירא — סוד הכנסת האורחים','r1','y1','parasha',['וירא','חסד'],22,{type:'file',media:'audio',url:SAMPLE+'1.mp3'},true,
         'שיעור דוגמה על פרשת השבוע.','אברהם אבינו יושב בפתח האוהל בחום היום, ודווקא אז הוא מחפש אורחים. הכנסת אורחים גדולה מהקבלת פני השכינה.',''),
-      L('l2','הלכות שבת — מלאכת בישול, שיעור 1','r2','y1','halacha',['שבת','בישול בשבת'],35,{type:'file',media:'audio',url:SAMPLE+'2.mp3'},true,
+      L('l2','מהו בישול? כלי ראשון וכלי שני','r2','y1','halacha',['שבת','בישול בשבת'],35,{type:'file',media:'audio',url:SAMPLE+'2.mp3'},true,
         'פתיחה לסדרה על מלאכת בישול.','מלאכת מבשל היא אחת מל״ט מלאכות. נלמד מה נחשב בישול, כלי ראשון וכלי שני, ודין דבר שכבר התבשל.',''),
-      L('l3','הלכות שבת — מלאכת בישול, שיעור 2','r2','y1','halacha',['שבת','בישול בשבת'],31,{type:'file',media:'audio',url:SAMPLE+'3.mp3'},true,
+      L('l3','יש בישול אחר בישול','r2','y1','halacha',['שבת','בישול בשבת'],31,{type:'file',media:'audio',url:SAMPLE+'3.mp3'},true,
         'המשך הסדרה: יש בישול אחר בישול.','בשיעור הקודם ראינו את יסודות המלאכה. היום נעסוק ביש בישול אחר בישול בלח, ובדין חימום אוכל על הפלטה.',''),
       L('l4','חושן משפט סימן י״ג — בחירת דיינים בזבל״א','r3',null,'halacha',['חושן משפט','דיינים'],48,{type:'file',media:'audio',url:SAMPLE+'4.mp3'},false,
         'שיעור עם טקסט המקור לצידו. ההורדה חסומה בשיעור זה לפי בחירת המעלה.','כל אחד מבעלי הדין בורר לו דיין אחד, ושני הדיינים בוררים את השלישי. זה נקרא זה בורר לו אחד.','Shulchan Arukh, Choshen Mishpat 13'),
@@ -216,18 +321,19 @@ function seed(){
     permissions:[{email:'admin@demo.com',role:'admin',orgId:null},{email:'rep@demo.com',role:'rep',orgId:'y1'}],
     user:null,
     playlists:[{id:'pl1',name:'מסלול: הלכות שבת — מלאכת בישול',lessonIds:['l2','l3'],official:true,owner:null}],
-    positions:{},bookmarks:{},ratings:{},history:[],daily:null,extraTags:{},dedications:{}
+    positions:{},bookmarks:{},ratings:{},history:[],daily:null,days:{},extraTags:{},dedications:{}
   };
 }
 function L(id,title,rabbiId,orgId,category,tags,mins,src,allowDownload,desc,transcript,sourceRef){
-  return {id,title,rabbiId,orgId,category,tags,duration:mins*60,src,allowDownload,desc,transcript,sourceRef,sourceText:'',date:'2026-10-01',demo:true};
+  const ser=id==='l2'||id==='l3'?{series:'הלכות שבת — מלאכת בישול',num:id==='l2'?1:2}:{};
+  return {id,title,rabbiId,orgId,category,tags,duration:mins*60,src,allowDownload,desc,transcript,sourceRef,sourceText:'',date:'2026-10-01',demo:true,...ser};
 }
 
 /* ---------- אחסון וסנכרון ---------- */
 const LS='torah_platform_v1';
-const PRIV_KEYS=['positions','bookmarks','ratings','history','daily'];
+const PRIV_KEYS=['positions','bookmarks','ratings','history','daily','days'];
 const FB=(CONFIG.firebase&&CONFIG.firebase.apiKey&&window.firebase)?(()=>{
-  try{const app=firebase.initializeApp(CONFIG.firebase);return {auth:firebase.auth(),db:firebase.firestore()};}catch(e){console.error(e);return null;}
+  try{const app=firebase.initializeApp(CONFIG.firebase);return {auth:firebase.auth(),db:firebase.firestore(),storage:firebase.storage?firebase.storage():null};}catch(e){console.error(e);return null;}
 })():null;
 let S=null;
 try{S=JSON.parse(localStorage.getItem(LS))}catch(e){}
@@ -236,6 +342,7 @@ if(FB){
   const priv={};PRIV_KEYS.forEach(k=>priv[k]=S&&S[k]!=null?S[k]:(k==='daily'?null:(k==='history'?[]:{})));
   S={orgs:[],lessons:[],permissions:[],playlists:[],extraTags:{},dedications:{},user:null,...priv};
 }else if(!S||!S.lessons) S=seed();
+if(!S.days) S.days={};
 
 /* מיפוי בין הנתונים בזיכרון לאוספים ב-Firestore */
 const COLS={
@@ -327,6 +434,7 @@ function startSync(){
       S.ratings={...S.ratings,...(srv.ratings||{})};
       S.history=[...new Set([...(srv.history||[]),...(S.history||[])])].slice(0,60);
       S.daily=srv.daily||S.daily||null;
+      S.days={...(srv.days||{}),...(S.days||{})};
       scheduleUserWrite(true);
     }catch(e){console.error(e);}
     userUnsubs.push(FB.db.collection('playlists').where('owner','==',email).onSnapshot(sn=>{PL_PARTS.own=docsOf(sn);setPlaylists();rerender();},onErr));
@@ -349,6 +457,9 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid=p=>p+Math.random().toString(36).slice(2,9);
 const org=id=>S.orgs.find(o=>o.id===id);
+const orgBySlug=k=>{if(!k)return null;try{k=decodeURIComponent(k)}catch(e){}return S.orgs.find(o=>o.slug&&o.slug===k)||org(k);};
+const orgHref=o=>'#/org/'+encodeURIComponent(o.slug||o.id);
+const SLUG_RE=/^[a-z0-9\u0590-\u05FF][a-z0-9\u0590-\u05FF-]{1,39}$/;
 const lesson=id=>S.lessons.find(l=>l.id===id);
 const catName=id=>(CATS.find(c=>c.id===id)||{}).name||'';
 function fmt(t){t=Math.max(0,Math.floor(t||0));const h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(s).padStart(2,'0');}
@@ -361,13 +472,33 @@ function avatar(name){
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="${['#1f73b0','#2f86c4','#c99a2e','#17598a','#b08423'][hue%5]}"/><text x="50" y="66" font-size="46" text-anchor="middle" fill="#fff" font-family="Arial">${ch}</text></svg>`;
   return 'data:image/svg+xml,'+encodeURIComponent(svg);
 }
-const orgImg=o=>o?(o.image||avatar(o.name)):avatar('?');
-function lessonImg(l){
-  const r=org(l.rabbiId),o=org(l.orgId);
-  if(r&&r.showOnLessons) return orgImg(r);
-  if(o&&o.showOnLessons) return orgImg(o);
-  return orgImg(r||o);
+const realImg=o=>o?(o.image||(o.parent&&org(o.parent)?.image)||''):'';
+function silhouette(type){
+  const svg=type==='rabbi'
+    ?'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#dbe9f5"/><circle cx="50" cy="38" r="17" fill="#8fb3d3"/><path d="M18 92c3-20 16-30 32-30s29 10 32 30z" fill="#8fb3d3"/></svg>'
+    :'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#dbe9f5"/><path d="M20 80V44l30-20 30 20v36z" fill="#8fb3d3"/><rect x="43" y="56" width="14" height="24" fill="#dbe9f5"/><path d="M50 30l4 7h-8z" fill="#c99a2e"/></svg>';
+  return 'data:image/svg+xml,'+encodeURIComponent(svg);
 }
+const orgImg=o=>realImg(o)||silhouette(o&&o.type);
+function lessonImg(l){return orgImg(lessonImgOrg(l));}
+function gem(n){
+  const H=[[400,'ת'],[300,'ש'],[200,'ר'],[100,'ק'],[90,'צ'],[80,'פ'],[70,'ע'],[60,'ס'],[50,'נ'],[40,'מ'],[30,'ל'],[20,'כ'],[10,'י'],[9,'ט'],[8,'ח'],[7,'ז'],[6,'ו'],[5,'ה'],[4,'ד'],[3,'ג'],[2,'ב'],[1,'א']];
+  let x=n%1000,out='';
+  while(x>0){if(x===15){out+='טו';break;}if(x===16){out+='טז';break;}for(const [v,c] of H)if(x>=v){out+=c;x-=v;break;}}
+  return out.length>1?out.slice(0,-1)+'״'+out.slice(-1):out+'׳';
+}
+const HD_CACHE={};
+function hebDate(iso){
+  if(!iso) return '';if(HD_CACHE[iso]) return HD_CACHE[iso];
+  try{
+    const parts=new Intl.DateTimeFormat('he-u-ca-hebrew',{day:'numeric',month:'long',year:'numeric'}).formatToParts(new Date(iso+'T12:00:00'));
+    const g=t=>(parts.find(p=>p.type===t)||{}).value;
+    return HD_CACHE[iso]=`${gem(+g('day'))} ${g('month')} ${gem(+g('year'))}`;
+  }catch(e){return iso;}
+}
+function lessonImgOrg(l){const r=org(l.rabbiId),o=org(l.orgId);if(r&&r.showOnLessons)return r;if(o&&o.showOnLessons)return o;return r||o;}
+const imgCls=o=>o&&o.type==='rabbi'?'round':'';
+function lessonTitleParts(l){return {kicker:l.series?`${l.series}${l.num?' · שיעור '+l.num:''}`:'',title:l.title};}
 function ytId(u){const m=String(u).match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([\w-]{11})/);return m?m[1]:null;}
 function allTagsFor(cat){
   const set=new Set();
@@ -446,12 +577,49 @@ async function play(id,start,queue){
   setMediaSession(l);updDock();
 }
 function onEnded(){
-  if(P.l){S.positions[P.l.id]={t:P.dur(),d:P.dur(),done:true};save();}
+  if(P.l){S.positions[P.l.id]={t:P.dur(),d:P.dur(),done:true};markDay(999);save();route(true);checkSiyum(P.l);}
   if(P.qi>-1&&P.qi<P.queue.length-1) play(P.queue[P.qi+1],0);
 }
 function savePos(){
   if(!P.l) return;const t=P.time(),d=P.dur();
-  if(t>3) {S.positions[P.l.id]={t,d,done:d>0&&t>d*0.95};save();}
+  if(t>3) {const was=S.positions[P.l.id];S.positions[P.l.id]={t,d,done:(was&&was.done)||(d>0&&t>d*0.95)};markDay(t);save();}
+}
+const dayKey=d=>{const z=new Date(d);return z.getFullYear()+'-'+String(z.getMonth()+1).padStart(2,'0')+'-'+String(z.getDate()).padStart(2,'0');};
+function isRestDay(d){
+  if(d.getDay()===6) return true;
+  try{const pr=new Intl.DateTimeFormat('he-u-ca-hebrew',{day:'numeric',month:'long'}).formatToParts(d);
+    const day=+(pr.find(p=>p.type==='day')||{}).value,mon=(pr.find(p=>p.type==='month')||{}).value;
+    return (mon==='תשרי'&&[1,2,10,15,22].includes(day))||(mon==='ניסן'&&[15,21].includes(day))||(mon==='סיון'&&day===6);
+  }catch(e){return false;}
+}
+function streak(){
+  const days=S.days||{};let n=0;const d=new Date();const grace=new Set();
+  if(!days[dayKey(d)]) d.setDate(d.getDate()-1);
+  for(let i=0;i<500;i++){
+    if(days[dayKey(d)]) n++;
+    else if(!isRestDay(d)){const w=new Date(d);w.setDate(w.getDate()-w.getDay());const wk=dayKey(w);if(grace.has(wk)||!n&&i>0)break;grace.add(wk);}
+    d.setDate(d.getDate()-1);
+  }
+  return n;
+}
+function markDay(t){
+  if(t<60) return;const k=dayKey(new Date());if(S.days[k]) return;
+  S.days[k]=1;const s=streak();
+  if([3,7,18,30,50,100,180,365].includes(s)) toast(`${s} ימי לימוד ברצף — יישר כוח!`);
+}
+function checkSiyum(l){
+  if(l.series){const ls=S.lessons.filter(x=>x.series===l.series);if(ls.length>1&&ls.every(x=>lessonPct(x)>=100)) return showSiyum(l.series,ls.length);}
+  const pl=S.playlists.find(p=>p.official&&p.lessonIds.includes(l.id)&&p.lessonIds.length>1&&p.lessonIds.every(id=>{const x=lesson(id);return !x||lessonPct(x)>=100;}));
+  if(pl) showSiyum(pl.name,pl.lessonIds.length);
+}
+function showSiyum(name,n){
+  const old=$('#siyum');if(old)old.remove();
+  const cols=['#c99a2e','#1b6aa3','#4fa3dc','#e0b84f','#2b6b5c'];
+  const cf=Array.from({length:40},(_,i)=>`<i class="cf" style="left:${Math.random()*100}%;background:${cols[i%cols.length]};animation-delay:${(Math.random()*1.2).toFixed(2)}s"></i>`).join('');
+  const el=document.createElement('div');el.id='siyum';el.className='siyum';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','סיום סדרה');
+  el.innerHTML=`${cf}<div class="sbox"><div class="eyebrow">סיום!</div><h2>הדרן עלך ${esc(name)}</h2><p>סיימת את כל ${n} השיעורים. יישר כוח!</p>
+    <div class="row" style="justify-content:center;margin-top:14px"><button class="btn wa" data-act="siyumShare" data-s="${esc(name)}">שיתוף בוואטסאפ</button><button class="btn ghost" data-act="siyumClose">סגירה</button></div></div>`;
+  document.body.appendChild(el);el.querySelector('[data-act=siyumClose]').focus();
 }
 setInterval(()=>{if(P.l&&P.playing())savePos();},5000);
 window.addEventListener('pagehide',savePos);
@@ -468,13 +636,13 @@ function setMediaSession(l){
 function updDock(){
   if(!P.l) return;
   const l=P.l,r=org(l.rabbiId);
-  $('#dImg').src=lessonImg(l);
+  $('#dImg').src=lessonImg(l);$('#dImg').className=imgCls(lessonImgOrg(l));
   $('#dTitle').textContent=l.title;$('#dTitle').href='#/lesson/'+l.id;
   $('#dSub').textContent=(r?r.name:'')+(P.queue.length>1?` · ${P.qi+1}/${P.queue.length} בסדרה`:'');
   const t=P.time(),d=P.dur();
   $('#dCur').textContent=fmt(t);$('#dDur').textContent=fmt(d);
   if(!P.dragging) $('#dSeek').value=d?Math.round(t/d*1000):0;
-  $('#dPlay').textContent=P.playing()?'❚❚':'▶';
+  const pl=P.playing();$('#dPlay').textContent=pl?'❚❚':'▶';$('#dPlay').setAttribute('aria-label',pl?'השהה':'נגן');
   const cur=document.getElementById('curTime');if(cur) cur.textContent=fmt(t);
 }
 setInterval(updDock,500);
@@ -498,6 +666,9 @@ function route(keepScroll){
   else if(v==='admin') vAdmin();
   else if(v==='me') vMe();
   else if(v==='playlist') vPlaylist(parts[1]);
+  else if(v==='accessibility') vA11y();
+  else if(v==='series') parts[1]?vSeries(decodeURIComponent(parts.slice(1).join('/'))):vAllSeries();
+  else if(v==='rabbis') vRabbis();
   else vHome();
   if(!keepScroll) window.scrollTo(0,0);
 }
@@ -511,23 +682,59 @@ function renderChrome(v){
   if(isAdmin()) links.push(['admin','ניהול']);
   $('#nav').innerHTML=links.map(([k,n])=>`<a href="#/${k}" class="${v===k?'on':''}">${n}</a>`).join('');
   $('#userbox').innerHTML=S.user?`<a href="#/me">${esc(S.user.name||S.user.email)}</a> · ${ROLE_NAMES[role()]}`:`<a class="btn sm" href="#/me">התחברות</a>`;
-  $('#footer').innerHTML=`${esc(CONFIG.siteName)} · גרסת ניסיון${CONFIG.siteDonateUrl?` · <a href="${esc(CONFIG.siteDonateUrl)}" target="_blank" rel="noopener">תרומה לאתר</a>`:''}<br>השיעורים בגרסה זו הם דוגמאות טכניות בלבד.`;
+  $('#hbtns').innerHTML=`${CONFIG.siteDonateUrl?`<a class="btn ghost sm" href="${esc(CONFIG.siteDonateUrl)}" target="_blank" rel="noopener">תרומה</a>`:''}<button class="btn ghost sm" data-act="a11y" aria-expanded="${!$('#a11yPop').hidden}" aria-controls="a11yPop">נגישות</button>`;
+  $('#footer').innerHTML=`${esc(CONFIG.siteName)} · גרסת ניסיון${CONFIG.siteDonateUrl?` · <a href="${esc(CONFIG.siteDonateUrl)}" target="_blank" rel="noopener">תרומה לאתר</a>`:''}${CONFIG.whatsappChannel?` · <a href="${esc(CONFIG.whatsappChannel)}" target="_blank" rel="noopener">ערוץ הווטסאפ</a>`:''} · <a href="#/accessibility">הצהרת נגישות</a><br>השיעורים בגרסה זו הם דוגמאות טכניות בלבד.`;
 }
 
 /* =========================================================
    דף הבית — חיפוש וסינון
    ========================================================= */
-function vHome(){
-  const cont=S.history.map(lesson).filter(l=>l&&S.positions[l.id]&&!S.positions[l.id].done).slice(0,8);
+function pickHero(){
   const daily=S.daily?S.playlists.find(p=>p.id===S.daily):null;
-  let dailyNext=null;if(daily) dailyNext=daily.lessonIds.map(lesson).find(l=>l&&!(S.positions[l.id]||{}).done);
+  const dn=daily&&daily.lessonIds.map(lesson).find(l=>l&&lessonPct(l)<100);
+  if(dn) return {l:dn,eyebrow:'השיעור היומי שלך · '+daily.name};
+  const cont=S.history.map(lesson).find(l=>l&&S.positions[l.id]&&!S.positions[l.id].done);
+  if(cont) return {l:cont,eyebrow:'להמשיך מאיפה שעצרת'};
+  const ps=parshaLessons();if(ps.length) return {l:ps[0],eyebrow:'לפרשת השבוע'+(loadShabbat.data?' · '+loadShabbat.data.parsha:'')};
+  return S.lessons[0]?{l:S.lessons[0],eyebrow:'חדש במאגר'}:null;
+}
+function parshaLessons(){
+  const d=loadShabbat.data;const ps=S.lessons.filter(l=>l.category==='parasha');
+  if(!d||!d.parsha) return ps;
+  const names=d.parsha.split('-').map(x=>x.trim());
+  const m=ps.filter(l=>l.tags.some(t=>names.some(n=>n.includes(t)||t.includes(n))));
+  return m.length?m:ps;
+}
+function heroHTML(h){
+  if(!h) return '';const l=h.l,r=org(l.rabbiId),pos=S.positions[l.id];const cont=pos&&!pos.done&&pos.t>5;
+  return `<section class="heroRec" style="--cc:${catColor(l.category)}">
+    <a class="cwrap" href="#/lesson/${l.id}" aria-label="${esc(l.title)}">${coverHTML(coverData(l),{lg:true,prog:cont?lessonPct(l):0})}</a>
+    <div><div class="eyebrow">${esc(h.eyebrow)}</div><h1>${esc(l.title)}</h1>
+      <div class="muted">${r?`<a href="${orgHref(r)}">${esc(r.name)}</a> · `:''}${l.series?`${esc(l.series)}${l.num?' · שיעור '+l.num:''} · `:''}${Math.round(l.duration/60)} דק׳</div>
+      <div class="row" style="margin-top:16px"><button class="btn bigplay" data-act="play" data-id="${l.id}">▶ ${cont?'המשך מ-'+fmt(pos.t):'השמע עכשיו'}</button><a href="#/lesson/${l.id}">לדף השיעור</a></div>
+    </div></section>`;
+}
+const FLAME='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 1.5s1 3.2-1.6 6.1C9.7 10 7 11.8 7 15.5A5 5 0 0 0 12 20.5a5 5 0 0 0 5-5c0-2.3-1.2-3.8-2-4.8.1 1.5-.6 2.8-1.7 3.3.4-3.3-.6-7.6.2-11.5z"/></svg>';
+function vHome(){
+  const cont=S.history.map(lesson).filter(l=>l&&S.positions[l.id]&&!S.positions[l.id].done).slice(0,12);
   const official=S.playlists.filter(p=>p.official);
+  const series=allSeries().slice(0,12);
+  const rabbis=S.orgs.filter(o=>o.type==='rabbi').map(o=>[o,S.lessons.filter(l=>l.rabbiId===o.id).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]).slice(0,12).map(x=>x[0]);
+  const short=S.lessons.filter(l=>l.duration<=20*60).slice(0,12);
+  const fresh=S.lessons.slice(0,12);
+  const st=streak();
   $('#app').innerHTML=`
-    <div id="shabbat"></div>
-    ${dailyNext?`<h2>השיעור היומי שלך</h2><div class="grid">${card(dailyNext)}</div><div class="muted small">מתוך: ${esc(daily.name)}</div>`:''}
-    ${cont.length?`<h2>המשך האזנה</h2><div class="hscroll">${cont.map(card).join('')}</div>`:''}
-    ${official.length?`<h2>מסלולי לימוד</h2><div class="hscroll">${official.map(plCard).join('')}</div>`:''}
-    <h2>חיפוש שיעורים</h2>
+    ${st?`<div class="row" style="justify-content:flex-end;margin-bottom:8px"><span class="streak" title="ימי לימוד ברצף (שבתות וחגים לא שוברים את הרצף)">${FLAME} ${st} ימי לימוד ברצף</span></div>`:''}
+    <div id="heroBox">${heroHTML(pickHero())}</div>
+    ${CONFIG.whatsappChannel?`<div class="panel row" style="margin-top:18px;justify-content:space-between"><div><b>השיעור היומי בוואטסאפ</b><div class="muted small">הצטרפו לערוץ וקבלו שיעור קצר בכל בוקר</div></div><a class="btn wa" href="${esc(CONFIG.whatsappChannel)}" target="_blank" rel="noopener">הצטרפות לערוץ</a></div>`:''}
+    ${shelf('המשך האזנה',cont.map(l=>card(l)))}
+    <div id="parshaRow">${shelf('לפרשת השבוע',parshaLessons().slice(0,12).map(l=>card(l)),'data-act="seeAll" data-f=\'{"cat":"parasha"}\'')}</div>
+    ${shelf('שיעור לדרך — עד 20 דקות',short.map(l=>card(l)),'data-act="seeAll" data-f=\'{"dur":"20"}\'')}
+    ${shelf('סדרות',series.map(seriesCard),'data-act="go" data-h="#/series"')}
+    ${shelf('מסלולי לימוד',official.map(plCard))}
+    ${shelf('רבנים',rabbis.map(rabbiCircle),'data-act="go" data-h="#/rabbis"','rabbis')}
+    ${shelf('חדש במאגר',fresh.map(l=>card(l)),'data-act="seeAll" data-f=\'{}\'')}
+    <div class="row-h" id="searchTop"><h2>כל השיעורים</h2></div>
     <section class="panel search">
       <input id="fq" placeholder="חפשו שיעור, רב, נושא, או מילה שנאמרה בשיעור…" value="${esc(F.q)}">
       <div class="filters">
@@ -540,7 +747,7 @@ function vHome(){
       <div id="ftags" class="chips"></div>
     </section>
     <div class="row" style="justify-content:space-between;margin-top:14px"><div id="rcount" class="muted small"></div><button class="btn ghost sm" data-act="clearF">ניקוי סינון</button></div>
-    <div id="results" class="grid" style="margin-top:8px"></div>`;
+    <div id="results" class="gridm" style="margin-top:12px"></div>`;
   ['fq','fcat','frabbi','forg','fdur','fmedia'].forEach(id=>{
     const el=$('#'+id);el.addEventListener(id==='fq'?'input':'change',()=>{
       const k={fq:'q',fcat:'cat',frabbi:'rabbi',forg:'org',fdur:'dur',fmedia:'media'}[id];
@@ -551,20 +758,24 @@ function vHome(){
 }
 function plCard(p){
   const ls=p.lessonIds.map(lesson).filter(Boolean);const first=ls[0];
-  return `<article class="card"><a class="card-main" href="#/playlist/${p.id}"><img src="${first?lessonImg(first):avatar(p.name)}" alt=""><div><h3>${esc(p.name)}</h3><div class="meta">${ls.length} שיעורים · ${Math.round(ls.reduce((a,l)=>a+l.duration,0)/60)} דק׳</div></div></a>
-  <div class="card-foot"><button class="btn sm" data-act="playList" data-id="${p.id}">▶ נגן מההתחלה</button></div></article>`;
+  const done=ls.filter(l=>lessonPct(l)>=100).length;const pct=ls.length?done/ls.length*100:0;
+  const c=first?{...coverData(first),title:p.name,sub:p.official?'מסלול לימוד':'פלייליסט אישי'}:{img:'',color:'#1b6aa3',band:'',title:p.name,sub:''};
+  return `<article class="mcard"><div class="pslot"><a class="cwrap" href="#/playlist/${p.id}" aria-label="${esc(p.name)}">${coverHTML(c,{prog:pct&&pct<100?pct:0,done:pct>=100&&ls.length})}</a>
+    ${ls.length?`<button class="pbtn" data-act="playList" data-id="${p.id}" aria-label="נגן את ${esc(p.name)}">▶</button>`:''}</div>
+    <div><h3><a href="#/playlist/${p.id}">${esc(p.name)}</a></h3><div class="meta">${ls.length} שיעורים · ${Math.round(ls.reduce((a,l)=>a+l.duration,0)/60)} דק׳</div></div></article>`;
 }
-function filterLessons(){
-  const q=F.q.trim();
+
+function filterLessons(f){
+  f=f||F;const q=f.q.trim();
   return S.lessons.filter(l=>{
-    if(F.cat&&l.category!==F.cat) return false;
-    if(F.rabbi&&l.rabbiId!==F.rabbi) return false;
-    if(F.org&&l.orgId!==F.org&&org(l.rabbiId)?.parent!==F.org) return false;
-    if(F.tags.length&&!F.tags.every(t=>l.tags.includes(t))) return false;
+    if(f.cat&&l.category!==f.cat) return false;
+    if(f.rabbi&&l.rabbiId!==f.rabbi) return false;
+    if(f.org&&l.orgId!==f.org&&org(l.rabbiId)?.parent!==f.org) return false;
+    if(f.tags.length&&!f.tags.every(t=>l.tags.includes(t))) return false;
     const m=l.duration/60;
-    if(F.dur==='46'){if(m<=45) return false;} else if(F.dur&&m>+F.dur) return false;
+    if(f.dur==='46'){if(m<=45) return false;} else if(f.dur&&m>+f.dur) return false;
     const media=l.src.type==='youtube'?'video':l.src.media;
-    if(F.media&&media!==F.media) return false;
+    if(f.media&&media!==f.media) return false;
     if(q){
       const hay=[l.title,l.desc,l.transcript,org(l.rabbiId)?.name,org(l.orgId)?.name,catName(l.category),...l.tags].join(' ');
       if(!q.split(/\s+/).every(w=>hay.includes(w))) return false;
@@ -572,9 +783,21 @@ function filterLessons(){
     return true;
   });
 }
+function countBy(list,keyFn){const m={};list.forEach(l=>[].concat(keyFn(l)).forEach(k=>{if(k)m[k]=(m[k]||0)+1;}));return m;}
+function fillSelect(id,allLabel,items,cur){
+  const el=$('#'+id);if(!el) return;
+  el.innerHTML=`<option value="">${allLabel}</option>`+items.map(([v,n,c])=>`<option value="${esc(v)}" ${cur===v?'selected':''} ${!c&&cur!==v?'disabled':''}>${esc(n)} (${c||0})</option>`).join('');
+}
 function renderResults(){
-  const used=[...new Set(S.lessons.filter(l=>!F.cat||l.category===F.cat).flatMap(l=>l.tags))];
-  $('#ftags').innerHTML=used.map(t=>`<span class="chip ${F.tags.includes(t)?'on':''}" data-act="ftag" data-t="${esc(t)}">${esc(t)}</span>`).join('');
+  const cC=countBy(filterLessons({...F,cat:''}),l=>l.category);
+  fillSelect('fcat','כל הקטגוריות',CATS.map(c=>[c.id,c.name,cC[c.id]]),F.cat);
+  const cR=countBy(filterLessons({...F,rabbi:''}),l=>l.rabbiId);
+  fillSelect('frabbi','כל הרבנים',S.orgs.filter(o=>o.type==='rabbi').map(o=>[o.id,o.name,cR[o.id]]).sort((a,b)=>(b[2]||0)-(a[2]||0)),F.rabbi);
+  const cO=countBy(filterLessons({...F,org:''}),l=>[l.orgId,org(l.rabbiId)?.parent].filter((v,i,a)=>v&&a.indexOf(v)===i));
+  fillSelect('forg','כל המוסדות',S.orgs.filter(o=>o.type!=='rabbi').map(o=>[o.id,o.name,cO[o.id]]),F.org);
+  const cT=countBy(filterLessons({...F,tags:[]}),l=>l.tags);
+  const tags=Object.keys(cT).sort((a,b)=>cT[b]-cT[a]);F.tags.forEach(t=>{if(!tags.includes(t))tags.unshift(t);});
+  $('#ftags').innerHTML=tags.map(t=>`<button type="button" class="chip ${F.tags.includes(t)?'on':''}" data-act="ftag" data-t="${esc(t)}" aria-pressed="${F.tags.includes(t)}">${esc(t)} <span class="muted small">${cT[t]||0}</span></button>`).join('');
   const res=filterLessons();
   $('#rcount').textContent=`נמצאו ${res.length} שיעורים`;
   $('#results').innerHTML=res.length?res.map(l=>card(l,F.q)).join(''):(FB&&!loaded?'<div class="muted">טוען שיעורים…</div>':(S.lessons.length?'<div class="muted">לא נמצאו שיעורים. נסו לשנות את הסינון.</div>':'<div class="muted">עדיין אין שיעורים במאגר.'+(isAdmin()?' אפשר להתחיל ב<a href="#/upload">העלאת שיעור</a> או לייבא שיעורי דוגמה מ<a href="#/admin">דף הניהול</a>.':'')+'</div>'));
@@ -585,19 +808,48 @@ function snippet(text,q){
   const s=Math.max(0,i-40),part=text.slice(s,i+w.length+60);
   return `<div class="snip">מתוך התמלול: …${esc(part).split(esc(w)).join('<mark>'+esc(w)+'</mark>')}…</div>`;
 }
+const CAT_COLORS={parasha:'#1b6aa3',halacha:'#2b6b5c',gemara:'#7a4a24',emuna:'#4f3f86',moadim:'#9c5d17',tanach:'#1f4e79',musar:'#8a3344'};
+const catColor=id=>CAT_COLORS[id]||'#1b6aa3';
+function coverData(l){const o=lessonImgOrg(l);const r=org(l.rabbiId)||org(l.orgId);
+  return {img:realImg(o),color:catColor(l.category),band:catName(l.category),title:l.series||catName(l.category)||l.title,sub:r?r.name:''};}
+function coverHTML(c,o){o=o||{};
+  return `<div class="cover ${c.img?'':'noimg'} ${o.lg?'lg':''}" style="--cc:${c.color}">${c.img?`<img class="ph" src="${esc(c.img)}" alt="" loading="lazy">`:''}${c.band?`<span class="band">${esc(c.band)}</span>`:''}${o.done?'<span class="done">✓ הושלם</span>':''}<div class="ct">${esc(c.title)}${c.sub?`<small>${esc(c.sub)}</small>`:''}</div>${o.prog?`<div class="prog"><i style="width:${o.prog}%"></i></div>`:''}</div>`;}
+function lessonPct(l){const p=S.positions[l.id];if(!p)return 0;if(p.done)return 100;return p.d?Math.min(100,p.t/p.d*100):0;}
 function card(l,q){
-  const r=org(l.rabbiId),o=org(l.orgId);const pos=S.positions[l.id];
-  const pct=pos&&pos.d?Math.min(100,pos.t/pos.d*100):0;
-  const media=l.src.type==='youtube'?'יוטיוב':(l.src.media==='video'?'וידאו':'אודיו');
-  return `<article class="card">
-    <a class="card-main" href="#/lesson/${l.id}"><img src="${lessonImg(l)}" alt=""><div><h3>${esc(l.title)}</h3>
-    <div class="meta">${catName(l.category)} · ${Math.round(l.duration/60)} דק׳ · ${media}</div></div></a>
-    <div class="meta">${r?`<a href="#/org/${r.id}">${esc(r.name)}</a>`:''}${o?` · <a href="#/org/${o.id}">${esc(o.name)}</a>`:''}</div>
-    <div class="chips">${l.tags.map(t=>`<span class="chip sm">${esc(t)}</span>`).join('')}</div>
-    ${snippet(l.transcript,q)}
-    <div class="card-foot"><button class="btn sm" data-act="play" data-id="${l.id}">▶ ${pct&&!pos.done?'המשך':'השמע'}</button>${pct?`<div class="bar" title="${Math.round(pct)}%"><i style="width:${pct}%"></i></div>`:''}</div>
+  const r=org(l.rabbiId);const pct=lessonPct(l);const pos=S.positions[l.id];
+  const label=pct&&pct<100?'המשך':'השמע';
+  return `<article class="mcard">
+    <div class="pslot"><a class="cwrap" href="#/lesson/${l.id}" aria-label="${esc(l.title)}">${coverHTML(coverData(l),{prog:pct&&pct<100?pct:0,done:pct>=100})}</a>
+    <button class="pbtn" data-act="play" data-id="${l.id}" aria-label="${label}: ${esc(l.title)}">▶</button></div>
+    <div>${l.series&&l.num?`<div class="kicker">שיעור ${l.num}</div>`:''}<h3><a href="#/lesson/${l.id}">${esc(l.title)}</a></h3>
+    <div class="meta">${r?`<a href="${orgHref(r)}">${esc(r.name)}</a> · `:''}${Math.round(l.duration/60)} דק׳${l.date?` · <span class="hdate">${hebDate(l.date)}</span>`:''}</div>
+    ${snippet(l.transcript,q)}</div>
   </article>`;
 }
+function allSeries(){
+  const m={};S.lessons.forEach(l=>{if(!l.series)return;(m[l.series]=m[l.series]||[]).push(l);});
+  return Object.entries(m).map(([name,ls])=>{ls.sort((a,b)=>(+a.num||0)-(+b.num||0));
+    const done=ls.filter(l=>lessonPct(l)>=100).length;
+    const rc={};ls.forEach(l=>{if(l.rabbiId)rc[l.rabbiId]=(rc[l.rabbiId]||0)+1;});
+    const rid=Object.keys(rc).sort((a,b)=>rc[b]-rc[a])[0];
+    return {name,ls,done,rabbi:org(rid),first:ls[0],last:ls.reduce((a,l)=>String(l.date)>String(a)?l.date:a,'')};
+  }).sort((a,b)=>String(b.last).localeCompare(String(a.last)));
+}
+const seriesHref=n=>'#/series/'+encodeURIComponent(n);
+function seriesCard(x){
+  const c={...coverData(x.first),title:x.name,sub:x.rabbi?x.rabbi.name:''};
+  const pct=x.ls.length?x.done/x.ls.length*100:0;
+  return `<article class="mcard"><div class="pslot"><a class="cwrap" href="${seriesHref(x.name)}" aria-label="${esc(x.name)}">${coverHTML(c,{prog:pct&&pct<100?pct:0,done:pct>=100})}</a>
+    <button class="pbtn" data-act="playSeries" data-s="${esc(x.name)}" aria-label="נגן את הסדרה ${esc(x.name)}">▶</button></div>
+    <div><h3><a href="${seriesHref(x.name)}">${esc(x.name)}</a></h3><div class="meta">${x.ls.length} שיעורים${x.done?` · ${x.done} מתוך ${x.ls.length} הושלמו`:''}</div></div></article>`;
+}
+function rabbiCircle(o){const n=S.lessons.filter(l=>l.rabbiId===o.id||l.orgId===o.id).length;
+  return `<a class="rabbi-c" href="${orgHref(o)}"><img class="${imgCls(o)}" src="${orgImg(o)}" alt="" loading="lazy"><b>${esc(o.name)}</b><span class="muted small">${n} שיעורים</span></a>`;}
+function shelf(title,items,allAct,extraCls){
+  if(!items.length) return '';
+  return `<div class="row-h"><h2>${title}</h2>${allAct?`<button class="all" ${allAct}>הכל ←</button>`:''}</div><div class="shelf ${extraCls||''}">${items.join('')}</div>`;
+}
+
 /* פרשת השבוע — הפניה לפי זמן */
 function loadShabbat(){
   if(loadShabbat.data) return showShabbat(loadShabbat.data);
@@ -608,12 +860,10 @@ function loadShabbat(){
   }).catch(()=>{});
 }
 function showShabbat(d){
-  const el=$('#shabbat');if(!el||!d.parsha) return;
-  const names=d.parsha.split('-').map(s=>s.trim());
-  const match=S.lessons.filter(l=>l.category==='parasha'&&l.tags.some(t=>names.some(n=>n.includes(t)||t.includes(n))));
+  const el=$('#parshaRow');if(!el||!d.parsha) return;
   const fri=new Date().getDay()===5;
-  el.innerHTML=`<div class="banner"><div><div style="font-size:14px;opacity:.85">${fri?'ערב שבת — לקראת שבת':'פרשת השבוע'}${d.holiday?' · '+esc(d.holiday):''}</div><div style="font-size:21px;font-weight:800">פרשת ${esc(d.parsha)}</div><div style="font-size:14px;opacity:.85">${match.length} שיעורים על הפרשה</div></div>
-  <button class="btn" data-act="parsha" data-p="${esc(names[0])}">לשיעורים על הפרשה</button></div>`;
+  el.innerHTML=shelf(`${fri?'לקראת שבת — ':''}פרשת ${esc(d.parsha)}`,parshaLessons().slice(0,12).map(l=>card(l)),'data-act="seeAll" data-f=\'{"cat":"parasha"}\'');
+  const hb=$('#heroBox');if(hb&&!S.daily&&!S.history.some(id=>S.positions[id]&&!S.positions[id].done)) hb.innerHTML=heroHTML(pickHero());
 }
 
 /* =========================================================
@@ -630,20 +880,25 @@ function vLesson(id,q){
   const isCur=P.l&&P.l.id===id;
   const hasSource=l.sourceRef||l.sourceText;
   $('#app').innerHTML=`
+    <div class="lhead" style="--cc:${catColor(l.category)}">
+    ${ded.length?`<div class="dedic">${ded.map(d=>`השיעור מוקדש ${esc(d.kind)} ${esc(d.name)}`).join(' · ')}</div>`:''}
     <section class="hero">
-      <img src="${lessonImg(l)}" alt="">
+      ${coverHTML(coverData(l),{lg:true})}
       <div style="flex:1;min-width:240px">
+        ${l.series?`<div class="kicker"><a href="${seriesHref(l.series)}" style="color:inherit">${esc(lessonTitleParts(l).kicker)}</a></div>`:''}
         <h1 style="margin:0">${esc(l.title)}</h1>
-        <div class="muted">${r?`<a href="#/org/${r.id}">${esc(r.name)}</a>`:''}${o?` · <a href="#/org/${o.id}">${esc(o.name)}</a>`:''} · ${catName(l.category)} · ${Math.round(l.duration/60)} דק׳</div>
+        <div class="muted">${r?`<a href="${orgHref(r)}">${esc(r.name)}</a>`:''}${o?` · <a href="${orgHref(o)}">${esc(o.name)}</a>`:''} · ${catName(l.category)} · ${Math.round(l.duration/60)} דק׳${l.date?` · ${hebDate(l.date)}`:''}</div>
         <div class="chips" style="margin-top:6px">${l.tags.map(x=>`<span class="chip sm">${esc(x)}</span>`).join('')}</div>
+        ${(()=>{if(!l.series)return'';const ls=S.lessons.filter(x=>x.series===l.series);const dn=ls.filter(x=>lessonPct(x)>=100).length;return `<div class="sprog"><span>${dn} מתוך ${ls.length} בסדרה</span><div class="bar"><i style="width:${ls.length?dn/ls.length*100:0}%"></i></div></div>`;})()}
       </div>
     </section>
-    ${ded.length?`<div class="notice" style="margin-top:12px">${ded.map(d=>`השיעור מוקדש ${esc(d.kind)} ${esc(d.name)}`).join(' · ')}</div>`:''}
+    </div>
     <div class="row" style="margin-top:14px">
-      <button class="btn" data-act="play" data-id="${id}" ${t?`data-t="${+t}"`:''}>▶ ${t?`נגן מדקה ${fmt(+t)}`:(pos&&!pos.done?`המשך מ-${fmt(pos.t)}`:'השמע שיעור')}</button>
+      <button class="btn bigplay" data-act="play" data-id="${id}" ${t?`data-t="${+t}"`:''}>▶ ${t?`נגן מדקה ${fmt(+t)}`:(pos&&!pos.done?`המשך מ-${fmt(pos.t)}`:'השמע שיעור')}</button>
       ${pos&&!pos.done&&!t?`<button class="btn ghost" data-act="play" data-id="${id}" data-t="0">מההתחלה</button>`:''}
       <button class="btn ghost" data-act="shareAt" data-id="${id}">שיתוף מהרגע הנוכחי</button>
       <button class="btn ghost" data-act="chavruta" data-id="${id}">הזמנת חברותא</button>
+      <button class="btn wa" data-act="waShare" data-id="${id}">שיתוף בוואטסאפ</button>
       ${l.allowDownload&&l.src.type==='file'?`<a class="btn ghost" href="${esc(l.src.url)}" download target="_blank" rel="noopener">הורדה</a>`:''}
       ${canDeleteLesson(l)?`<button class="btn ghost" data-act="delLesson" data-id="${id}" style="color:var(--danger);border-color:var(--danger)">מחיקת שיעור</button>`:''}
     </div>
@@ -659,11 +914,11 @@ function vLesson(id,q){
           <h3>סימניות והערות שלי</h3>
           <div class="muted small">${isCur?`הזמן בנגן: <b id="curTime">${fmt(P.time())}</b>`:'הפעילו את השיעור כדי לסמן רגע.'}</div>
           <div class="row" style="margin-top:8px"><input id="bmNote" placeholder="למשל: כאן הרב אמר חידוש יפה על רש״י" style="flex:1"><button class="btn sm" data-act="addBm" data-id="${id}" ${isCur?'':'disabled'}>סמן רגע</button></div>
-          <div style="margin-top:8px">${bms.length?bms.map((b,i)=>`<div class="bm"><button class="btn ghost sm" data-act="goBm" data-id="${id}" data-t="${b.t}">${fmt(b.t)}</button><span style="flex:1">${esc(b.note)}</span><button class="ib" data-act="delBm" data-id="${id}" data-i="${i}" title="מחיקה">✕</button></div>`).join(''):'<div class="muted small">אין סימניות עדיין.</div>'}</div>
+          <div style="margin-top:8px">${bms.length?bms.map((b,i)=>`<div class="bm"><button class="btn ghost sm" data-act="goBm" data-id="${id}" data-t="${b.t}">${fmt(b.t)}</button><span style="flex:1">${esc(b.note)}</span><button class="ib" data-act="delBm" data-id="${id}" data-i="${i}" title="מחיקה" aria-label="מחיקת סימנייה">✕</button></div>`).join(''):'<div class="muted small">אין סימניות עדיין.</div>'}</div>
         </section>
         ${l.transcript?`<section class="panel" style="margin-top:14px"><details><summary>תמלול השיעור</summary><p>${esc(l.transcript)}</p></details></section>`:''}
         <section class="panel" style="margin-top:14px">
-          <details><summary>הקדשת השיעור</summary>
+          <details><summary>הקדשת השיעור <span class="muted small">— לעילוי נשמת, לרפואה או להצלחה</span></summary>
             <div class="row" style="margin-top:8px">
               <select id="dedKind" style="width:auto"><option>לעילוי נשמת</option><option>לרפואת</option><option>להצלחת</option><option>לזכר</option></select>
               <input id="dedName" placeholder="שם" style="flex:1"><button class="btn sm" data-act="dedicate" data-id="${id}">הקדש</button>
@@ -674,8 +929,8 @@ function vLesson(id,q){
       </div>
       ${hasSource?`<section class="panel"><h3>טקסט המקור${l.sourceRef?` <span class="muted small">— ${esc(l.sourceRef)}</span>`:''}</h3><div class="source" id="srcText">${l.sourceText?l.sourceText.split('\n').map(p=>`<p>${esc(p)}</p>`).join(''):'<p class="muted">טוען מספריא…</p>'}</div></section>`:''}
     </div>
-    <h2>רבנים בסגנון דומה</h2><div class="grid" id="simRabbis"></div>
-    <h2>שיעורים נוספים שיכולים לעניין</h2><div class="grid" id="simLessons"></div>`;
+    <div class="row-h"><h2>רבנים בסגנון דומה</h2></div><div class="shelf rabbis" id="simRabbis"></div>
+    <div class="row-h"><h2>שיעורים נוספים שיכולים לעניין</h2></div><div class="gridm" id="simLessons"></div>`;
   if(l.sourceRef&&!l.sourceText) loadSource(l.sourceRef);
   const pl=$('#addPl');
   if(pl) pl.addEventListener('change',()=>{
@@ -703,8 +958,8 @@ function renderRecs(l){
     let s=0;(o.styles||[]).forEach(st=>{if(r&&(r.styles||[]).includes(st))s+=2;});
     catsOf(o.id).forEach(c=>{if(myCats.has(c))s+=1;});return {o,s};
   }).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,4);
-  $('#simRabbis').innerHTML=sims.length?sims.map(({o})=>`<article class="card"><a class="card-main" href="#/org/${o.id}"><img src="${orgImg(o)}" alt=""><div><h3>${esc(o.name)}</h3><div class="meta">${(o.styles||[]).join(' · ')}</div><div class="meta">${S.lessons.filter(x=>x.rabbiId===o.id).length} שיעורים</div></div></a></article>`).join(''):'<div class="muted small">עדיין אין מספיק נתונים.</div>';
-  const rel=S.lessons.filter(x=>x.id!==l.id).map(x=>({x,s:(x.category===l.category?2:0)+x.tags.filter(t=>l.tags.includes(t)).length*3+(x.rabbiId===l.rabbiId?1:0)})).filter(a=>a.s>0).sort((a,b)=>b.s-a.s).slice(0,4);
+  $('#simRabbis').innerHTML=sims.length?sims.map(({o})=>rabbiCircle(o)).join(''):'<div class="muted small">עדיין אין מספיק נתונים.</div>';
+  const rel=S.lessons.filter(x=>x.id!==l.id).map(x=>({x,s:(x.category===l.category?2:0)+x.tags.filter(t=>l.tags.includes(t)).length*3+(x.rabbiId===l.rabbiId?1:0)})).filter(a=>a.s>0).sort((a,b)=>b.s-a.s).slice(0,6);
   $('#simLessons').innerHTML=rel.length?rel.map(a=>card(a.x)).join(''):'<div class="muted small">אין המלצות כרגע.</div>';
 }
 
@@ -712,19 +967,21 @@ function renderRecs(l){
    דף רב / מוסד
    ========================================================= */
 function vOrg(id){
-  const o=org(id);if(!o){$('#app').innerHTML='<p>הדף לא נמצא.</p>';return;}
+  const o=orgBySlug(id);if(!o){$('#app').innerHTML='<p>הדף לא נמצא.</p>';return;}
   const kids=S.orgs.filter(x=>x.parent===o.id);
   const parent=org(o.parent);
   const ls=S.lessons.filter(l=>l.rabbiId===o.id||l.orgId===o.id);
-  const series=S.playlists.filter(p=>p.official&&p.lessonIds.some(i=>ls.find(l=>l.id===i)));
+  const series=allSeries().filter(x=>x.ls.some(l=>ls.includes(l)));
+  const tracks=S.playlists.filter(p=>p.official&&p.lessonIds.some(i=>ls.find(l=>l.id===i)));
   const edit=canEditOrg(o);
-  const pageUrl=baseUrl()+'#/org/'+o.id;
+  const pageUrl=baseUrl()+orgHref(o);
   $('#app').innerHTML=`
     <section class="hero">
-      <img src="${orgImg(o)}" alt="">
+      <img class="${imgCls(o)}" src="${orgImg(o)}" alt="${esc(o.name)}" style="width:132px;height:132px">
       <div style="flex:1;min-width:240px">
-        <div class="muted small">${o.type==='rabbi'?'דף רב':'דף מוסד'}${parent?` · <a href="#/org/${parent.id}">${esc(parent.name)}</a>`:''}</div>
+        <div class="muted small">${o.type==='rabbi'?'דף רב':'דף מוסד'}${parent?` · <a href="${orgHref(parent)}">${esc(parent.name)}</a>`:''}</div>
         <h1 style="margin:0">${esc(o.name)}</h1>
+        <div class="muted small">${ls.length} שיעורים${series.length?` · ${series.length} סדרות`:''}${kids.length?` · ${kids.length} רבנים`:''}</div>
         <div class="chips" style="margin-top:6px">${(o.styles||[]).map(s=>`<span class="chip sm">${esc(s)}</span>`).join('')}</div>
       </div>
       <div class="row">
@@ -733,20 +990,25 @@ function vOrg(id){
       </div>
     </section>
     ${o.about?`<p style="white-space:pre-line">${esc(o.about)}</p>`:''}
-    ${kids.length?`<h2>${o.type==='rabbi'?'':'רבני המוסד'}</h2><div class="grid">${kids.map(k=>`<article class="card"><a class="card-main" href="#/org/${k.id}"><img src="${orgImg(k)}" alt=""><div><h3>${esc(k.name)}</h3><div class="meta">${S.lessons.filter(l=>l.rabbiId===k.id).length} שיעורים</div></div></a></article>`).join('')}</div>`:''}
-    ${series.length?`<h2>סדרות</h2><div class="grid">${series.map(plCard).join('')}</div>`:''}
-    <h2>שיעורים (${ls.length})</h2>
-    <div class="grid">${ls.map(l=>card(l)).join('')||'<div class="muted">אין שיעורים עדיין.</div>'}</div>
+    ${kids.length?`<div class="row-h"><h2>רבני המוסד</h2></div><div class="shelf rabbis">${kids.map(rabbiCircle).join('')}</div>`:''}
+    ${shelf('סדרות',series.map(seriesCard))}
+    ${shelf('מסלולי לימוד',tracks.map(plCard))}
+    <div class="row-h"><h2>שיעורים (${ls.length})</h2></div>
+    <div class="gridm">${ls.map(l=>card(l)).join('')||'<div class="muted">אין שיעורים עדיין.</div>'}</div>
     ${edit?`
     <h2>עריכת הדף</h2>
     <section class="panel">
       <label>שם</label><input id="oName" value="${esc(o.name)}">
+      ${isAdmin()?`<label>כתובת הדף (סיומת ייחודית — מנהל בלבד)</label>
+      <div class="row" style="flex-wrap:nowrap;direction:ltr"><span class="muted small" style="white-space:nowrap">${esc(baseUrl())}#/org/</span><input id="oSlug" value="${esc(o.slug||'')}" placeholder="yeshivat-example" style="direction:ltr"></div>
+      <div class="muted small">אותיות באנגלית קטנות, ספרות ומקפים (גם עברית אפשרית, אך קישור באנגלית נראה טוב יותר בשיתוף). ריק = כתובת אוטומטית.</div>`:''}
+      ${!o.image?'<div class="notice" style="margin-top:10px">לדף הזה עדיין אין תמונה. תמונה אמיתית של '+(o.type==='rabbi'?'הרב':'המוסד (לוגו)')+' היא מה שהכי מושך לשיעורים — מומלץ מאוד להוסיף.</div>':''}
       <label>קישור לתמונה (כתובת URL של תמונה)</label><input id="oImg" value="${esc(o.image)}" placeholder="https://…/image.jpg">
       <label class="row" style="font-weight:400"><input type="checkbox" id="oShow" style="width:auto" ${o.showOnLessons?'checked':''}> להציג את התמונה בכל השיעורים של ${o.type==='rabbi'?'הרב':'המוסד'}</label>
       <label>טקסט על ${o.type==='rabbi'?'הרב':'המוסד'}</label><textarea id="oAbout">${esc(o.about)}</textarea>
       <label>קישור לתרומה</label><input id="oDonate" value="${esc(o.donate)}" placeholder="https://…">
       <label>סגנון (לתיוג ולמנוע ההמלצות)</label>
-      <div class="chips" id="oStyles">${STYLES.map(s=>`<span class="chip ${(o.styles||[]).includes(s)?'on':''}" data-act="toggleStyle" data-s="${s}">${s}</span>`).join('')}</div>
+      <div class="chips" id="oStyles">${STYLES.map(s=>`<button type="button" class="chip ${(o.styles||[]).includes(s)?'on':''}" data-act="toggleStyle" data-s="${s}">${s}</button>`).join('')}</div>
       ${o.type!=='rabbi'||true?`<label>ברירת מחדל להעלאות: קטגוריה</label><select id="oDefCat"><option value="">ללא</option>${CATS.map(c=>`<option value="${c.id}" ${o.defaults?.category===c.id?'selected':''}>${c.name}</option>`).join('')}</select>`:''}
       <div style="margin-top:14px"><button class="btn" data-act="saveOrg" data-id="${o.id}">שמירה</button></div>
     </section>`:''}`;
@@ -794,18 +1056,27 @@ function vUpload(){
   const def=(myOrg&&myOrg.defaults)||{category:'',tags:[]};
   $('#app').innerHTML=`
     <h1>העלאת שיעור</h1>
+    ${ghActive()?'<div class="notice" style="margin-bottom:8px">קבצים יועלו אוטומטית למאגר GitHub (מפתח שמור בדפדפן הזה).</div>':''}
     ${myOrg?`<div class="notice">כל השיעורים שתעלו ישויכו אוטומטית ל<b>${esc(myOrg.name)}</b> ולהגדרות שלו.</div>`:'<div class="notice">כמנהל, אפשר להעלות לכל מוסד ולכל רב בפלטפורמה.</div>'}
     <section class="panel" style="margin-top:12px">
-      <label>קישורים לשיעורים — שורה לכל שיעור (יוטיוב או קובץ ישיר)</label>
+      <label>קבצים מהמחשב (אודיו או וידאו) — אפשר לבחור כמה יחד</label>
+      <input type="file" id="uFiles" multiple accept="audio/*,video/*">
+      <label class="row" style="font-weight:400"><input type="checkbox" id="uCompress" style="width:auto" checked> כיווץ אוטומטי (מומלץ) — וידאו יומר לאודיו בלבד, באיכות דיבור (MP3, כ-21MB לשעה)</label>
+      <div id="uProg" class="muted small"></div>
+      <label>או קישורים לשיעורים — שורה לכל שיעור (יוטיוב או קובץ ישיר)</label>
       <textarea id="uLinks" placeholder="https://www.youtube.com/watch?v=…&#10;https://example.org/shiur.mp3"></textarea>
       <div class="muted small">כמה שורות = קליטה באצווה. העלו רק תוכן שיש עליו אישור מפורש מבעליו.</div>
       <div class="two">
         <div><label>כותרת</label><input id="uTitle" placeholder="בכמה שורות יתווסף: — חלק 1, 2…"></div>
-        <div><label>אורך משוער (דקות)</label><input id="uDur" type="number" min="1" value="30"></div>
+        <div><label>אורך משוער בדקות (לקבצים יחושב לבד)</label><input id="uDur" type="number" min="1" value="30"></div>
       </div>
       <div class="two">
         <div><label>מוסד</label><select id="uOrg" ${admin?'':'disabled'}>${admin?'<option value="">ללא מוסד</option>':''}${orgs.map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')}</select></div>
-        <div><label>רב</label><select id="uRabbi"></select><input id="uNewRabbi" placeholder="שם הרב החדש" style="margin-top:6px;display:none"></div>
+        <div><label>רב</label><select id="uRabbi"></select><input id="uNewRabbi" placeholder="שם הרב החדש" style="margin-top:6px;display:none"><input id="uNewRabbiImg" placeholder="קישור לתמונת הרב (חובה)" style="margin-top:6px;display:none;direction:ltr"></div>
+      </div>
+      <div class="two">
+        <div><label>סדרה (לא חובה)</label><input id="uSeries" list="seriesList" placeholder="למשל: הלכות שבת — מלאכת בישול"><datalist id="seriesList">${[...new Set(S.lessons.map(l=>l.series).filter(Boolean))].map(x=>`<option value="${esc(x)}">`).join('')}</datalist></div>
+        <div><label>מספר שיעור בסדרה</label><input id="uNum" type="number" min="1" placeholder="יוצע אוטומטית"></div>
       </div>
       <div class="two">
         <div><label>קטגוריה כללית</label><select id="uCat">${CATS.map(c=>`<option value="${c.id}" ${def.category===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div>
@@ -820,34 +1091,161 @@ function vUpload(){
       </div>
       <label>תמלול (לא חובה — בגרסה המלאה ייווצר אוטומטית)</label><textarea id="uTrans"></textarea>
       <label class="row" style="font-weight:400"><input type="checkbox" id="uDl" style="width:auto" checked> לאפשר למשתמשים להוריד את השיעור</label>
-      <div style="margin-top:14px"><button class="btn" data-act="doUpload">העלאה</button></div>
+      <div class="row" style="margin-top:14px"><button class="btn" data-act="doUpload" id="uBtn">העלאה</button><button class="btn ghost" data-act="compressDl" id="uDlBtn">כווץ והורד</button></div>
+      <div class="muted small" style="margin-top:6px">"כווץ והורד": מכווץ את הקבצים שבחרתם ל-MP3 ומוריד אותם למחשב, בלי להעלות. אחר כך אפשר להעלות אותם ל-archive.org או ל-GitHub ולהדביק כאן את הקישור. שימושי כל עוד אחסון הקבצים ב-Firebase לא מופעל.</div>
     </section>`;
-  const fillRabbis=()=>{const oid=$('#uOrg').value;$('#uRabbi').innerHTML=rabbisFor(oid).map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')+'<option value="__new">+ רב חדש…</option>'+(oid?'<option value="__org">שיעור כללי של המוסד</option>':'');$('#uNewRabbi').style.display='none';};
+  const fillRabbis=()=>{const oid=$('#uOrg').value;$('#uRabbi').innerHTML=rabbisFor(oid).map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')+'<option value="__new">+ רב חדש…</option>'+(oid?'<option value="__org">שיעור כללי של המוסד</option>':'');$('#uNewRabbi').style.display='none';$('#uNewRabbiImg').style.display='none';};
   $('#uOrg').addEventListener('change',fillRabbis);fillRabbis();
-  $('#uRabbi').addEventListener('change',()=>{$('#uNewRabbi').style.display=$('#uRabbi').value==='__new'?'':'none';const r=org($('#uRabbi').value);if(r&&r.defaults&&r.defaults.category){$('#uCat').value=r.defaults.category;tagUi.set(r.defaults.tags||[]);}});
+  $('#uRabbi').addEventListener('change',()=>{$('#uNewRabbi').style.display=$('#uNewRabbiImg').style.display=$('#uRabbi').value==='__new'?'':'none';const r=org($('#uRabbi').value);if(r&&r.defaults&&r.defaults.category){$('#uCat').value=r.defaults.category;tagUi.set(r.defaults.tags||[]);}});
   const tagUi=tagInput($('#uTags'),()=>allTagsFor($('#uCat').value),def.tags,t=>{const c=$('#uCat').value;(S.extraTags[c]=S.extraTags[c]||[]).push(t);save();});
   window._tagUi=tagUi;
 }
-function doUpload(){
+/* ---------- כיווץ: כל קובץ אודיו/וידאו → MP3 מונו 48kbps ---------- */
+const MP3_RATE=22050,MP3_KBPS=48;
+const yieldUI=()=>new Promise(r=>setTimeout(r,0));
+async function compressToMp3(file,onProgress){
+  if(!window.lamejs) throw new Error('nolame');
+  let buf=await file.arrayBuffer();
+  const ctx=new OfflineAudioContext(1,1,MP3_RATE);
+  const audio=await ctx.decodeAudioData(buf);buf=null;
+  const n=audio.length,chs=audio.numberOfChannels;
+  const data=[];for(let c=0;c<chs;c++)data.push(audio.getChannelData(c));
+  const enc=new lamejs.Mp3Encoder(1,MP3_RATE,MP3_KBPS);
+  const out=[],BLOCK=1152*64,pcm=new Int16Array(BLOCK);
+  for(let i=0;i<n;i+=BLOCK){
+    const len=Math.min(BLOCK,n-i);
+    for(let j=0;j<len;j++){let v=0;for(let c=0;c<chs;c++)v+=data[c][i+j];v/=chs;v=v<-1?-1:v>1?1:v;pcm[j]=v<0?v*32768:v*32767;}
+    const mp3=enc.encodeBuffer(len===BLOCK?pcm:pcm.subarray(0,len));if(mp3.length)out.push(new Uint8Array(mp3));
+    if((i/BLOCK)%8===0){onProgress&&onProgress(i/n);await yieldUI();}
+  }
+  const end=enc.flush();if(end.length)out.push(new Uint8Array(end));
+  onProgress&&onProgress(1);
+  return {blob:new Blob(out,{type:'audio/mpeg'}),duration:audio.duration};
+}
+function mediaDuration(file){
+  return new Promise(res=>{const el=document.createElement(file.type.startsWith('video')?'video':'audio');const u=URL.createObjectURL(file);
+    el.preload='metadata';el.onloadedmetadata=()=>{res(isFinite(el.duration)?el.duration:0);URL.revokeObjectURL(u);};el.onerror=()=>{res(0);URL.revokeObjectURL(u);};el.src=u;});
+}
+/* ---------- העלאה למאגר GitHub ---------- */
+const GH_KEY='torah_gh_token';
+const ghToken=()=>{try{return localStorage.getItem(GH_KEY)||''}catch(e){return ''}};
+const ghActive=()=>isAdmin()&&!!ghToken();
+const ghApi=path=>`https://api.github.com/repos/${CONFIG.github.owner}/${CONFIG.github.repo}/contents/${path}`;
+const ghPagesUrl=path=>`https://${CONFIG.github.owner}.github.io/${CONFIG.github.repo}/${path}`;
+function blobToB64(blob){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(blob);});}
+async function ghUpload(blob,name,message,onProgress){
+  if(blob.size>95*1048576) throw {code:'gh/too-big'};
+  const path=`${CONFIG.github.folder}/${name}`;
+  const body=JSON.stringify({message,content:await blobToB64(blob),branch:CONFIG.github.branch});
+  await new Promise((res,rej)=>{
+    const x=new XMLHttpRequest();x.open('PUT',ghApi(path));
+    x.setRequestHeader('Authorization','Bearer '+ghToken());x.setRequestHeader('Accept','application/vnd.github+json');
+    x.upload.onprogress=e=>e.lengthComputable&&onProgress&&onProgress(e.loaded/e.total);
+    x.onload=()=>x.status>=200&&x.status<300?res():rej({code:'gh/'+x.status});
+    x.onerror=()=>rej({code:'gh/network'});x.send(body);
+  });
+  return {url:ghPagesUrl(path),ghPath:path};
+}
+async function ghDelete(path){
+  const h={'Authorization':'Bearer '+ghToken(),'Accept':'application/vnd.github+json'};
+  const r=await fetch(ghApi(path)+'?ref='+CONFIG.github.branch,{headers:h});if(!r.ok)return;
+  const {sha}=await r.json();
+  await fetch(ghApi(path),{method:'DELETE',headers:h,body:JSON.stringify({message:'מחיקת שיעור',sha,branch:CONFIG.github.branch})});
+}
+function storeFile(blob,path,contentType,onProgress,meta){
+  if(ghActive()) return ghUpload(blob,path.split('/').pop(),'העלאת שיעור: '+((meta&&meta.title)||''),onProgress);
+  if(!FB) return Promise.resolve({url:URL.createObjectURL(blob),path:null,local:true});
+  if(!FB.storage) return Promise.reject({code:'storage/unknown'});
+  const ref=FB.storage.ref(path);
+  return new Promise((res,rej)=>{
+    const task=ref.put(blob,{contentType});
+    task.on('state_changed',sn=>onProgress&&onProgress(sn.bytesTransferred/sn.totalBytes),rej,async()=>{try{res({url:await ref.getDownloadURL(),path});}catch(e){rej(e);}});
+  });
+}
+const mb=x=>(x/1048576).toFixed(1)+'MB';
+
+async function compressDl(){
+  const files=[...($('#uFiles').files||[])];
+  if(!files.length) return toast('בחרו קובץ אודיו או וידאו');
+  const btns=[$('#uBtn'),$('#uDlBtn')],prog=$('#uProg');btns.forEach(b=>b.disabled=true);
+  let done=0,lastDur=0;
+  for(const [i,f] of files.entries()){
+    const tag=files.length>1?`קובץ ${i+1}/${files.length}: `:'';
+    try{
+      const r=await compressToMp3(f,x=>prog.textContent=`${tag}מכווץ… ${Math.round(x*100)}%`);
+      const name=f.name.replace(/\.[^.]+$/,'').replace(/[\\/:*?"<>|]+/g,'_')+'.mp3';
+      const u=URL.createObjectURL(r.blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(u),60000);
+      prog.textContent=`${tag}הורד: ${name} — כווץ מ-${mb(f.size)} ל-${mb(r.blob.size)}`;
+      lastDur=r.duration;done++;
+      await new Promise(res=>setTimeout(res,400));
+    }catch(e){console.error(e);toast(`לא הצלחנו לכווץ את "${f.name}"`);}
+  }
+  btns.forEach(b=>b.disabled=false);
+  if(files.length===1&&lastDur) $('#uDur').value=Math.max(1,Math.round(lastDur/60));
+  if(done) toast(done>1?`${done} קבצים כווצו והורדו`:'הקובץ כווץ והורד');
+}
+async function doUpload(){
   const links=$('#uLinks').value.split('\n').map(s=>s.trim()).filter(Boolean);
-  if(!links.length) return toast('הדביקו לפחות קישור אחד');
-  const title=$('#uTitle').value.trim()||'שיעור';
+  const files=[...($('#uFiles').files||[])];
+  if(!links.length&&!files.length) return toast('בחרו קבצים או הדביקו קישור');
+  const total=links.length+files.length;
+  let title=$('#uTitle').value.trim();
+  if(!title) title=(total===1&&files.length)?files[0].name.replace(/\.[^.]+$/,''):'שיעור';
   let orgId=$('#uOrg').value||null;let rabbiId=$('#uRabbi').value;
   if(!isAdmin()) orgId=perm().orgId;
-  if(rabbiId==='__new'){const n=$('#uNewRabbi').value.trim();if(!n)return toast('הזינו שם לרב החדש');rabbiId=uid('r');S.orgs.push({id:rabbiId,type:'rabbi',name:n,parent:orgId,image:'',showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});}
+  if(rabbiId==='__new'){const n=$('#uNewRabbi').value.trim();if(!n)return toast('הזינו שם לרב החדש');const im=$('#uNewRabbiImg').value.trim();if(!/^https?:\/\//.test(im))return toast('חובה להוסיף קישור לתמונת הרב');rabbiId=uid('r');S.orgs.push({id:rabbiId,type:'rabbi',name:n,parent:orgId,image:im,showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});}
   if(rabbiId==='__org') rabbiId=null;
-  const created=[];
-  links.forEach((u,i)=>{
-    const y=ytId(u);let src;
-    if(y) src={type:'youtube',ytId:y};
-    else{let m=$('#uMedia').value;if(m==='auto')m=/\.(mp4|webm|mov|m4v)(\?|$)/i.test(u)?'video':'audio';src={type:'file',media:m,url:u};}
-    const l={id:uid('l'),title:links.length>1?`${title} — חלק ${i+1}`:title,rabbiId,orgId,category:$('#uCat').value,tags:window._tagUi.get(),
-      duration:(+$('#uDur').value||30)*60,src,allowDownload:$('#uDl').checked&&!y,desc:$('#uDesc').value.trim(),transcript:$('#uTrans').value.trim(),
-      sourceRef:$('#uRef').value.trim(),sourceText:$('#uSrcText').value.trim(),date:new Date().toISOString().slice(0,10),uploadedBy:S.user.email};
-    S.lessons.unshift(l);created.push(l.id);
-  });
+  const series=$('#uSeries').value.trim();let num=+$('#uNum').value||0;
+  if(series&&!num) num=Math.max(0,...S.lessons.filter(l=>l.series===series).map(l=>+l.num||0))+1;
+  const nextNum=()=>series?num++:0;
+  const base={series,rabbiId,orgId,category:$('#uCat').value,tags:window._tagUi.get(),desc:$('#uDesc').value.trim(),transcript:$('#uTrans').value.trim(),
+    sourceRef:$('#uRef').value.trim(),sourceText:$('#uSrcText').value.trim(),date:new Date().toISOString().slice(0,10),uploadedBy:S.user.email};
+  const mkTitle=i=>total>1&&!series?`${title} — חלק ${i+1}`:title;
+  const created=[];let idx=0;
+  const btn=$('#uBtn'),prog=$('#uProg');btn.disabled=true;
+  try{
+    for(const f of files){
+      const id=uid('l');const tag=total>1?`קובץ ${idx+1}/${files.length}: `:'';
+      let blob=f,duration=0,media=f.type.startsWith('video')?'video':'audio',ext=(f.name.match(/\.([^.]+)$/)||[,'bin'])[1].toLowerCase(),ctype=f.type||'application/octet-stream';
+      if($('#uCompress').checked){
+        prog.textContent=tag+'מכווץ…';
+        try{
+          const r=await compressToMp3(f,x=>prog.textContent=`${tag}מכווץ… ${Math.round(x*100)}%`);
+          blob=r.blob;duration=r.duration;media='audio';ext='mp3';ctype='audio/mpeg';
+          prog.textContent=`${tag}כווץ מ-${mb(f.size)} ל-${mb(blob.size)}`;
+        }catch(e){
+          console.error(e);
+          if(!confirm(`לא הצלחנו לכווץ את "${f.name}" (ייתכן שהקובץ גדול מדי לדפדפן או בפורמט לא נתמך). להעלות את הקובץ המקורי בלי כיווץ?`)) {idx++;continue;}
+        }
+      }
+      if(!duration) duration=await mediaDuration(f);
+      const st=await storeFile(blob,`lessons/${id}.${ext}`,ctype,x=>prog.textContent=`${tag}${ghActive()?'מעלה ל-GitHub':'מעלה'}… ${Math.round(x*100)}%`,{title:mkTitle(idx)});
+      S.lessons.unshift({...base,num:nextNum(),id,title:mkTitle(idx),duration:Math.round(duration)||(+$('#uDur').value||30)*60,
+        src:{type:'file',media,url:st.url,storagePath:st.path||'',ghPath:st.ghPath||''},allowDownload:$('#uDl').checked,size:blob.size});
+      created.push(id);idx++;
+      if(st.local) toast('מצב הדגמה: הקובץ נשמר זמנית בדפדפן בלבד');
+      if(st.ghPath) window._ghJustUploaded=true;
+    }
+    links.forEach(u=>{
+      const y=ytId(u);let src;
+      if(y) src={type:'youtube',ytId:y};
+      else{let m=$('#uMedia').value;if(m==='auto')m=/\.(mp4|webm|mov|m4v)(\?|$)/i.test(u)?'video':'audio';src={type:'file',media:m,url:u};}
+      const id=uid('l');
+      S.lessons.unshift({...base,num:nextNum(),id,title:mkTitle(idx),duration:(+$('#uDur').value||30)*60,src,allowDownload:$('#uDl').checked&&!y});
+      created.push(id);idx++;
+    });
+  }catch(e){
+    console.error(e);btn.disabled=false;
+    const code=e&&e.code||'';
+    prog.textContent='';
+    toast(code==='gh/too-big'?'הקובץ גדול מ-95MB — סמנו כיווץ':code==='gh/401'?'מפתח GitHub לא תקף — עדכנו אותו בדף הניהול':code==='gh/403'||code==='gh/404'?'למפתח GitHub אין הרשאת כתיבה למאגר':/^gh\//.test(code)?'ההעלאה ל-GitHub נכשלה':code==='storage/unauthorized'?'אין הרשאה להעלות קבצים':(/storage\/(unknown|bucket-not-found|project-not-found)|retry-limit/.test(code)?'אחסון הקבצים עוד לא הופעל ב-Firebase. אפשר להשתמש ב"כווץ והורד"':'ההעלאה נכשלה'));
+    if(!created.length) return;
+  }
+  btn.disabled=false;
+  if(!created.length){prog.textContent='';return;}
   if(created.length>1&&confirm('ליצור מהשיעורים האלה סדרה (מסלול לימוד)?')) S.playlists.push({id:uid('pl'),name:title,lessonIds:created,official:true,owner:S.user.email});
-  save();toast(`נקלטו ${created.length} שיעורים`);location.hash='#/lesson/'+created[0];
+  save();toast(window._ghJustUploaded?'נקלט. הקובץ יתנגן בעוד כדקה-שתיים, אחרי ש-GitHub יעדכן את האתר':`נקלטו ${created.length} שיעורים`);window._ghJustUploaded=false;location.hash='#/lesson/'+created[0];
 }
 
 /* =========================================================
@@ -860,7 +1258,7 @@ function vAdmin(){
     <h2>הרשאות</h2>
     <section class="panel">
       <table class="tbl"><tr><th>חשבון Google</th><th>תפקיד</th><th>מוסד</th><th></th></tr>
-      ${S.permissions.map((p,i)=>`<tr><td>${esc(p.email)}</td><td>${ROLE_NAMES[p.role]}</td><td>${p.orgId?esc(org(p.orgId)?.name):'—'}</td><td><button class="ib" data-act="delPerm" data-i="${i}" title="הסרה">✕</button></td></tr>`).join('')}
+      ${S.permissions.map((p,i)=>`<tr><td>${esc(p.email)}</td><td>${ROLE_NAMES[p.role]}</td><td>${p.orgId?esc(org(p.orgId)?.name):'—'}</td><td><button class="ib" data-act="delPerm" data-i="${i}" title="הסרה" aria-label="הסרת הרשאה">✕</button></td></tr>`).join('')}
       </table>
       <div class="filters" style="margin-top:12px">
         <input id="pEmail" placeholder="כתובת Gmail">
@@ -871,11 +1269,12 @@ function vAdmin(){
     </section>
     <h2>מוסדות ורבנים</h2>
     <section class="panel">
-      <table class="tbl"><tr><th>שם</th><th>סוג</th><th>שייך ל</th><th>שיעורים</th></tr>
-      ${S.orgs.map(o=>`<tr><td><a href="#/org/${o.id}">${esc(o.name)}</a></td><td>${o.type==='rabbi'?'רב':'מוסד'}</td><td>${o.parent?esc(org(o.parent)?.name):'—'}</td><td>${S.lessons.filter(l=>l.rabbiId===o.id||l.orgId===o.id).length}</td></tr>`).join('')}
+      <table class="tbl"><tr><th>שם</th><th>סוג</th><th>שייך ל</th><th>שיעורים</th><th>כתובת</th></tr>
+      ${S.orgs.map(o=>`<tr><td><a href="${orgHref(o)}">${esc(o.name)}</a></td><td>${o.type==='rabbi'?'רב':'מוסד'}</td><td>${o.parent?esc(org(o.parent)?.name):'—'}</td><td>${S.lessons.filter(l=>l.rabbiId===o.id||l.orgId===o.id).length}</td><td style="direction:ltr;text-align:right">${o.slug?esc(o.slug):'<span class="muted">—</span>'}</td></tr>`).join('')}
       </table>
       <div class="filters" style="margin-top:12px">
         <input id="nName" placeholder="שם הרב או המוסד">
+        <input id="nImg" placeholder="קישור לתמונה / לוגו (חובה)" style="direction:ltr">
         <select id="nType"><option value="yeshiva">מוסד / ישיבה</option><option value="rabbi">רב</option></select>
         <select id="nParent"><option value="">ללא שיוך</option>${S.orgs.filter(o=>o.type!=='rabbi').map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')}</select>
         <button class="btn" data-act="addOrg">יצירת דף</button>
@@ -887,6 +1286,15 @@ function vAdmin(){
       <div style="margin-top:10px;max-height:220px;overflow:auto">${S.lessons.map(l=>`<label class="row" style="font-weight:400;margin:4px 0"><input type="checkbox" class="olChk" value="${l.id}" style="width:auto"> ${esc(l.title)}</label>`).join('')}</div>
       <button class="btn" data-act="addOfficial" style="margin-top:10px">יצירת מסלול</button>
     </section>
+    <h2>העלאה אוטומטית ל-GitHub</h2>
+    <section class="panel">
+      <div class="muted small">כשמפתח שמור כאן, קבצים שתעלו יכווצו ויישמרו אוטומטית בתיקייה <b style="direction:ltr;display:inline-block">${esc(CONFIG.github.folder)}/</b> במאגר <b style="direction:ltr;display:inline-block">${esc(CONFIG.github.owner)}/${esc(CONFIG.github.repo)}</b>. המפתח נשמר רק בדפדפן הזה — לא בשרת ולא בקוד.</div>
+      <div style="margin-top:8px">${ghToken()?'<span style="color:var(--ok);font-weight:700">✓ מפתח שמור בדפדפן הזה</span>':'<span class="muted">אין מפתח שמור</span>'}</div>
+      <div class="row" style="margin-top:8px"><input id="ghTok" type="password" placeholder="github_pat_…" style="flex:1;direction:ltr"><button class="btn" data-act="ghSave">שמירה ובדיקה</button>${ghToken()?'<button class="btn ghost" data-act="ghRemove">הסרת המפתח</button>':''}</div>
+    </section>
+    <h2>גיבוי</h2>
+    <section class="panel"><div class="muted small">הורדת קובץ גיבוי של כל השיעורים, הרבנים, המוסדות, המסלולים וההרשאות. מומלץ פעם בשבוע. קובצי האודיו עצמם שמורים בנפרד (ב-GitHub הם מגובים בהיסטוריית המאגר).</div>
+      <div class="row" style="margin-top:8px"><button class="btn" data-act="backupDl">הורדת גיבוי</button><label class="btn ghost" style="cursor:pointer">שחזור מגיבוי<input type="file" id="restoreFile" accept="application/json" hidden></label></div></section>
     <h2>נתונים</h2>
     ${FB?`<section class="panel"><div class="muted small">האתר מחובר ל-Firebase: כל השינויים נשמרים בשרת ומשותפים לכל המשתמשים.</div>
       <button class="btn ghost" data-act="importDemo" style="margin-top:8px">ייבוא שיעורי דוגמה לבדיקה</button></section>`
@@ -923,11 +1331,11 @@ function vMe(){
       <select id="dailySel" style="margin-top:8px"><option value="">ללא</option>${allPl.map(p=>`<option value="${p.id}" ${S.daily===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></section>
     <h2>הפלייליסטים שלי</h2>
     <div class="row"><input id="newPl" placeholder="שם לפלייליסט חדש" style="flex:1;max-width:340px"><button class="btn" data-act="newPl">יצירה</button></div>
-    <div class="grid" style="margin-top:10px">${mine.map(plCard).join('')||'<div class="muted">אין פלייליסטים עדיין. אפשר להוסיף שיעורים מדף השיעור.</div>'}</div>
+    <div class="gridm" style="margin-top:10px">${mine.map(plCard).join('')||'<div class="muted">אין פלייליסטים עדיין. אפשר להוסיף שיעורים מדף השיעור.</div>'}</div>
     <h2>הסימניות שלי</h2>
     <section class="panel">${bms.length?bms.map(b=>`<div class="bm"><button class="btn ghost sm" data-act="goBm" data-id="${b.id}" data-t="${b.t}">${fmt(b.t)}</button><a href="#/lesson/${b.id}" style="flex:1">${esc(lesson(b.id).title)}</a><span class="muted">${esc(b.note)}</span></div>`).join(''):'<div class="muted small">אין סימניות.</div>'}</section>
     <h2>היסטוריית האזנה</h2>
-    <div class="grid">${S.history.map(lesson).filter(Boolean).slice(0,12).map(l=>card(l)).join('')||'<div class="muted">עוד לא האזנתם לשיעורים.</div>'}</div>`;
+    <div class="gridm">${S.history.map(lesson).filter(Boolean).slice(0,12).map(l=>card(l)).join('')||'<div class="muted">עוד לא האזנתם לשיעורים.</div>'}</div>`;
   $('#dailySel').addEventListener('change',e=>{S.daily=e.target.value||null;save();toast('נשמר');});
 }
 function vPlaylist(id){
@@ -937,8 +1345,81 @@ function vPlaylist(id){
   $('#app').innerHTML=`<div class="muted small">${p.official?'מסלול לימוד':'פלייליסט אישי'}</div><h1>${esc(p.name)}</h1>
     <div class="row"><button class="btn" data-act="playList" data-id="${p.id}">▶ נגן הכל לפי הסדר</button><button class="btn ghost" data-act="copy" data-url="${esc(baseUrl()+'#/playlist/'+p.id)}">שיתוף</button>${own?`<button class="btn ghost" data-act="delPl" data-id="${p.id}">מחיקה</button>`:''}</div>
     ${!p.official?'<div class="muted small" style="margin-top:6px">שיתוף פלייליסט אישי יעבוד בין משתמשים אחרי חיבור לשרת.</div>':''}
-    <div style="margin-top:14px" class="grid">${ls.map((l,i)=>card(l).replace('<article class="card">',`<article class="card"><div class="meta">${i+1}.${own?` <a href="#" data-act="rmFromPl" data-pl="${p.id}" data-id="${l.id}">הסרה</a>`:''}</div>`)).join('')}</div>`;
+    <div style="margin-top:14px" class="gridm">${ls.map((l,i)=>card(l).replace('<article class="mcard">',`<article class="mcard"><div class="meta">${i+1}.${own?` <a href="#" data-act="rmFromPl" data-pl="${p.id}" data-id="${l.id}">הסרה</a>`:''}</div>`)).join('')}</div>`;
 }
+
+function vSeries(name){
+  const x=allSeries().find(z=>z.name===name);if(!x){$('#app').innerHTML='<p>הסדרה לא נמצאה.</p>';return;}
+  const c={...coverData(x.first),title:x.name,sub:x.rabbi?x.rabbi.name:''};
+  const next=x.ls.find(l=>lessonPct(l)<100)||x.ls[0];const pct=x.ls.length?x.done/x.ls.length*100:0;
+  const total=Math.round(x.ls.reduce((a,l)=>a+l.duration,0)/60);
+  $('#app').innerHTML=`<div class="lhead" style="--cc:${c.color}"><section class="hero">${coverHTML(c,{lg:true})}
+    <div style="flex:1;min-width:240px"><div class="eyebrow">סדרה</div><h1 style="margin:0">${esc(x.name)}</h1>
+      <div class="muted">${x.rabbi?`<a href="${orgHref(x.rabbi)}">${esc(x.rabbi.name)}</a> · `:''}${x.ls.length} שיעורים · ${total} דק׳</div>
+      <div class="sprog"><span>${x.done} מתוך ${x.ls.length} הושלמו</span><div class="bar"><i style="width:${pct}%"></i></div></div>
+      <div class="row" style="margin-top:14px"><button class="btn bigplay" data-act="playSeries" data-s="${esc(x.name)}">▶ ${x.done&&x.done<x.ls.length?'המשך — שיעור '+(next.num||''):'נגן מההתחלה'}</button>
+      <button class="btn ghost" data-act="copy" data-url="${esc(baseUrl()+seriesHref(x.name))}">שיתוף</button></div></div></section></div>
+    <div class="slist" style="margin-top:10px">${x.ls.map((l,i)=>{const d=lessonPct(l)>=100,pc=lessonPct(l);return `<div class="it ${d?'d':''}"><span class="n">${d?'✓':(l.num||i+1)}</span>
+      <div class="t"><a href="#/lesson/${l.id}">${esc(l.title)}</a><div class="meta">${Math.round(l.duration/60)} דק׳${l.date?' · '+hebDate(l.date):''}${pc&&!d?` · הושמע ${Math.round(pc)}%`:''}</div></div>
+      <button class="ib" data-act="play" data-id="${l.id}" aria-label="נגן: ${esc(l.title)}">▶</button></div>`;}).join('')}</div>`;
+}
+function vAllSeries(){$('#app').innerHTML=`<h1>סדרות</h1><div class="gridm">${allSeries().map(seriesCard).join('')||'<div class="muted">אין סדרות עדיין.</div>'}</div>`;}
+function vRabbis(){
+  const rs=S.orgs.filter(o=>o.type==='rabbi').sort((a,b)=>S.lessons.filter(l=>l.rabbiId===b.id).length-S.lessons.filter(l=>l.rabbiId===a.id).length);
+  const insts=S.orgs.filter(o=>o.type!=='rabbi');
+  $('#app').innerHTML=`<h1>רבנים</h1><div class="gridm">${rs.map(rabbiCircle).join('')}</div>${insts.length?`<div class="row-h"><h2>מוסדות</h2></div><div class="gridm">${insts.map(rabbiCircle).join('')}</div>`:''}`;
+}
+function vA11y(){
+  $('#app').innerHTML=`<h1>הצהרת נגישות</h1>
+  <section class="panel">
+    <p>אנו רואים חשיבות רבה במתן שירות שוויוני לכל המשתמשים, ופועלים להנגיש את האתר בהתאם לתקן הישראלי ת"י 5568 (המבוסס על WCAG 2.0) ברמה AA.</p>
+    <h3 style="margin-top:12px">מה נעשה באתר</h3>
+    <ul>
+      <li>קישור "דלג לתוכן" בראש כל עמוד, וניווט מלא באמצעות המקלדת. מקש רווח מפעיל ומשהה את הנגן.</li>
+      <li>תוויות טקסט לכל כפתורי הנגן ולכפתורים שמוצג בהם סמל בלבד.</li>
+      <li>ניגודיות צבעים ברמה AA, ומצב ניגודיות גבוהה.</li>
+      <li>הגדלה והקטנה של הטקסט, והדגשת קישורים, דרך כפתור "נגישות" בראש העמוד.</li>
+      <li>תמלול טקסטואלי לשיעורים שתומללו, כחלופה לתוכן הקולי.</li>
+      <li>התאמה מלאה לטלפונים ולמסכים קטנים.</li>
+    </ul>
+    <h3 style="margin-top:12px">מגבלות ידועות</h3>
+    <ul><li>חלק מהשיעורים עדיין ללא תמלול. שיעורים המוטמעים מיוטיוב מוצגים בנגן של יוטיוב, שהנגישות שלו באחריותם.</li></ul>
+    <h3 style="margin-top:12px">פניות בנושא נגישות</h3>
+    <p>${CONFIG.contactEmail?`נתקלתם בבעיה? נשמח לשמוע: <a href="mailto:${esc(CONFIG.contactEmail)}">${esc(CONFIG.contactEmail)}</a>`:'פרטי הקשר לפניות נגישות יעודכנו בקרוב.'}</p>
+    <p class="muted small">עודכן לאחרונה: ${hebDate(new Date().toISOString().slice(0,10))}</p>
+  </section>`;
+}
+/* העדפות נגישות — נשמרות בדפדפן */
+const A11Y_KEY='torah_a11y';
+let A11Y={z:0,hc:false,links:false};
+try{A11Y={...A11Y,...JSON.parse(localStorage.getItem(A11Y_KEY)||'{}')}}catch(e){}
+function applyA11y(){
+  const h=document.documentElement;h.style.zoom=A11Y.z?String(1+A11Y.z*0.15):'';
+  h.classList.toggle('hc',!!A11Y.hc);h.classList.toggle('links-u',!!A11Y.links);
+  $('#a11yHc').checked=!!A11Y.hc;$('#a11yLinks').checked=!!A11Y.links;
+  try{localStorage.setItem(A11Y_KEY,JSON.stringify(A11Y))}catch(e){}
+}
+$('#a11yHc').addEventListener('change',e=>{A11Y.hc=e.target.checked;applyA11y();});
+$('#a11yLinks').addEventListener('change',e=>{A11Y.links=e.target.checked;applyA11y();});
+document.addEventListener('click',e=>{const pop=$('#a11yPop');if(!pop.hidden&&!e.target.closest('#a11yPop')&&!e.target.closest('[data-act=a11y]')){pop.hidden=true;renderChrome((location.hash.slice(2).split(/[/?]/)[0])||'');}});
+$('#skipLink').addEventListener('click',e=>{e.preventDefault();$('#app').focus();});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&$('#siyum')){$('#siyum').remove();return;}
+  if(e.key==='Escape'&&!$('#a11yPop').hidden){$('#a11yPop').hidden=true;return;}
+  if((e.key===' '||e.code==='Space')&&P.l&&!e.target.closest('input,textarea,select,button,a,[contenteditable],summary')){e.preventDefault();P.toggle();}
+});
+document.addEventListener('change',e=>{
+  if(e.target.id!=='restoreFile'||!e.target.files[0]) return;
+  const f=e.target.files[0];f.text().then(t=>{
+    let d;try{d=JSON.parse(t)}catch(err){return toast('קובץ גיבוי לא תקין');}
+    if(!d||!Array.isArray(d.lessons)||!Array.isArray(d.orgs)) return toast('קובץ גיבוי לא תקין');
+    if(!confirm(`לשחזר ${d.lessons.length} שיעורים ו-${d.orgs.length} רבנים ומוסדות? פריטים קיימים עם אותו מזהה יוחלפו, ושום דבר לא יימחק.`)) return;
+    const merge=(arr,items,key)=>items.forEach(x=>{const i=arr.findIndex(y=>y[key]===x[key]);if(i>-1)arr[i]=x;else arr.push(x);});
+    merge(S.lessons,d.lessons,'id');merge(S.orgs,d.orgs,'id');merge(S.playlists,(d.playlists||[]).filter(p=>p.official),'id');merge(S.permissions,d.permissions||[],'email');
+    Object.assign(S.extraTags,d.extraTags||{});Object.assign(S.dedications,d.dedications||{});
+    save();toast('השחזור הושלם');route(true);
+  });
+});
 
 /* =========================================================
    פעולות
@@ -966,18 +1447,36 @@ document.addEventListener('click',e=>{
     dedicate:()=>{if(FB&&!S.user)return toast('יש להתחבר כדי להקדיש שיעור');const n=$('#dedName').value.trim();if(!n)return toast('הזינו שם');(S.dedications[id]=S.dedications[id]||[]).push({kind:$('#dedKind').value,name:n});save();route();},
     copy:()=>copy(b.dataset.url),
     toggleStyle:()=>b.classList.toggle('on'),
-    saveOrg:()=>{const o=org(id);o.name=$('#oName').value.trim()||o.name;o.image=$('#oImg').value.trim();o.showOnLessons=$('#oShow').checked;o.about=$('#oAbout').value;o.donate=$('#oDonate').value.trim();o.styles=[...document.querySelectorAll('#oStyles .chip.on')].map(c=>c.dataset.s);o.defaults={category:$('#oDefCat').value,tags:o.defaults?.tags||[]};save();toast('הדף נשמר');route();},
+    saveOrg:()=>{const o=org(id);if(isAdmin()&&$('#oSlug')){const sl=$('#oSlug').value.trim().toLowerCase();if(sl){if(!SLUG_RE.test(sl))return toast('סיומת לא תקינה: 2–40 תווים, אותיות, ספרות ומקפים');if(S.orgs.some(x=>x.id!==o.id&&(x.slug===sl||x.id===sl)))return toast('הסיומת הזו כבר תפוסה');}o.slug=sl;}o.name=$('#oName').value.trim()||o.name;o.image=$('#oImg').value.trim();o.showOnLessons=$('#oShow').checked;o.about=$('#oAbout').value;o.donate=$('#oDonate').value.trim();o.styles=[...document.querySelectorAll('#oStyles .chip.on')].map(c=>c.dataset.s);o.defaults={category:$('#oDefCat').value,tags:o.defaults?.tags||[]};save();toast('הדף נשמר');if(location.hash!==orgHref(o))location.hash=orgHref(o);else route();},
     doUpload,
+    seeAll:()=>{let f={};try{f=JSON.parse(b.dataset.f||'{}')}catch(e){}F={q:'',cat:'',tags:[],rabbi:'',org:'',dur:'',media:'',...f};vHome();const t=$('#searchTop');if(t)t.scrollIntoView({behavior:'smooth'});},
+    go:()=>{location.hash=b.dataset.h;},
+    playSeries:()=>{const x=allSeries().find(z=>z.name===b.dataset.s);if(!x)return;const ids=x.ls.map(l=>l.id);const nx=x.ls.find(l=>lessonPct(l)<100)||x.ls[0];play(nx.id,null,ids);},
+    siyumClose:()=>{const e=$('#siyum');if(e)e.remove();},
+    siyumShare:()=>{window.open('https://wa.me/?text='+encodeURIComponent(`סיימתי את הסדרה "${b.dataset.s}" ב${CONFIG.siteName}! הדרן עלך.\n${baseUrl()}${seriesHref(b.dataset.s)}`),'_blank');},
+    a11y:()=>{const pop=$('#a11yPop');pop.hidden=!pop.hidden;b.setAttribute('aria-expanded',String(!pop.hidden));},
+    a11yZoom:()=>{const z=+b.dataset.z;A11Y.z=z===0?0:Math.max(-1,Math.min(3,A11Y.z+z));applyA11y();},
+    waShare:()=>{const l=lesson(id);const r=org(l.rabbiId);const t=P.l&&P.l.id===id?Math.floor(P.time()):0;window.open('https://wa.me/?text='+encodeURIComponent(`${l.title}${r?' — '+r.name:''}\n${baseUrl()}#/lesson/${id}${t?'?t='+t:''}`),'_blank');},
+    backupDl:()=>{const d={exported:new Date().toISOString(),site:CONFIG.siteName,lessons:S.lessons,orgs:S.orgs,playlists:S.playlists.filter(p=>p.official),permissions:S.permissions,extraTags:S.extraTags,dedications:S.dedications};
+      const u=URL.createObjectURL(new Blob([JSON.stringify(d,null,1)],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download=`backup-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000);toast('קובץ הגיבוי הורד');},
+    ghSave:async()=>{const t=$('#ghTok').value.trim();if(!t)return toast('הדביקו מפתח');
+      try{const r=await fetch(`https://api.github.com/repos/${CONFIG.github.owner}/${CONFIG.github.repo}`,{headers:{'Authorization':'Bearer '+t,'Accept':'application/vnd.github+json'}});
+        if(r.status===401)return toast('המפתח לא תקף');if(!r.ok)return toast('למפתח אין גישה למאגר '+CONFIG.github.repo);
+        const j=await r.json();if(j.permissions&&!j.permissions.push)return toast('למפתח אין הרשאת כתיבה (Contents: Read and write)');
+        try{localStorage.setItem(GH_KEY,t)}catch(e){return toast('הדפדפן חוסם שמירה מקומית');}toast('המפתח נשמר ונבדק בהצלחה');route(true);
+      }catch(e){toast('לא ניתן לבדוק את המפתח כרגע');}},
+    ghRemove:()=>{try{localStorage.removeItem(GH_KEY)}catch(e){}toast('המפתח הוסר');route(true);},
+    compressDl,
     addPerm:()=>{const em=$('#pEmail').value.trim().toLowerCase();if(!em.includes('@'))return toast('כתובת לא תקינה');S.permissions=S.permissions.filter(p=>p.email!==em);const r=$('#pRole').value;S.permissions.push({email:em,role:r,orgId:r==='rep'?$('#pOrg').value:null});save();route();},
     delPerm:()=>{S.permissions.splice(+b.dataset.i,1);save();route();},
-    addOrg:()=>{const n=$('#nName').value.trim();if(!n)return toast('הזינו שם');const oid=uid('o');S.orgs.push({id:oid,type:$('#nType').value,name:n,parent:$('#nParent').value||null,image:'',showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});save();location.hash='#/org/'+oid;},
+    addOrg:()=>{const n=$('#nName').value.trim();if(!n)return toast('הזינו שם');const im=$('#nImg').value.trim();if(!/^https?:\/\//.test(im))return toast('חובה להוסיף קישור לתמונה של הרב או ללוגו המוסד');const oid=uid('o');S.orgs.push({id:oid,type:$('#nType').value,name:n,parent:$('#nParent').value||null,image:im,showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});save();location.hash='#/org/'+oid;},
     addOfficial:()=>{const n=$('#olName').value.trim();const ids=[...document.querySelectorAll('.olChk:checked')].map(c=>c.value);if(!n||!ids.length)return toast('בחרו שם ושיעורים');S.playlists.push({id:uid('pl'),name:n,lessonIds:ids,official:true,owner:S.user.email});save();toast('המסלול נוצר');route();},
     reset:()=>{if(confirm('לאפס את כל הנתונים?')){const u=S.user;S=seed();S.user=u;save();route();}},
     login:()=>{if(FB){FB.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(err=>{if(err.code!=='auth/popup-closed-by-user'&&err.code!=='auth/cancelled-popup-request')toast(err.code==='auth/unauthorized-domain'?'הדומיין לא מאושר ב-Firebase (ראו הדרכה)':'ההתחברות נכשלה');});return;}const em=$('#lEmail').value.trim().toLowerCase();if(!em.includes('@'))return toast('הזינו כתובת');S.user={email:em};save();route();},
     loginAs:()=>{S.user={email:b.dataset.e};save();route();},
     logout:()=>{if(FB){flushUser();FB.auth.signOut();location.hash='#/';return;}S.user=null;save();route();},
     importDemo:()=>{if(!confirm('לייבא שיעורי דוגמה? אפשר למחוק אותם אחר כך.'))return;const d=seed();d.orgs.forEach(o=>{if(!org(o.id))S.orgs.push(o);});d.lessons.forEach(l=>{if(!lesson(l.id))S.lessons.push(l);});d.playlists.forEach(p=>{if(!S.playlists.find(x=>x.id===p.id))S.playlists.push({...p,owner:S.user.email});});save();toast('שיעורי הדוגמה יובאו');},
-    delLesson:()=>{if(!confirm('למחוק את השיעור לצמיתות?'))return;S.lessons=S.lessons.filter(x=>x.id!==id);S.playlists.forEach(p=>{if(isAdmin()||p.owner===S.user.email)p.lessonIds=p.lessonIds.filter(x=>x!==id);});save();toast('השיעור נמחק');location.hash='#/';},
+    delLesson:()=>{if(!confirm('למחוק את השיעור לצמיתות?'))return;const dl=lesson(id);if(FB&&FB.storage&&dl&&dl.src&&dl.src.storagePath)FB.storage.ref(dl.src.storagePath).delete().catch(e=>console.error(e));if(dl&&dl.src&&dl.src.ghPath&&ghActive())ghDelete(dl.src.ghPath).catch(e=>console.error(e));S.lessons=S.lessons.filter(x=>x.id!==id);S.playlists.forEach(p=>{if(isAdmin()||p.owner===S.user.email)p.lessonIds=p.lessonIds.filter(x=>x!==id);});save();toast('השיעור נמחק');location.hash='#/';},
     newPl:()=>{const n=$('#newPl').value.trim();if(!n)return;S.playlists.push({id:uid('pl'),name:n,lessonIds:[],official:false,owner:S.user.email});save();route();},
     delPl:()=>{if(confirm('למחוק את הפלייליסט?')){S.playlists=S.playlists.filter(p=>p.id!==id);if(S.daily===id)S.daily=null;save();location.hash='#/me';}},
     rmFromPl:()=>{e.preventDefault();const p=S.playlists.find(x=>x.id===b.dataset.pl);p.lessonIds=p.lessonIds.filter(x=>x!==id);save();route();}
@@ -985,6 +1484,7 @@ document.addEventListener('click',e=>{
   if(A[a]){if(b.tagName==='A'&&a!=='rmFromPl')e.preventDefault();A[a]();}
 });
 
+applyA11y();
 if(FB) startSync();
 route();
 </script>
