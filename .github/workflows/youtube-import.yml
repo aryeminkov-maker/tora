@@ -1,0 +1,39 @@
+name: youtube-import
+
+on:
+  schedule:
+    - cron: '17 */3 * * *'   # כל 3 שעות
+  workflow_dispatch: {}       # הפעלה ידנית / מכפתור "ייבא עכשיו"
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: youtube-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: התקנת כלים
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          pip install -q -U yt-dlp firebase-admin
+      - name: ייבוא
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          PAGES_BASE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+          MAX_PER_RUN: '8'
+        run: python tools/yt_import.py
+      - name: עדכון האתר
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST repos/${{ github.repository }}/pages/builds || true
