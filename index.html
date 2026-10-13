@@ -366,6 +366,17 @@ details.prog-row summary{cursor:pointer}
 #admInsts td:nth-child(3){order:5;flex-basis:100%}
 .tbl.resp td.nw:last-child{white-space:nowrap}
 }
+.drive-box summary{font-size:15.5px}
+.dv-head{margin-bottom:6px}
+.dv-tools{gap:16px;margin-bottom:6px}.dv-tools label{font-weight:400;gap:6px}.dv-tools input{width:auto}
+.dv-list{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.dv-it{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line)}
+.dv-it:last-child{border-bottom:0}
+.dv-it>input[type=checkbox]{width:auto;flex:none}
+.dv-it .dv-m{flex:1;min-width:0}.dv-it .dv-m .muted{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dv-it .dvT{padding:6px 8px;font-size:14.5px}
+.dv-it .dvN{width:62px;flex:none;padding:6px;text-align:center}
+.dv-it.done{opacity:.55}
 </style>
 </head>
 <body>
@@ -1427,6 +1438,12 @@ function vUpload(){
       </div>
       <div class="or"><span>או הדביקו קישור</span></div>
       <textarea id="uLinks" rows="2" placeholder="קישור ליוטיוב או לקובץ שמע — שורה לכל שיעור" style="min-height:52px"></textarea>
+      <details class="more-box drive-box" id="driveBox">
+        <summary>📁 ייבוא תיקייה שלמה מגוגל דרייב</summary>
+        <div class="muted small">הדביקו קישור לתיקייה (או לקובץ) בגוגל דרייב שמשותפת "כל מי שיש לו את הקישור". תופיע רשימת כל קבצי השמע והווידאו — כולל תת-תיקיות — ותבחרו אילו לייבא. הכותרות נלקחות משמות הקבצים ואפשר לערוך אותן.</div>
+        <div class="row" style="margin-top:8px"><input id="dvUrl" placeholder="https://drive.google.com/drive/folders/…" style="flex:1;min-width:220px;direction:ltr"><button class="btn" data-act="driveLoad" type="button" style="white-space:nowrap">טעינת התיקייה</button></div>
+        <div id="dvList" style="margin-top:10px"></div>
+      </details>
       <div id="uProg" class="muted small" aria-live="polite"></div>
 
       <label for="uTitle">כותרת השיעור</label>
@@ -1596,24 +1613,30 @@ function trayRender(){
 function jobUpd(j,msg,pct){j.msg=msg;if(pct!=null)j.pct=pct;trayRender();}
 window.addEventListener('beforeunload',e=>{if(UPQ.jobs.some(j=>j.state==='run'||j.state==='wait')){e.preventDefault();e.returnValue='';}});
 
+/* קריאת שדות הטופס המשותפים (רב, מוסד, קטגוריה, תגיות…) — משמש גם להעלאה רגילה וגם לייבוא מדרייב */
+function uploadBase(){
+  let orgId=$('#uOrg').value||null;let rabbiId=$('#uRabbi').value;
+  if(!isAdmin()) orgId=perm().orgId;
+  if(rabbiId==='__new'){const n=$('#uNewRabbi').value.trim();if(!n){toast('הזינו שם לרב החדש');return null;}const im=getImg('uNewRabbiPick');if(!im){toast('חובה להוסיף תמונה של הרב');return null;}rabbiId=uid('r');S.orgs.push({id:rabbiId,type:'rabbi',name:n,parent:orgId,image:im,showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});save();}
+  if(rabbiId==='__org') rabbiId=null;
+  const series=$('#uSeries').value.trim();
+  return {series,rabbiId,orgId,category:$('#uCat').value,tags:window._tagUi.get(),desc:$('#uDesc').value.trim(),transcript:$('#uTrans').value.trim(),
+    sourceRef:$('#uRef').value.trim(),sourceText:$('#uSrcText').value.trim(),date:new Date().toISOString().slice(0,10),uploadedBy:S.user.email};
+}
+const seriesMax=s=>Math.max(0,...S.lessons.filter(l=>l.series===s).map(l=>+l.num||0),...UPQ.jobs.filter(j=>j.state!=='done').flatMap(j=>[j.series===s?j.lastNum||0:0,...(j.items||[]).filter(i=>i.series===s).map(i=>+i.num||0)]));
 function doUpload(){
   const links=$('#uLinks').value.split('\n').map(s=>s.trim()).filter(Boolean);
   const files=[...($('#uFiles').files||[])];
-  if(!links.length&&!files.length) return toast('בחרו קבצים או הדביקו קישור');
+  if(!links.length&&!files.length) return toast(window._dv&&window._dv.files.length?'כדי לייבא מהדרייב לחצו על "ייבוא" בתיבת גוגל דרייב':'בחרו קבצים או הדביקו קישור');
   const total=links.length+files.length;
   let title=$('#uTitle').value.trim();
   if(!title) title=(total===1&&files.length)?files[0].name.replace(/\.[^.]+$/,''):'שיעור';
-  let orgId=$('#uOrg').value||null;let rabbiId=$('#uRabbi').value;
-  if(!isAdmin()) orgId=perm().orgId;
-  if(rabbiId==='__new'){const n=$('#uNewRabbi').value.trim();if(!n)return toast('הזינו שם לרב החדש');const im=getImg('uNewRabbiPick');if(!im)return toast('חובה להוסיף תמונה של הרב');rabbiId=uid('r');S.orgs.push({id:rabbiId,type:'rabbi',name:n,parent:orgId,image:im,showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});save();}
-  if(rabbiId==='__org') rabbiId=null;
-  const series=$('#uSeries').value.trim();let num=+$('#uNum').value||0;
-  if(series&&!num) num=Math.max(0,...S.lessons.filter(l=>l.series===series).map(l=>+l.num||0),...UPQ.jobs.filter(j=>j.series===series&&j.state!=='done').map(j=>j.lastNum||0))+1;
+  const base=uploadBase();if(!base)return;
+  const series=base.series;let num=+$('#uNum').value||0;
+  if(series&&!num) num=seriesMax(series)+1;
   const job={id:uid('j'),state:'wait',title,files,links,total,series,num,
     compress:$('#uCompress').checked,ytImp:$('#uYtImp').checked,allowDl:$('#uDl').checked,media:$('#uMedia').value,
-    base:{series,rabbiId,orgId,category:$('#uCat').value,tags:window._tagUi.get(),desc:$('#uDesc').value.trim(),transcript:$('#uTrans').value.trim(),
-      sourceRef:$('#uRef').value.trim(),sourceText:$('#uSrcText').value.trim(),date:new Date().toISOString().slice(0,10),uploadedBy:S.user.email},
-    msg:'ממתין…',pct:0};
+    base,msg:'ממתין…',pct:0};
   job.lastNum=series?num+total-1:0;
   UPQ.jobs.push(job);trayRender();runQueue();
   toast(files.length?'ההעלאה התחילה ברקע — אפשר להמשיך לגלוש באתר':'נקלט');
@@ -1629,8 +1652,34 @@ async function runJob(job){
   const {files,links,total,series}=job;let num=job.num;
   const nextNum=()=>series?num++:0;
   const mkTitle=i=>total>1&&!series?`${job.title} — חלק ${i+1}`:job.title;
-  const created=[];let idx=0,gh=false;
+  const created=[];let idx=0,gh=false;const failed=[];
   try{
+    /* ייבוא מגוגל דרייב: כל קובץ יורד, מכווץ ונשמר כמו קובץ מהמחשב. כשל בקובץ אחד לא עוצר את השאר */
+    const items=job.items||[];
+    for(const [k,it] of items.entries()){
+      const tag=`${k+1}/${items.length}: `;
+      if(lesson(it.lessonId)){continue;}
+      let f;
+      try{f=await driveDownload(it.drive,x=>jobUpd(job,`${tag}מוריד מהדרייב… ${Math.round(x*100)}%`,(k+x*0.3)/items.length));}
+      catch(e){console.error(e);failed.push(it.title);continue;}
+      let blob=f,duration=it.drive.dur||0,media=/^video/.test(f.type)?'video':'audio',ext=(f.name.match(/\.([^.]+)$/)||[,'mp3'])[1].toLowerCase(),ctype=f.type||'application/octet-stream';
+      if(job.compress){
+        try{const r=await compressToMp3(f,x=>jobUpd(job,`${tag}מכווץ… ${Math.round(x*100)}%`,(k+0.3+x*0.4)/items.length));blob=r.blob;duration=r.duration;media='audio';ext='mp3';ctype='audio/mpeg';}
+        catch(e){console.error(e);if(f.size>95*1048576){failed.push(it.title);continue;}}
+      }
+      f=null;
+      if(!duration) duration=await mediaDuration(new File([blob],'x.'+ext,{type:ctype}));
+      try{
+        const st=await storeFile(blob,`lessons/${it.lessonId}.${ext}`,ctype,x=>jobUpd(job,`${tag}${ghActive()?'מעלה ל-GitHub':'מעלה'}… ${Math.round(x*100)}%`,(k+0.7+x*0.3)/items.length),{title:it.title});
+        S.lessons.unshift({...job.base,series:it.series||'',num:it.series?(+it.num||0):0,id:it.lessonId,title:it.title,duration:Math.round(duration)||0,
+          src:{type:'file',media,url:st.url,storagePath:st.path||'',ghPath:st.ghPath||'',driveId:it.drive.id},allowDownload:job.allowDl,size:blob.size});
+        created.push(it.lessonId);save();if(st.ghPath)gh=true;
+      }catch(e){
+        console.error(e);const c=e&&e.code||'';
+        if(c==='gh/401'||c==='gh/403'||c==='gh/404'||/storage\/(unauthorized|unknown|bucket-not-found|project-not-found)/.test(c))throw e;
+        failed.push(it.title);
+      }
+    }
     for(const f of files){
       const id=uid('l');const tag=total>1?`קובץ ${idx+1}/${files.length}: `:'';
       let blob=f,duration=0,media=f.type.startsWith('video')?'video':'audio',ext=(f.name.match(/\.([^.]+)$/)||[,'bin'])[1].toLowerCase(),ctype=f.type||'application/octet-stream';
@@ -1671,7 +1720,10 @@ async function runJob(job){
     if(created.length){save();rerender();}
     return;
   }
-  if(!created.length){job.state='error';jobUpd(job,'לא הועלה אף קובץ');return;}
+  if(!created.length){job.state='error';jobUpd(job,failed.length?`לא הצלחנו לייבא: ${failed.slice(0,3).join(', ')}${failed.length>3?'…':''}`:'לא הועלה אף קובץ');return;}
+  if(job.items){save();job.state='done';job.first=created[0];
+    jobUpd(job,`✓ יובאו ${created.length} שיעורים${failed.length?` · ${failed.length} נכשלו (${failed.slice(0,2).join(', ')}${failed.length>2?'…':''}) — אפשר לטעון את התיקייה שוב ולנסות רק אותם`:''}`,1);
+    rerender();if(!failed.length)setTimeout(()=>{job.hidden=true;trayRender();},30000);return;}
   if(created.length>1&&confirm(`ליצור מ-${created.length} השיעורים של "${job.title}" מסלול לימוד?`)) S.playlists.push({id:uid('pl'),name:job.title,lessonIds:created,official:true,owner:S.user.email});
   const anyImp=created.some(id=>{const x=lesson(id);return x&&x.src.type==='ytimport';});
   if(anyImp&&ghActive()) ghDispatch(true);
@@ -1680,6 +1732,124 @@ async function runJob(job){
   jobUpd(job,anyImp?'נקלט — השמע יורד מיוטיוב ויופיע בקרוב':gh?'✓ הועלה — יתנגן בעוד כדקה-שתיים':`✓ ${created.length>1?created.length+' שיעורים הועלו':'הועלה'}`,1);
   rerender();
   setTimeout(()=>{job.hidden=true;trayRender();},20000);
+}
+
+/* =========================================================
+   ייבוא תיקייה מגוגל דרייב (תיקייה משותפת "כל מי שיש לו את הקישור")
+   ========================================================= */
+const GAPI_KEY_LS='torah_gapi_key';
+const driveKey=()=>{try{const k=localStorage.getItem(GAPI_KEY_LS);if(k)return k;}catch(e){}return CONFIG.googleApiKey||(CONFIG.firebase&&CONFIG.firebase.apiKey)||'';};
+const MEDIA_EXT=/\.(mp3|m4a|aac|wav|ogg|oga|opus|flac|wma|amr|mp4|m4v|mov|webm|mkv|avi|3gp|mpeg|mpg)$/i;
+const isMediaFile=f=>/^(audio|video)\//.test(f.mimeType||'')||MEDIA_EXT.test(f.name||'');
+function parseDrive(u){u=String(u||'').trim();
+  const rk=(u.match(/[?&]resourcekey=([\w-]+)/i)||[])[1]||'';
+  let m=u.match(/\/folders\/([\w-]{10,})/);if(m)return {kind:'folder',id:m[1],rk};
+  m=u.match(/\/file\/d\/([\w-]{10,})/)||u.match(/[?&]id=([\w-]{10,})/);if(m)return {kind:/\/file\/d\//.test(u)?'file':'any',id:m[1],rk};
+  if(/^[\w-]{20,}$/.test(u))return {kind:'any',id:u,rk};return null;}
+async function driveApi(path,params,rk){
+  const key=driveKey();if(!key)throw {code:'drive/nokey'};
+  const qs=new URLSearchParams({...params,key,supportsAllDrives:'true'});
+  const r=await fetch(`https://www.googleapis.com/drive/v3/${path}?${qs}`,{headers:rk?{'X-Goog-Drive-Resource-Keys':rk}:{}});
+  if(!r.ok){let reason='';try{const j=await r.json();const er=j.error||{};reason=((er.details||[]).find(d=>d.reason)||{}).reason||((er.errors||[])[0]||{}).reason||er.status||'';}catch(e){}
+    throw {code:'drive/'+r.status,reason};}
+  return r.json();
+}
+function driveErr(e){const c=e&&e.code||'',rs=String(e&&e.reason||'');
+  if(c==='drive/nokey')return 'חסר מפתח Google API (ראו בדף הניהול ← גוגל דרייב)';
+  if(/SERVICE_DISABLED|accessNotConfigured/i.test(rs))return 'צריך להפעיל פעם אחת את Google Drive API בפרויקט — הוראות בדף הניהול ← גוגל דרייב';
+  if(/API_KEY_SERVICE_BLOCKED|API_KEY_HTTP_REFERRER_BLOCKED|keyInvalid|API_KEY_INVALID/i.test(rs))return 'המפתח לא מורשה לגשת לגוגל דרייב — הוראות בדף הניהול ← גוגל דרייב';
+  if(c==='drive/404')return 'התיקייה לא נמצאה, או שהיא לא משותפת "כל מי שיש לו את הקישור"';
+  if(c==='drive/403')return 'אין גישה — ודאו שהתיקייה משותפת "כל מי שיש לו את הקישור"';
+  if(c==='drive/nofiles')return 'לא נמצאו קבצי שמע או וידאו בתיקייה';
+  return 'לא הצלחנו לקרוא את התיקייה'+(c?` (${c.replace('drive/','')})`:'');}
+async function driveListFolder(id,rk,path,depth,out,onProg){
+  let token='';
+  do{const d=await driveApi('files',{q:`'${id}' in parents and trashed=false`,fields:'nextPageToken,files(id,name,mimeType,size,resourceKey,videoMediaMetadata(durationMillis))',pageSize:'1000',includeItemsFromAllDrives:'true',...(token?{pageToken:token}:{})},rk);
+    for(const f of d.files||[]){
+      if(f.mimeType==='application/vnd.google-apps.folder'){if(depth<4)await driveListFolder(f.id,f.resourceKey||'',path?path+' / '+f.name:f.name,depth+1,out,onProg);}
+      else if(f.mimeType==='application/vnd.google-apps.shortcut'){}
+      else if(isMediaFile(f))out.push({id:f.id,name:f.name,mime:f.mimeType,size:+f.size||0,rk:f.resourceKey||'',folder:path,dur:f.videoMediaMetadata?Math.round(+f.videoMediaMetadata.durationMillis/1000):0});
+    }
+    onProg&&onProg(out.length);token=d.nextPageToken||'';
+  }while(token);
+  return out;
+}
+async function driveDownload(d,onProg){
+  const key=driveKey();
+  const r=await fetch(`https://www.googleapis.com/drive/v3/files/${d.id}?alt=media&supportsAllDrives=true&key=${encodeURIComponent(key)}`,{headers:d.rk?{'X-Goog-Drive-Resource-Keys':d.rk}:{}});
+  if(!r.ok)throw {code:'drive/'+r.status};
+  const total=+r.headers.get('content-length')||d.size||0;
+  let blob;
+  if(r.body&&r.body.getReader){const rd=r.body.getReader();const parts=[];let got=0;
+    for(;;){const {done,value}=await rd.read();if(done)break;parts.push(value);got+=value.length;if(total)onProg&&onProg(Math.min(1,got/total));}
+    blob=new Blob(parts);}
+  else blob=await r.blob();
+  let type=d.mime&&/^(audio|video)\//.test(d.mime)?d.mime:'';
+  if(!type){const e=(d.name.match(/\.(\w+)$/)||[])[1]||'';type=/^(mp4|m4v|mov|webm|mkv|avi|3gp|mpe?g)$/i.test(e)?'video/'+e.toLowerCase():'audio/'+(e.toLowerCase()==='mp3'?'mpeg':e.toLowerCase()||'mpeg');}
+  return new File([blob],d.name,{type});
+}
+/* "03 - הקדמה לשבת.mp3" → {num:3, title:"הקדמה לשבת"} */
+function cleanDriveName(n){let t=n.replace(/\.[^.]+$/,'').replace(/[_]+/g,' ').replace(/\s+/g,' ').trim();
+  const m=t.match(/^(?:שיעור\s*)?(\d{1,4})\s*[-.)_:–—]?\s+(.+)$/);
+  return m?{num:+m[1],title:m[2].trim()}:{num:0,title:t};}
+const natCmp=new Intl.Collator('he',{numeric:true,sensitivity:'base'}).compare;
+async function driveLoad(){
+  const p=parseDrive($('#dvUrl').value);const box=$('#dvList');
+  if(!p)return toast('הדביקו קישור לתיקייה בגוגל דרייב');
+  box.innerHTML='<div class="muted small" aria-live="polite">קורא את התיקייה…</div>';
+  try{
+    let meta=await driveApi('files/'+p.id,{fields:'id,name,mimeType,size,resourceKey,videoMediaMetadata(durationMillis)'},p.rk);
+    let files;
+    if(meta.mimeType==='application/vnd.google-apps.folder')files=await driveListFolder(p.id,p.rk||meta.resourceKey||'','',0,[],n=>{box.innerHTML=`<div class="muted small">קורא את התיקייה… נמצאו ${n} קבצים</div>`;});
+    else if(isMediaFile(meta))files=[{id:meta.id,name:meta.name,mime:meta.mimeType,size:+meta.size||0,rk:p.rk||meta.resourceKey||'',folder:'',dur:0}];
+    else throw {code:'drive/nofiles'};
+    if(!files.length)throw {code:'drive/nofiles'};
+    files.sort((a,b)=>natCmp(a.folder,b.folder)||natCmp(a.name,b.name));
+    const imported=new Set(S.lessons.map(l=>l.src&&l.src.driveId).filter(Boolean));
+    files.forEach(f=>{const c=cleanDriveName(f.name);f.title=c.title;f.num=c.num;f.done=imported.has(f.id);f.sel=!f.done;});
+    window._dv={name:meta.name,files,hasSub:files.some(f=>f.folder)};
+    if(!$('#uSeries').value.trim()&&meta.mimeType==='application/vnd.google-apps.folder')$('#uSeries').value=meta.name;
+    driveRender();
+  }catch(e){console.error(e);box.innerHTML=`<div class="notice">${esc(driveErr(e))}</div>`;}
+}
+function driveRender(){
+  const dv=window._dv,box=$('#dvList');if(!dv||!box)return;
+  const sel=dv.files.filter(f=>f.sel),done=dv.files.filter(f=>f.done).length;
+  const totalMb=sel.reduce((a,f)=>a+f.size,0);
+  box.innerHTML=`<div class="dv-head"><b>📁 ${esc(dv.name)}</b> <span class="muted small">${dv.files.length} קבצים${done?` · ${done} כבר יובאו`:''}</span></div>
+    <div class="row dv-tools"><label class="row"><input type="checkbox" id="dvAll" ${sel.length===dv.files.filter(f=>!f.done).length&&sel.length?'checked':''}> בחירת הכל</label>
+      ${dv.hasSub?`<label class="row"><input type="checkbox" id="dvSub" ${dv.sub!==false?'checked':''}> כל תת-תיקייה = סדרה נפרדת</label>`:''}</div>
+    <div class="dv-list">${dv.files.map((f,i)=>`<div class="dv-it ${f.done?'done':''}">
+      <input type="checkbox" class="dvChk" data-i="${i}" ${f.sel?'checked':''} aria-label="בחירת ${esc(f.name)}">
+      <div class="dv-m"><input class="dvT" data-i="${i}" value="${esc(f.title)}" aria-label="כותרת השיעור">
+        <div class="muted small">${f.folder?esc(f.folder)+' / ':''}${esc(f.name)}${f.size?' · '+mb(f.size):''}${f.done?' · <b>כבר יובא</b>':''}</div></div>
+      <input class="dvN" data-i="${i}" type="number" min="0" value="${f.num||''}" placeholder="#" aria-label="מספר בסדרה" title="מספר בסדרה (ריק = אוטומטי)"></div>`).join('')}</div>
+    <div class="row" style="margin-top:10px;justify-content:space-between;align-items:center">
+      <span class="muted small">${sel.length} נבחרו${totalMb?` · ${mb(totalMb)} לפני כיווץ`:''}</span>
+      <button class="btn" data-act="driveImport" type="button" ${sel.length?'':'disabled'}>ייבוא ${sel.length} שיעורים</button></div>
+    <div class="muted small" style="margin-top:6px">הרב, הקטגוריה, הסדרה וההגדרות נלקחים מהטופס למטה. הקבצים יורדים ומכווצים בדפדפן שלכם אחד אחרי השני — אפשר להמשיך לגלוש באתר, רק לא לסגור את הלשונית.</div>`;
+  box.querySelectorAll('.dvChk').forEach(c=>c.addEventListener('change',()=>{dv.files[+c.dataset.i].sel=c.checked;driveRender();}));
+  box.querySelectorAll('.dvT').forEach(c=>c.addEventListener('input',()=>{dv.files[+c.dataset.i].title=c.value;}));
+  box.querySelectorAll('.dvN').forEach(c=>c.addEventListener('input',()=>{dv.files[+c.dataset.i].num=+c.value||0;}));
+  $('#dvAll').addEventListener('change',e=>{dv.files.forEach(f=>{if(!f.done)f.sel=e.target.checked;});driveRender();});
+  $('#dvSub')&&$('#dvSub').addEventListener('change',e=>{dv.sub=e.target.checked;});
+}
+function driveImport(){
+  const dv=window._dv;if(!dv)return;
+  const sel=dv.files.filter(f=>f.sel&&!f.done);if(!sel.length)return toast('בחרו קבצים לייבוא');
+  if(sel.some(f=>!f.title.trim()))return toast('לכל שיעור צריכה להיות כותרת');
+  const base=uploadBase();if(!base)return;
+  const bySub=dv.hasSub&&dv.sub!==false;
+  const used={};const next=s=>{if(!(s in used))used[s]=seriesMax(s);return ++used[s];};
+  const items=sel.map(f=>{const series=bySub&&f.folder?f.folder.split(' / ').pop():base.series;
+    let num=0;if(series){num=f.num||next(series);used[series]=Math.max(used[series]||seriesMax(series),num);}
+    return {drive:{id:f.id,name:f.name,mime:f.mime,size:f.size,rk:f.rk,dur:f.dur},title:f.title.trim(),series,num,lessonId:uid('l')};});
+  const job={id:uid('j'),state:'wait',title:`ייבוא מהדרייב: ${dv.name}`,files:[],links:[],items,total:items.length,series:'',num:0,
+    compress:$('#uCompress').checked,allowDl:$('#uDl').checked,media:'auto',base,msg:'ממתין…',pct:0};
+  UPQ.jobs.push(job);trayRender();runQueue();
+  dv.files.forEach(f=>{if(f.sel){f.done=true;f.sel=false;}});
+  toast(`הייבוא של ${items.length} שיעורים התחיל ברקע — אפשר להמשיך לגלוש באתר`);
+  driveRender();
 }
 
 /* =========================================================
@@ -1799,6 +1969,18 @@ function vAdmin(){
       </details>
       <div class="row" style="margin-top:12px"><button class="btn ghost" data-act="ytRun">ייבא עכשיו</button><a class="small" href="https://github.com/${esc(CONFIG.github.owner)}/${esc(CONFIG.github.repo)}/actions" target="_blank" rel="noopener">יומן הריצות ב-GitHub</a></div>
     </section>`)}
+    ${sec('drive','ייבוא מגוגל דרייב',null,`<section class="panel">
+      <div class="muted small">הייבוא מתיקייה משותפת בדרייב נעשה מדף "העלאת שיעור". הוא משתמש במפתח Google API — כברירת מחדל המפתח של Firebase שכבר באתר.</div>
+      <div class="row" style="margin-top:8px"><button class="btn" data-act="gapiTest" type="button">בדיקת החיבור לדרייב</button><span id="gapiRes" class="small"></span></div>
+      <details class="more-box"><summary>החיבור לא עובד? הגדרה חד-פעמית (2 דקות)</summary>
+        <ol class="small" style="line-height:1.9">
+          <li>היכנסו ל-<a href="https://console.cloud.google.com/apis/library/drive.googleapis.com?project=${esc((CONFIG.firebase&&CONFIG.firebase.projectId)||'')}" target="_blank" rel="noopener">Google Drive API בפרויקט שלכם</a> ולחצו <b>Enable</b> (הפעלה).</li>
+          <li>אם עדיין לא עובד: היכנסו ל-<a href="https://console.cloud.google.com/apis/credentials?project=${esc((CONFIG.firebase&&CONFIG.firebase.projectId)||'')}" target="_blank" rel="noopener">Credentials</a>, פתחו את <b>Browser key (auto created by Firebase)</b>, ותחת <b>API restrictions</b> הוסיפו לרשימה את <b>Google Drive API</b> ← Save. (השינוי נקלט תוך כמה דקות.)</li>
+          <li>חזרו לכאן ולחצו "בדיקת החיבור לדרייב".</li>
+        </ol>
+        <div class="muted small">מפתח אחר (לא חובה) — נשמר רק בדפדפן הזה:</div>
+        <div class="row" style="margin-top:6px"><input id="gapiKey" placeholder="AIza…" style="flex:1;direction:ltr" value="${esc((()=>{try{return localStorage.getItem(GAPI_KEY_LS)||''}catch(e){return ''}})())}"><button class="btn ghost" data-act="gapiSave" type="button">שמירה</button></div>
+      </details></section>`)}
     ${sec('backup','גיבוי ושחזור',null,`<section class="panel"><div class="muted small">הורדת קובץ גיבוי של כל השיעורים, הרבנים, המוסדות, המסלולים וההרשאות. מומלץ פעם בשבוע. קובצי האודיו עצמם שמורים בנפרד (ב-GitHub הם מגובים בהיסטוריית המאגר).</div>
       <div class="row" style="margin-top:8px"><button class="btn" data-act="backupDl">הורדת גיבוי</button><label class="btn ghost" style="cursor:pointer">שחזור מגיבוי<input type="file" id="restoreFile" accept="application/json" hidden></label></div></section>`)}
     ${sec('data','נתונים',null,FB?`<section class="panel"><div class="muted small">האתר מחובר ל-Firebase: כל השינויים נשמרים בשרת ומשותפים לכל המשתמשים.</div>
@@ -2118,6 +2300,12 @@ document.addEventListener('click',e=>{
       if(!n)return toast(type==='rabbi'?'הזינו את שם הרב':'הזינו את שם המוסד');const im=getImg(p+'ImgPick');if(!im)return toast(type==='rabbi'?'חובה להוסיף תמונה של הרב':'חובה להוסיף לוגו של המוסד');
       S.orgs.push({id:uid('o'),type,name:n,parent:($('#'+p+'Parent')&&$('#'+p+'Parent').value)||null,image:im,showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});
       save();toast(`נוצר דף ל${n}`);route(true);},
+    driveLoad:()=>driveLoad(),
+    driveImport:()=>driveImport(),
+    gapiSave:async()=>{const k=$('#gapiKey').value.trim();try{k?localStorage.setItem(GAPI_KEY_LS,k):localStorage.removeItem(GAPI_KEY_LS);}catch(e){}toast(k?'המפתח נשמר בדפדפן הזה':'חזרה למפתח של Firebase');route(true);},
+    gapiTest:async()=>{const out=$('#gapiRes');out.textContent='בודק…';
+      try{await driveApi('files/1',{fields:'id'});out.textContent='✓ תקין';}
+      catch(e){if(e.code==='drive/404'){out.innerHTML='<span style="color:var(--ok);font-weight:700">✓ החיבור לגוגל דרייב תקין</span>';}else out.innerHTML=`<span style="color:var(--danger)">${esc(driveErr(e))}${e.reason?' ['+esc(e.reason)+']':''}</span>`;}},
     scrollEdit:()=>{const el=$('#orgEdit');if(el){el.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>$('#oName')?.focus({preventScroll:true}),400);}},
     unlinkRabbi:()=>{if(!isAdmin())return;const r=org(id);if(!r)return;const i=org(r.parent);r.parent=null;save();toast(`${r.name} נותק${i?' מ'+i.name:''}`);route(true);},
     toggleHidden:()=>{const l=lesson(id);if(!l||!canEditLesson(l))return toast('אין הרשאה');l.hidden=!l.hidden;save();toast(l.hidden?'השיעור הוסתר — נגיש רק בקישור ישיר':'השיעור מוצג שוב לכולם');route(true);},
