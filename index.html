@@ -253,6 +253,19 @@ mark{background:#f3dc95;color:#1d2125;border-radius:3px}
 .gridm{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
 @media(max-width:600px){.kh-hero{padding:30px 16px 56px}.kh-hero h1{font-size:34px}.kh-search input{font-size:16px}.shelf{grid-auto-columns:minmax(210px,72vw)}.row-h h2{font-size:20px}}
 
+/* דף שיעור: כפתור הפעלה במרכז */
+.lcenter{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.lcover{position:relative;width:min(300px,72vw)}
+.lhead .lcover .cover{width:100%}
+.bigbtn{position:absolute;inset:0;margin:auto;width:88px;height:88px;border-radius:50%;border:0;background:var(--gold);color:#16293d;font-size:34px;cursor:pointer;
+  box-shadow:0 10px 30px rgba(0,0,0,.35),0 0 0 8px rgba(255,255,255,.25);transition:transform .15s;display:grid;place-items:center;padding-inline-start:6px}
+.bigbtn.pz{padding-inline-start:0;font-size:28px}
+.bigbtn:hover{transform:scale(1.07)}
+.bigcap{font-weight:700;color:var(--gold-text);min-height:22px}
+.ltext{max-width:760px}
+.ltext .chips{justify-content:center}
+.ltext .sprog{justify-content:center}
+.lactions{justify-content:center}
 /* מגש העלאות ברקע */
 #upTray{position:fixed;bottom:16px;left:16px;z-index:60;width:300px;max-width:calc(100vw - 32px);display:flex;flex-direction:column;gap:8px}
 #dock.on~#upTray,body:has(#dock.on) #upTray{bottom:130px}
@@ -828,6 +841,7 @@ function updDock(){
   $('#dCur').textContent=fmt(t);$('#dDur').textContent=fmt(d);
   if(!P.dragging) $('#dSeek').value=d?Math.round(t/d*1000):0;
   const pl=P.playing();$('#dPlay').textContent=pl?'❚❚':'▶';$('#dPlay').setAttribute('aria-label',pl?'השהה':'נגן');
+  const bb=document.getElementById('lessonBig');if(bb&&bb.dataset.id===l.id){const want=pl?'❚❚':'▶';if(bb.textContent!==want){bb.textContent=want;bb.classList.toggle('pz',pl);bb.setAttribute('aria-label',pl?'השהה':'נגן');}const cp=$('#lessonCap');if(cp)cp.textContent=fmt(t)+' / '+fmt(d);}
   const cur=document.getElementById('curTime');if(cur) cur.textContent=fmt(t);
 }
 setInterval(updDock,500);
@@ -1137,9 +1151,12 @@ function vLesson(id,q){
   $('#app').innerHTML=`
     <div class="lhead" style="--cc:${catColor(l.category)}">
     ${ded.length?`<div class="dedic">${ded.map(d=>`השיעור מוקדש ${esc(d.kind)} ${esc(d.name)}`).join(' · ')}</div>`:''}
-    <section class="hero">
-      ${coverHTML(coverData(l),{lg:true})}
-      <div style="flex:1;min-width:240px">
+    <section class="lcenter">
+      <div class="lcover">${coverHTML(coverData(l),{lg:true})}
+        ${l.src.type!=='ytimport'?`<button class="bigbtn" id="lessonBig" data-act="lessonPlay" data-id="${id}" ${t?`data-t="${+t}"`:''} aria-label="${P.l&&P.l.id===id&&P.playing()?'השהה':'נגן'}">${P.l&&P.l.id===id&&P.playing()?'❚❚':'▶'}</button>`:''}
+      </div>
+      ${l.src.type!=='ytimport'?`<div class="bigcap" id="lessonCap">${P.l&&P.l.id===id?'':(t?`נגן מדקה ${fmt(+t)}`:(pos&&!pos.done?`המשך מ-${fmt(pos.t)}`:''))}</div>`:''}
+      <div class="ltext">
         ${l.series?`<div class="kicker"><a href="${seriesHref(l.series)}" style="color:inherit">${esc(lessonTitleParts(l).kicker)}</a></div>`:''}
         <h1 style="margin:0">${esc(l.title)}</h1>
         <div class="muted">${r?`<a href="${orgHref(r)}">${esc(r.name)}</a>`:''}${o?` · <a href="${orgHref(o)}">${esc(o.name)}</a>`:''} · ${catName(l.category)} · ${Math.round(l.duration/60)} דק׳${l.date?` · ${hebDate(l.date)}`:''}</div>
@@ -1149,13 +1166,12 @@ function vLesson(id,q){
     </section>
     </div>
     ${l.src.type==='ytimport'?'<div class="notice" style="margin-top:14px">השיעור בתהליך ייבוא מיוטיוב: השמע יורד, מכווץ ונשמר אצלנו. בדרך כלל זה לוקח עד כמה שעות (ומיידי אם המנהל לוחץ "ייבא עכשיו"). עד אז השיעור מוסתר מהגולשים.</div>':''}
-    <div class="row" style="margin-top:14px">
-      <button class="btn bigplay" data-act="play" data-id="${id}" ${t?`data-t="${+t}"`:''}>▶ ${t?`נגן מדקה ${fmt(+t)}`:(pos&&!pos.done?`המשך מ-${fmt(pos.t)}`:'השמע שיעור')}</button>
-      ${pos&&!pos.done&&!t?`<button class="btn ghost" data-act="play" data-id="${id}" data-t="0">מההתחלה</button>`:''}
+    <div class="row lactions" style="margin-top:14px">
+      ${pos&&!pos.done&&!t?`<button class="btn ghost" data-act="play" data-id="${id}" data-t="0">↺ מההתחלה</button>`:''}
       <button class="btn ghost" data-act="shareAt" data-id="${id}">שיתוף מהרגע הנוכחי</button>
       <button class="btn ghost" data-act="chavruta" data-id="${id}">הזמנת חברותא</button>
       <button class="btn wa" data-act="waShare" data-id="${id}">שיתוף בוואטסאפ</button>
-      ${l.allowDownload&&l.src.type==='file'?`<a class="btn ghost" href="${esc(l.src.url)}" download target="_blank" rel="noopener">הורדה</a>`:''}
+      ${l.allowDownload&&l.src.type==='file'?`<button class="btn ghost" data-act="dlLesson" data-id="${id}">⬇ הורדה</button>`:''}
       ${l.src.type==='youtube'&&canDeleteLesson(l)?`<button class="btn ghost" data-act="toImport" data-id="${id}">ייבוא השמע מיוטיוב אלינו</button>`:''}
       ${canEditLesson(l)?`<a class="btn ghost" href="#/edit/${id}">✎ עריכה</a>`:''}
       ${canDeleteLesson(l)?`<button class="btn ghost" data-act="delLesson" data-id="${id}" style="color:var(--danger);border-color:var(--danger)">מחיקת שיעור</button>`:''}
@@ -1880,6 +1896,14 @@ document.addEventListener('click',e=>{
     toggleStyle:()=>b.classList.toggle('on'),
     saveOrg:()=>{const o=org(id);if(isAdmin()&&$('#oSlug')){const sl=$('#oSlug').value.trim().toLowerCase();if(sl){if(!SLUG_RE.test(sl))return toast('סיומת לא תקינה: 2–40 תווים, אותיות, ספרות ומקפים');if(S.orgs.some(x=>x.id!==o.id&&(x.slug===sl||x.id===sl)))return toast('הסיומת הזו כבר תפוסה');}o.slug=sl;}o.name=$('#oName').value.trim()||o.name;o.image=getImg('oImgPick');o.showOnLessons=$('#oShow').checked;o.about=$('#oAbout').value;o.donate=$('#oDonate').value.trim();o.styles=[...document.querySelectorAll('#oStyles .chip.on')].map(c=>c.dataset.s);o.defaults={category:$('#oDefCat').value,tags:o.defaults?.tags||[]};save();toast('הדף נשמר');if(location.hash!==orgHref(o))location.hash=orgHref(o);else route();},
     doUpload,
+    lessonPlay:()=>{if(P.l&&P.l.id===id){P.toggle();setTimeout(updDock,50);}else play(id,b.dataset.t!=null?+b.dataset.t:null);},
+    dlLesson:async()=>{const l=lesson(id);if(!l||!l.allowDownload||l.src.type!=='file')return;
+      const ext=((l.src.url.split('?')[0].match(/\.(\w{2,4})$/)||[,l.src.media==='video'?'mp4':'mp3'])[1]).toLowerCase();
+      const r=org(l.rabbiId);const name=(l.title+(r?' - '+r.name:'')).replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,120)+'.'+ext;
+      const go=href=>{const a=document.createElement('a');a.href=href;a.download=name;document.body.appendChild(a);a.click();a.remove();};
+      toast('ההורדה מתחילה…');
+      try{const res=await fetch(l.src.url);if(!res.ok)throw 0;const u=URL.createObjectURL(await res.blob());go(u);setTimeout(()=>URL.revokeObjectURL(u),60000);}
+      catch(e){go(l.src.url);}},
     delOrg:()=>{if(!isAdmin())return toast('רק מנהל יכול למחוק');const o=org(id);if(!o)return;
       const ls=S.lessons.filter(l=>l.rabbiId===o.id||l.orgId===o.id).length;
       const kids=S.orgs.filter(x=>x.parent===o.id).length;
