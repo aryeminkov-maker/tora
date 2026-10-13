@@ -132,7 +132,7 @@ mark{background:#f3dc95;color:#1d2125;border-radius:3px}
 .cwrap{display:block;border-radius:14px}
 .cover{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:var(--cc,#1b6aa3);color:#fff;display:block;isolation:isolate;transition:transform .2s, box-shadow .2s}
 .cwrap:hover .cover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(22,60,100,.18)}
-.cover img.ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.cover img.ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%;z-index:-2}
 .cover::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,color-mix(in srgb,var(--cc) 94%,#000) 0%,color-mix(in srgb,var(--cc) 60%,transparent) 42%,transparent 72%)}
 .cover.noimg{background:radial-gradient(130% 100% at 90% 0%,color-mix(in srgb,var(--cc) 62%,#fff) 0%,var(--cc) 50%,color-mix(in srgb,var(--cc) 70%,#000) 100%)}
 .cover.noimg::after{background:repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 2px,transparent 2px 14px)}
@@ -253,6 +253,15 @@ mark{background:#f3dc95;color:#1d2125;border-radius:3px}
 .gridm{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
 @media(max-width:600px){.kh-hero{padding:30px 16px 56px}.kh-hero h1{font-size:34px}.kh-search input{font-size:16px}.shelf{grid-auto-columns:minmax(210px,72vw)}.row-h h2{font-size:20px}}
 
+/* בוחר תמונה */
+.imgpick{display:flex;gap:14px;align-items:flex-start;margin-top:6px}
+.imgpick .prev{width:84px;height:84px;object-fit:cover;border-radius:14px;background:var(--chip);flex:none;border:1px solid var(--line)}
+.imgpick .prev.round{border-radius:50%}
+.imgpick[data-type="org"] .prev{object-fit:contain;background:#fff}
+.imgpick .ctl{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
+.imgpick .st{min-height:18px}
+.imgpick .st.err{color:var(--danger)}
+.imgpick .st.ok{color:var(--ok)}
 /* טופס העלאה */
 .up label{margin-top:14px}
 .drop{border:2px dashed var(--accent);border-radius:14px;padding:22px 16px;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center;cursor:pointer;background:var(--accent-soft);transition:background .15s}
@@ -582,6 +591,88 @@ function hebDate(iso){
 function lessonImgOrg(l){const r=org(l.rabbiId),o=org(l.orgId);if(r&&r.showOnLessons)return r;if(o&&o.showOnLessons)return o;return r||o;}
 const imgCls=o=>o&&o.type==='rabbi'?'round':'';
 function lessonTitleParts(l){return {kicker:l.series?`${l.series}${l.num?' · שיעור '+l.num:''}`:'',title:l.title};}
+/* ===== תמונות: העלאה עם כיווץ, וקישורים מכל הסוגים ===== */
+function imgPickerHTML(id,value,type){
+  return `<div class="imgpick" id="${id}" data-type="${type==='rabbi'?'rabbi':'org'}" data-value="${esc(value||'')}">
+    <img class="prev ${type==='rabbi'?'round':''}" src="${esc(value||silhouette(type==='rabbi'?'rabbi':'org'))}" alt="תצוגה מקדימה">
+    <div class="ctl">
+      <div class="row"><button type="button" class="btn sm" data-act="imgPickFile" data-for="${id}">העלאת תמונה מהמחשב</button>${value?`<button type="button" class="btn ghost sm" data-act="imgPickClear" data-for="${id}">הסרה</button>`:''}</div>
+      <input class="url" type="url" placeholder="או הדביקו קישור לתמונה — כל סוג קישור" aria-label="קישור לתמונה" style="direction:ltr">
+      <input class="file" type="file" accept="image/*" hidden>
+      <div class="st muted small" aria-live="polite"></div>
+    </div></div>`;
+}
+const getImg=id=>{const el=document.getElementById(id);return el?(el.dataset.value||''):'';};
+function setPick(el,val,msg,cls){
+  el.dataset.value=val||'';const pv=el.querySelector('.prev');delete pv.dataset.fb;pv.src=val||silhouette(el.dataset.type);
+  const st=el.querySelector('.st');st.textContent=msg||'';st.className='st small '+(cls||'muted');
+}
+let _webpOk=null;
+function canWebp(){if(_webpOk===null){try{_webpOk=document.createElement('canvas').toDataURL('image/webp').startsWith('data:image/webp');}catch(e){_webpOk=false;}}return _webpOk;}
+function drawCompressed(src,w,h,type){
+  const MAX=type==='rabbi'?320:360;const c=document.createElement('canvas');let sx=0,sy=0,sw=w,sh=h,dw,dh;
+  if(type==='rabbi'){const m=Math.min(w,h);sx=(w-m)/2;sy=Math.max(0,(h-m)/2-(h>w?(h-m)*0.25:0));sw=sh=m;dw=dh=Math.min(MAX,m);}
+  else{const k=Math.min(1,MAX/Math.max(w,h));dw=Math.round(w*k);dh=Math.round(h*k);}
+  c.width=dw;c.height=dh;const g=c.getContext('2d');g.imageSmoothingQuality='high';
+  if(type==='rabbi'){g.fillStyle='#fff';g.fillRect(0,0,dw,dh);}
+  g.drawImage(src,sx,sy,sw,sh,0,0,dw,dh);
+  if(canWebp()) return c.toDataURL('image/webp',0.82);
+  return type==='rabbi'?c.toDataURL('image/jpeg',0.85):c.toDataURL('image/png');
+}
+async function compressImageFile(file,type){
+  if(!/^image\//.test(file.type)) throw new Error('הקובץ שבחרתם אינו תמונה');
+  if(file.size>20*1048576) throw new Error('התמונה גדולה מדי (מעל 20MB)');
+  let bmp;
+  try{bmp=await createImageBitmap(file);}
+  catch(e){bmp=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('לא הצלחנו לקרוא את התמונה'));i.src=URL.createObjectURL(file);});}
+  return drawCompressed(bmp,bmp.width||bmp.naturalWidth,bmp.height||bmp.naturalHeight,type);
+}
+function normImgUrl(u){
+  u=(u||'').trim();if(!u) return '';
+  if(/^data:image\//.test(u)) return u;
+  if(!/^https?:\/\//i.test(u)) u='https://'+u.replace(/^\/+/,'');
+  let x;try{x=new URL(u);}catch(e){return '';}
+  const h=x.hostname.replace(/^www\./,'');
+  if(/(^|\.)google\.[a-z.]+$/.test(h)&&x.pathname==='/imgres'&&x.searchParams.get('imgurl')) return normImgUrl(x.searchParams.get('imgurl'));
+  if(h==='drive.google.com'||h==='docs.google.com'){const m=x.pathname.match(/\/d\/([\w-]{10,})/);const id=m?m[1]:x.searchParams.get('id');if(id) return `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;}
+  if(h.endsWith('dropbox.com')){x.searchParams.delete('dl');x.searchParams.set('raw','1');return x.toString();}
+  if(h==='github.com'){const m=x.pathname.match(/^\/([^/]+)\/([^/]+)\/blob\/(.+)$/);if(m) return `https://raw.githubusercontent.com/${m[1]}/${m[2]}/${m[3]}`;}
+  if(h==='imgur.com'&&/^\/\w{5,8}$/.test(x.pathname)) return `https://i.imgur.com${x.pathname}.jpg`;
+  if(/wiki(pedia|media)\.org$/.test(h)){const m=decodeURIComponent(x.pathname).match(/\/wiki\/(?:File|Image|קובץ|תמונה):(.+)$/);if(m) return `${x.origin}/wiki/Special:FilePath/${encodeURIComponent(m[1])}`;
+    if(x.hash.startsWith('#/media/')){const n=decodeURIComponent(x.hash.slice(8)).replace(/^(File|Image|קובץ|תמונה):/,'');return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(n)}`;}}
+  return x.toString();
+}
+function loadImg(src,cors){return new Promise((res,rej)=>{const i=new Image();if(cors)i.crossOrigin='anonymous';i.referrerPolicy='no-referrer';const t=setTimeout(()=>rej(new Error('timeout')),12000);i.onload=()=>{clearTimeout(t);res(i);};i.onerror=()=>{clearTimeout(t);rej(new Error('load'));};i.src=src;});}
+async function resolveImgUrl(raw,type){
+  const u=normImgUrl(raw);if(!u) throw new Error('הקישור לא תקין');
+  if(/photos\.(app\.goo\.gl|google\.com)|facebook\.com|instagram\.com/.test(u)) throw new Error('מהאתר הזה אי אפשר לקחת תמונה ישירות — שמרו את התמונה במחשב והעלו אותה');
+  if(u.startsWith('data:')){const i=await loadImg(u,false);return {val:drawCompressed(i,i.naturalWidth,i.naturalHeight,type),how:'כווצה ונשמרה'};}
+  try{const i=await loadImg(u,true);return {val:drawCompressed(i,i.naturalWidth,i.naturalHeight,type),how:'הורדה, כווצה ונשמרה אצלנו'};}
+  catch(e){
+    try{await loadImg(u,false);return {val:u,how:'נשמרה כקישור'};}
+    catch(e2){throw new Error('הקישור לא מוביל לתמונה. נסו לחיצה ימנית על התמונה ← "העתק כתובת תמונה", או העלו את התמונה מהמחשב');}
+  }
+}
+document.addEventListener('change',async e=>{
+  if(e.target.id==='nType'){const pk=$('#nImgPick');if(pk){const t=e.target.value==='rabbi'?'rabbi':'org';pk.dataset.type=t;pk.querySelector('.prev').classList.toggle('round',t==='rabbi');if(!pk.dataset.value)pk.querySelector('.prev').src=silhouette(t);}return;}
+  const pick=e.target.closest&&e.target.closest('.imgpick');if(!pick) return;
+  if(e.target.classList.contains('file')&&e.target.files[0]){
+    const st=pick.querySelector('.st');st.textContent='מכווץ…';st.className='st small muted';
+    try{const v=await compressImageFile(e.target.files[0],pick.dataset.type);setPick(pick,v,`✓ התמונה כווצה (${Math.round(v.length*0.75/1024)}KB)`,'ok');}
+    catch(err){setPick(pick,pick.dataset.value,err.message,'err');}
+    e.target.value='';
+  }
+  if(e.target.classList.contains('url')&&e.target.value.trim()){
+    const st=pick.querySelector('.st');st.textContent='בודק את הקישור…';st.className='st small muted';
+    try{const r=await resolveImgUrl(e.target.value,pick.dataset.type);setPick(pick,r.val,'✓ התמונה '+r.how,'ok');}
+    catch(err){st.textContent=err.message;st.className='st small err';}
+  }
+});
+document.addEventListener('paste',e=>{const inp=e.target;if(!inp.classList||!inp.classList.contains('url')||!inp.closest('.imgpick'))return;setTimeout(()=>inp.dispatchEvent(new Event('change',{bubbles:true})),0);});
+/* תמונה שבורה → גיבוי במקום סמל שבור */
+document.addEventListener('error',e=>{const t=e.target;if(!t||t.tagName!=='IMG')return;
+  if(t.classList.contains('ph')){const c=t.closest('.cover');if(c)c.classList.add('noimg');t.remove();return;}
+  if(!t.dataset.fb){t.dataset.fb='1';t.src=silhouette(t.classList.contains('round')?'rabbi':'org');}},true);
 function ytId(u){const m=String(u).match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([\w-]{11})/);return m?m[1]:null;}
 function allTagsFor(cat){
   const set=new Set();
@@ -1161,7 +1252,7 @@ function vOrg(id){
       <div class="row" style="flex-wrap:nowrap;direction:ltr"><span class="muted small" style="white-space:nowrap">${esc(baseUrl())}#/org/</span><input id="oSlug" value="${esc(o.slug||'')}" placeholder="yeshivat-example" style="direction:ltr"></div>
       <div class="muted small">אותיות באנגלית קטנות, ספרות ומקפים (גם עברית אפשרית, אך קישור באנגלית נראה טוב יותר בשיתוף). ריק = כתובת אוטומטית.</div>`:''}
       ${!o.image?'<div class="notice" style="margin-top:10px">לדף הזה עדיין אין תמונה. תמונה אמיתית של '+(o.type==='rabbi'?'הרב':'המוסד (לוגו)')+' היא מה שהכי מושך לשיעורים — מומלץ מאוד להוסיף.</div>':''}
-      <label>קישור לתמונה (כתובת URL של תמונה)</label><input id="oImg" value="${esc(o.image)}" placeholder="https://…/image.jpg">
+      <label>${o.type==='rabbi'?'תמונת הרב':'לוגו המוסד'}</label>${imgPickerHTML('oImgPick',o.image,o.type==='rabbi'?'rabbi':'org')}
       <label class="row" style="font-weight:400"><input type="checkbox" id="oShow" style="width:auto" ${o.showOnLessons?'checked':''}> להציג את התמונה בכל השיעורים של ${o.type==='rabbi'?'הרב':'המוסד'}</label>
       <label>טקסט על ${o.type==='rabbi'?'הרב':'המוסד'}</label><textarea id="oAbout">${esc(o.about)}</textarea>
       <label>קישור לתרומה</label><input id="oDonate" value="${esc(o.donate)}" placeholder="https://…">
@@ -1232,7 +1323,7 @@ function vUpload(){
       <input id="uTitle" placeholder="למשל: יש בישול אחר בישול">
       <label for="uRabbi">רב</label>
       <select id="uRabbi"></select>
-      <input id="uNewRabbi" placeholder="שם הרב החדש" style="margin-top:6px;display:none"><input id="uNewRabbiImg" placeholder="קישור לתמונת הרב (חובה)" style="margin-top:6px;display:none;direction:ltr">
+      <input id="uNewRabbi" placeholder="שם הרב החדש" style="margin-top:6px;display:none"><div id="uNewRabbiImg" style="display:none"><label>תמונת הרב <span class="muted small">(חובה)</span></label>${imgPickerHTML('uNewRabbiPick','','rabbi')}</div>
       <div class="two">
         <div><label for="uCat">קטגוריה</label><select id="uCat">${CATS.map(c=>`<option value="${c.id}" ${def.category===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div>
         <div><label for="uSeries">סדרה <span class="muted small">(לא חובה)</span></label><input id="uSeries" list="seriesList" placeholder="בחרו או הקלידו שם סדרה"><datalist id="seriesList">${[...new Set(S.lessons.map(l=>l.series).filter(Boolean))].map(x=>`<option value="${esc(x)}">`).join('')}</datalist></div>
@@ -1390,7 +1481,7 @@ async function doUpload(){
   if(!title) title=(total===1&&files.length)?files[0].name.replace(/\.[^.]+$/,''):'שיעור';
   let orgId=$('#uOrg').value||null;let rabbiId=$('#uRabbi').value;
   if(!isAdmin()) orgId=perm().orgId;
-  if(rabbiId==='__new'){const n=$('#uNewRabbi').value.trim();if(!n)return toast('הזינו שם לרב החדש');const im=$('#uNewRabbiImg').value.trim();if(!/^https?:\/\//.test(im))return toast('חובה להוסיף קישור לתמונת הרב');rabbiId=uid('r');S.orgs.push({id:rabbiId,type:'rabbi',name:n,parent:orgId,image:im,showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});}
+  if(rabbiId==='__new'){const n=$('#uNewRabbi').value.trim();if(!n)return toast('הזינו שם לרב החדש');const im=getImg('uNewRabbiPick');if(!im)return toast('חובה להוסיף תמונה של הרב');rabbiId=uid('r');S.orgs.push({id:rabbiId,type:'rabbi',name:n,parent:orgId,image:im,showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});}
   if(rabbiId==='__org') rabbiId=null;
   const series=$('#uSeries').value.trim();let num=+$('#uNum').value||0;
   if(series&&!num) num=Math.max(0,...S.lessons.filter(l=>l.series===series).map(l=>+l.num||0))+1;
@@ -1473,11 +1564,12 @@ function vAdmin(){
       </table>
       <div class="filters" style="margin-top:12px">
         <input id="nName" placeholder="שם הרב או המוסד">
-        <input id="nImg" placeholder="קישור לתמונה / לוגו (חובה)" style="direction:ltr">
+
         <select id="nType"><option value="yeshiva">מוסד / ישיבה</option><option value="rabbi">רב</option></select>
         <select id="nParent"><option value="">ללא שיוך</option>${S.orgs.filter(o=>o.type!=='rabbi').map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')}</select>
         <button class="btn" data-act="addOrg">יצירת דף</button>
       </div>
+      <label>תמונה / לוגו <span class="muted small">(חובה)</span></label>${imgPickerHTML('nImgPick','','org')}
     </section>
     <h2>מסלול לימוד רשמי חדש</h2>
     <section class="panel">
@@ -1743,8 +1835,10 @@ document.addEventListener('click',e=>{
     dedicate:()=>{if(FB&&!S.user)return toast('יש להתחבר כדי להקדיש שיעור');const n=$('#dedName').value.trim();if(!n)return toast('הזינו שם');(S.dedications[id]=S.dedications[id]||[]).push({kind:$('#dedKind').value,name:n});save();route();},
     copy:()=>copy(b.dataset.url),
     toggleStyle:()=>b.classList.toggle('on'),
-    saveOrg:()=>{const o=org(id);if(isAdmin()&&$('#oSlug')){const sl=$('#oSlug').value.trim().toLowerCase();if(sl){if(!SLUG_RE.test(sl))return toast('סיומת לא תקינה: 2–40 תווים, אותיות, ספרות ומקפים');if(S.orgs.some(x=>x.id!==o.id&&(x.slug===sl||x.id===sl)))return toast('הסיומת הזו כבר תפוסה');}o.slug=sl;}o.name=$('#oName').value.trim()||o.name;o.image=$('#oImg').value.trim();o.showOnLessons=$('#oShow').checked;o.about=$('#oAbout').value;o.donate=$('#oDonate').value.trim();o.styles=[...document.querySelectorAll('#oStyles .chip.on')].map(c=>c.dataset.s);o.defaults={category:$('#oDefCat').value,tags:o.defaults?.tags||[]};save();toast('הדף נשמר');if(location.hash!==orgHref(o))location.hash=orgHref(o);else route();},
+    saveOrg:()=>{const o=org(id);if(isAdmin()&&$('#oSlug')){const sl=$('#oSlug').value.trim().toLowerCase();if(sl){if(!SLUG_RE.test(sl))return toast('סיומת לא תקינה: 2–40 תווים, אותיות, ספרות ומקפים');if(S.orgs.some(x=>x.id!==o.id&&(x.slug===sl||x.id===sl)))return toast('הסיומת הזו כבר תפוסה');}o.slug=sl;}o.name=$('#oName').value.trim()||o.name;o.image=getImg('oImgPick');o.showOnLessons=$('#oShow').checked;o.about=$('#oAbout').value;o.donate=$('#oDonate').value.trim();o.styles=[...document.querySelectorAll('#oStyles .chip.on')].map(c=>c.dataset.s);o.defaults={category:$('#oDefCat').value,tags:o.defaults?.tags||[]};save();toast('הדף נשמר');if(location.hash!==orgHref(o))location.hash=orgHref(o);else route();},
     doUpload,
+    imgPickFile:()=>{const el=document.getElementById(b.dataset.for);if(el)el.querySelector('.file').click();},
+    imgPickClear:()=>{const el=document.getElementById(b.dataset.for);if(el){setPick(el,'','התמונה הוסרה','muted');b.remove();}},
     saveLesson:()=>{const l=lesson(id);if(!l||!canEditLesson(l))return toast('אין הרשאה');
       const t=$('#eTitle').value.trim();if(!t)return toast('הכותרת לא יכולה להיות ריקה');
       l.title=t;l.rabbiId=$('#eRabbi').value||null;l.category=$('#eCat').value;l.series=$('#eSeries').value.trim();
@@ -1797,7 +1891,7 @@ document.addEventListener('click',e=>{
     compressDl,
     addPerm:()=>{const em=$('#pEmail').value.trim().toLowerCase();if(!em.includes('@'))return toast('כתובת לא תקינה');S.permissions=S.permissions.filter(p=>p.email!==em);const r=$('#pRole').value;S.permissions.push({email:em,role:r,orgId:r==='rep'?$('#pOrg').value:null});save();route();},
     delPerm:()=>{S.permissions.splice(+b.dataset.i,1);save();route();},
-    addOrg:()=>{const n=$('#nName').value.trim();if(!n)return toast('הזינו שם');const im=$('#nImg').value.trim();if(!/^https?:\/\//.test(im))return toast('חובה להוסיף קישור לתמונה של הרב או ללוגו המוסד');const oid=uid('o');S.orgs.push({id:oid,type:$('#nType').value,name:n,parent:$('#nParent').value||null,image:im,showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});save();location.hash='#/org/'+oid;},
+    addOrg:()=>{const n=$('#nName').value.trim();if(!n)return toast('הזינו שם');const im=getImg('nImgPick');if(!im)return toast('חובה להוסיף תמונה של הרב או לוגו של המוסד');const oid=uid('o');S.orgs.push({id:oid,type:$('#nType').value,name:n,parent:$('#nParent').value||null,image:im,showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});save();location.hash='#/org/'+oid;},
     addOfficial:()=>{const n=$('#olName').value.trim();const ids=[...document.querySelectorAll('.olChk:checked')].map(c=>c.value);if(!n||!ids.length)return toast('בחרו שם ושיעורים');S.playlists.push({id:uid('pl'),name:n,lessonIds:ids,official:true,owner:S.user.email});save();toast('המסלול נוצר');route();},
     reset:()=>{if(confirm('לאפס את כל הנתונים?')){const u=S.user;S=seed();S.user=u;save();route();}},
     login:()=>{if(FB){FB.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(err=>{if(err.code!=='auth/popup-closed-by-user'&&err.code!=='auth/cancelled-popup-request')toast(err.code==='auth/unauthorized-domain'?'הדומיין לא מאושר ב-Firebase (ראו הדרכה)':'ההתחברות נכשלה');});return;}const em=$('#lEmail').value.trim().toLowerCase();if(!em.includes('@'))return toast('הזינו כתובת');S.user={email:em};save();route();},
