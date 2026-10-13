@@ -316,6 +316,56 @@ html.hc{--bg:#ffffff;--card:#ffffff;--text:#000000;--muted:#1a1a1a;--line:#444;-
 html.hc img{filter:none}
 footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 details summary{cursor:pointer;font-weight:500}
+/* ניהול — מקטעים נפתחים */
+.adm-wrap{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+details.adm{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 4px rgba(13,47,79,.06)}
+details.adm>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:14px 18px;font-size:18px;font-weight:800;color:var(--text);min-height:52px}
+details.adm>summary::-webkit-details-marker{display:none}
+details.adm>summary::after{content:'‹';margin-inline-start:auto;font-size:24px;line-height:1;color:var(--accent);width:24px;text-align:center}
+details.adm[open]>summary::after{content:'⌄';font-size:22px;transform:translateY(-5px)}
+details.adm>summary:hover{background:var(--chip);border-radius:14px}
+details.adm[open]>summary{border-bottom:1px solid var(--line);border-radius:14px 14px 0 0}
+.adm-n{background:var(--chip);color:var(--accent);font-size:13px;font-weight:700;border-radius:20px;padding:2px 10px}
+.adm-b{padding:14px 18px}
+.adm-b>section.panel{box-shadow:none;border:0;padding:0;margin:0;background:none}
+.adm-sep{margin:14px 4px 0;font-weight:700;color:var(--muted);font-size:14px}
+.admQ{max-width:340px;margin-bottom:8px}
+.filters .admQ{margin-bottom:0;flex:1;min-width:200px}
+.tblw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl td.nw,.nw{white-space:nowrap}
+.tbl select{min-width:140px;padding:6px 8px}
+.adm-img{width:38px;height:38px;object-fit:cover;border-radius:8px;display:block}
+.adm-img.round{border-radius:50%}
+.linkbox{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.linkbox .chip{display:inline-flex;align-items:center;gap:4px}
+.linkbox .x{background:none;border:0;cursor:pointer;color:var(--danger);font-size:16px;line-height:1;padding:0 2px}
+.linkbox select{width:auto;min-width:150px;padding:5px 8px;font-size:13px}
+.st{display:inline-block;font-size:12px;font-weight:700;border-radius:20px;padding:2px 9px}
+.st-pub{background:#e3f4ea;color:#1d6b3c}.st-hid{background:#eceff3;color:#4a5866}.st-imp{background:#fdf1d8;color:#7a5410}
+.chk-list{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.chk-list label{font-weight:400;margin:4px 0;gap:6px}
+.chk-list input{width:auto}
+details.prog-row{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:8px}
+details.prog-row summary{cursor:pointer}
+.hid-opt{font-weight:400;align-items:flex-start;margin-top:12px;background:var(--chip);border-radius:10px;padding:10px 12px}
+.mcard.is-hidden{opacity:.65;position:relative}
+.hid-tag{position:absolute;top:8px;right:8px;z-index:3;background:#4a5866;color:#fff;font-size:12px;font-weight:700;border-radius:20px;padding:2px 9px}
+.org-f{margin-bottom:10px}
+@media (max-width:640px){.adm-b{padding:12px}details.adm>summary{padding:12px 14px;font-size:17px}.tbl{font-size:13px}.tbl th,.tbl td{padding:6px 4px}}
+@media (max-width:640px){
+.tbl.resp tr:first-child{display:none}
+.tbl.resp tr{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.tbl.resp tr[hidden]{display:none}
+.tbl.resp td{border:0;padding:0}
+#admLessons td:first-child{flex-basis:100%;font-weight:700}
+#admLessons td:nth-child(2)::after{content:' ·';color:var(--muted)}
+#admLessons td:nth-child(5){flex-basis:100%;display:flex;gap:6px;justify-content:flex-end}
+#admRabbis td:nth-child(2),#admInsts td:nth-child(2){flex:1;font-weight:700}
+#admRabbis td:nth-child(4)::after,#admInsts td:nth-child(4)::after{content:' שיעורים';color:var(--muted);font-size:12px}
+#admRabbis td:nth-child(3){flex:1;min-width:150px}#admRabbis td:nth-child(3) select{width:100%}
+#admInsts td:nth-child(3){order:5;flex-basis:100%}
+.tbl.resp td.nw:last-child{white-space:nowrap}
+}
 </style>
 </head>
 <body>
@@ -860,7 +910,7 @@ function route(keepScroll){
   renderChrome(v);
   const app=$('#app');
   if(v==='lesson') vLesson(parts[1],q);
-  else if(v==='org') vOrg(parts[1]);
+  else if(v==='org') vOrg(parts[1],q);
   else if(v==='upload') vUpload();
   else if(v==='admin') vAdmin();
   else if(v==='me') vMe();
@@ -922,7 +972,7 @@ function vHome(){
   const cont=S.history.map(lesson).filter(l=>l&&S.positions[l.id]&&!S.positions[l.id].done).slice(0,12);
   const official=S.playlists.filter(p=>p.official);
   const series=allSeries().slice(0,12);
-  const rabbis=S.orgs.filter(o=>o.type==='rabbi').map(o=>[o,S.lessons.filter(l=>l.rabbiId===o.id).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]).slice(0,12).map(x=>x[0]);
+  const rabbis=S.orgs.filter(o=>o.type==='rabbi').map(o=>[o,pubLessons().filter(l=>l.rabbiId===o.id).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]).slice(0,12).map(x=>x[0]);
   const short=pubLessons().filter(l=>l.duration<=20*60).slice(0,12);
   const fresh=pubLessons().sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,12);
   const st=streak();
@@ -1019,7 +1069,8 @@ function plCard(p){
     <div class="foot"><span>${done?`${done} מתוך ${ls.length}`:''}</span><span>${Math.round(ls.reduce((a,l)=>a+l.duration,0)/60)} דק׳</span></div></div></article>`;
 }
 
-const isPub=l=>!l.src||l.src.type!=='ytimport'||canUpload();
+/* שיעור נסתר (לא רשום) — לא מופיע ברשימות, בחיפוש ובהמלצות, אבל נפתח למי שיש לו קישור ישיר */
+const isPub=l=>!l.hidden&&(!l.src||l.src.type!=='ytimport'||canUpload());
 const pubLessons=()=>S.lessons.filter(isPub);
 function filterLessons(f){
   f=f||F;const q=f.q.trim();
@@ -1111,7 +1162,10 @@ function seriesCard(x){
       <div class="foot"><span>${x.done?`${x.done} מתוך ${x.ls.length} הושלמו`:'טרם התחלת'}</span><span>${Math.round(tot/60)} דק׳</span></div></div></article>`;
 }
 
-function rabbiCircle(o){const n=S.lessons.filter(l=>l.rabbiId===o.id||l.orgId===o.id).length;
+/* כל השיעורים של רב או מוסד — למוסד כולל גם את השיעורים של הרבנים המשויכים אליו */
+function orgLessons(o,list){const kidIds=new Set(S.orgs.filter(x=>x.parent===o.id).map(x=>x.id));
+  return (list||pubLessons()).filter(l=>l.rabbiId===o.id||l.orgId===o.id||(l.rabbiId&&kidIds.has(l.rabbiId)));}
+function rabbiCircle(o){const n=orgLessons(o).length;
   return `<a class="rabbi-c" href="${orgHref(o)}"><img class="${imgCls(o)}" src="${orgImg(o)}" alt="" loading="lazy"><b>${esc(o.name)}</b><span class="muted small">${n} שיעורים</span></a>`;}
 function shelf(title,items,allAct,extraCls,moreLabel){
   if(!items.length) return '';
@@ -1150,6 +1204,7 @@ function vLesson(id,q){
   const hasSource=l.sourceRef||l.sourceText;
   $('#app').innerHTML=`
     <div class="lhead" style="--cc:${catColor(l.category)}">
+    ${l.hidden&&canEditLesson(l)?`<div class="notice" style="margin-bottom:10px">השיעור <b>נסתר (לא רשום)</b>: הוא לא מופיע ברשימות ובחיפוש, ורק מי שמחזיק בקישור יכול להאזין. <button class="btn ghost sm" data-act="toggleHidden" data-id="${l.id}">הצגה לכולם</button></div>`:''}
     ${ded.length?`<div class="dedic">${ded.map(d=>`השיעור מוקדש ${esc(d.kind)} ${esc(d.name)}`).join(' · ')}</div>`:''}
     <section class="lcenter">
       <div class="lcover">${coverHTML(coverData(l),{lg:true})}
@@ -1233,21 +1288,23 @@ function renderRecs(l){
     catsOf(o.id).forEach(c=>{if(myCats.has(c))s+=1;});return {o,s};
   }).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,4);
   $('#simRabbis').innerHTML=sims.length?sims.map(({o})=>rabbiCircle(o)).join(''):'<div class="muted small">עדיין אין מספיק נתונים.</div>';
-  const rel=S.lessons.filter(x=>x.id!==l.id).map(x=>({x,s:(x.category===l.category?2:0)+x.tags.filter(t=>l.tags.includes(t)).length*3+(x.rabbiId===l.rabbiId?1:0)})).filter(a=>a.s>0).sort((a,b)=>b.s-a.s).slice(0,6);
+  const rel=pubLessons().filter(x=>x.id!==l.id).map(x=>({x,s:(x.category===l.category?2:0)+x.tags.filter(t=>l.tags.includes(t)).length*3+(x.rabbiId===l.rabbiId?1:0)})).filter(a=>a.s>0).sort((a,b)=>b.s-a.s).slice(0,6);
   $('#simLessons').innerHTML=rel.length?rel.map(a=>card(a.x)).join(''):'<div class="muted small">אין המלצות כרגע.</div>';
 }
 
 /* =========================================================
    דף רב / מוסד
    ========================================================= */
-function vOrg(id){
+function vOrg(id,q){
   const o=orgBySlug(id);if(!o){$('#app').innerHTML='<p>הדף לא נמצא.</p>';return;}
   const kids=S.orgs.filter(x=>x.parent===o.id);
   const parent=org(o.parent);
-  const ls=pubLessons().filter(l=>l.rabbiId===o.id||l.orgId===o.id);
+  const edit=canEditOrg(o);
+  const ls=orgLessons(o);
+  const hiddenLs=edit?orgLessons(o,S.lessons).filter(l=>!ls.includes(l)):[];
   const series=allSeries().filter(x=>x.ls.some(l=>ls.includes(l)));
   const tracks=S.playlists.filter(p=>p.official&&p.lessonIds.some(i=>ls.find(l=>l.id===i)));
-  const edit=canEditOrg(o);
+  window._orgLs=[...ls,...hiddenLs];
   const pageUrl=baseUrl()+orgHref(o);
   $('#app').innerHTML=`
     <section class="hero">
@@ -1261,17 +1318,27 @@ function vOrg(id){
       <div class="row">
         ${o.donate?`<a class="btn" href="${esc(o.donate)}" target="_blank" rel="noopener">תרומה ל${esc(o.name)}</a>`:''}
         <button class="btn ghost" data-act="copy" data-url="${esc(pageUrl)}">העתקת קישור לדף</button>
+        ${edit?`<button class="btn ghost" data-act="scrollEdit">✎ עריכת הדף</button>`:''}
       </div>
     </section>
     ${o.about?`<p style="white-space:pre-line">${esc(o.about)}</p>`:''}
     ${kids.length?`<div class="row-h"><h2>רבני המוסד</h2></div><div class="shelf rabbis">${kids.map(rabbiCircle).join('')}</div>`:''}
     ${shelf('סדרות',series.map(seriesCard))}
     ${shelf('מסלולי לימוד',tracks.map(plCard))}
-    <div class="row-h"><h2>שיעורים (${ls.length})</h2></div>
-    <div class="gridm">${ls.map(l=>card(l)).join('')||'<div class="muted">אין שיעורים עדיין.</div>'}</div>
+    <div class="row-h"><h2>כל השיעורים${o.type!=='rabbi'&&kids.length?' של המוסד ורבניו':''} <span class="muted small">(${ls.length}${hiddenLs.length?` + ${hiddenLs.length} נסתרים`:''})</span></h2></div>
+    ${window._orgLs.length>4?`<div class="filters org-f">
+      <input id="olQ" type="search" placeholder="חיפוש בשיעורים…" aria-label="חיפוש בשיעורי הדף">
+      ${kids.length?`<select id="olR" aria-label="סינון לפי רב"><option value="">כל הרבנים</option>${[o,...kids].filter(x=>window._orgLs.some(l=>l.rabbiId===x.id)).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>`:''}
+      <select id="olS" aria-label="מיון"><option value="new">החדשים קודם</option><option value="old">הישנים קודם</option><option value="series">לפי סדרה</option><option value="title">לפי שם</option></select>
+    </div>`:''}
+    <div class="gridm" id="orgLsGrid"></div>
     ${edit?`
-    <h2>עריכת הדף</h2>
+    <h2 id="orgEdit">עריכת הדף</h2>
     <section class="panel">
+      ${isAdmin()?(o.type==='rabbi'
+        ?`<label for="oParent">מוסד שהרב משויך אליו</label><select id="oParent"><option value="">ללא שיוך</option>${S.orgs.filter(x=>x.type!=='rabbi').map(x=>`<option value="${x.id}" ${x.id===o.parent?'selected':''}>${esc(x.name)}</option>`).join('')}</select>`
+        :`<label>רבני המוסד</label>${linkBoxHTML(o)}`)
+      :(o.type==='rabbi'&&parent?`<div class="muted small">משויך ל${esc(parent.name)} (שינוי שיוך — מנהל בלבד)</div>`:'')}
       <label>שם</label><input id="oName" value="${esc(o.name)}">
       ${isAdmin()?`<label>כתובת הדף (סיומת ייחודית — מנהל בלבד)</label>
       <div class="row" style="flex-wrap:nowrap;direction:ltr"><span class="muted small" style="white-space:nowrap">${esc(baseUrl())}#/org/</span><input id="oSlug" value="${esc(o.slug||'')}" placeholder="yeshivat-example" style="direction:ltr"></div>
@@ -1286,6 +1353,24 @@ function vOrg(id){
       ${o.type!=='rabbi'||true?`<label>ברירת מחדל להעלאות: קטגוריה</label><select id="oDefCat"><option value="">ללא</option>${CATS.map(c=>`<option value="${c.id}" ${o.defaults?.category===c.id?'selected':''}>${c.name}</option>`).join('')}</select>`:''}
       <div class="row" style="margin-top:14px;justify-content:space-between"><button class="btn" data-act="saveOrg" data-id="${o.id}">שמירה</button>${isAdmin()?`<button class="btn ghost" data-act="delOrg" data-id="${o.id}" style="color:var(--danger);border-color:var(--danger)">מחיקת ${o.type==='rabbi'?'הרב':'המוסד'}</button>`:''}</div>
     </section>`:''}`;
+  drawOrgLs();
+  ['olQ','olR','olS'].forEach(k=>{const el=$('#'+k);if(el)el.addEventListener(k==='olQ'?'input':'change',drawOrgLs);});
+  if(q&&q.get('edit')&&$('#orgEdit'))setTimeout(()=>$('#orgEdit').scrollIntoView({block:'start'}),30);
+}
+function drawOrgLs(){
+  const g=$('#orgLsGrid');if(!g)return;
+  const qq=($('#olQ')?.value||'').trim().toLowerCase(),rr=$('#olR')?.value||'',ss=$('#olS')?.value||'new';
+  let ls=(window._orgLs||[]).filter(l=>(!rr||l.rabbiId===rr)&&(!qq||(l.title+' '+(l.series||'')+' '+(l.tags||[]).join(' ')+' '+(l.desc||'')).toLowerCase().includes(qq)));
+  const d=l=>String(l.date||l.createdAt||'');
+  ls.sort(ss==='old'?(a,b)=>d(a).localeCompare(d(b)):ss==='title'?(a,b)=>a.title.localeCompare(b.title,'he'):ss==='series'?(a,b)=>(a.series||'￿').localeCompare(b.series||'￿','he')||(+a.num||0)-(+b.num||0):(a,b)=>d(b).localeCompare(d(a)));
+  g.innerHTML=ls.map(l=>{const c=card(l);return l.hidden?c.replace('<article class="mcard">','<article class="mcard is-hidden"><span class="hid-tag">נסתר</span>'):c;}).join('')||`<div class="muted">${(window._orgLs||[]).length?'לא נמצאו שיעורים מתאימים.':'אין שיעורים עדיין.'}</div>`;
+}
+/* קישור רבנים למוסד — צ'יפים עם הסרה + בחירת רב להוספה */
+function linkBoxHTML(o){
+  const kids=S.orgs.filter(x=>x.parent===o.id);
+  const others=S.orgs.filter(x=>x.type==='rabbi'&&x.parent!==o.id);
+  return `<div class="linkbox">${kids.map(k=>`<span class="chip">${esc(k.name)}<button type="button" class="x" data-act="unlinkRabbi" data-id="${k.id}" aria-label="ניתוק ${esc(k.name)} מהמוסד" title="ניתוק מהמוסד">×</button></span>`).join('')||'<span class="muted small">אין רבנים משויכים</span>'}
+    ${others.length?`<select data-chg="linkRabbi" data-org="${o.id}" aria-label="קישור רב ל${esc(o.name)}"><option value="">+ קישור רב…</option>${others.map(x=>`<option value="${x.id}">${esc(x.name)}${x.parent?` (כעת: ${esc(org(x.parent)?.name||'')})`:''}</option>`).join('')}</select>`:''}</div>`;
 }
 
 /* =========================================================
@@ -1602,48 +1687,90 @@ async function runJob(job){
    ========================================================= */
 function vAdmin(){
   if(!isAdmin()){$('#app').innerHTML='<h1>ניהול</h1><div class="notice">אזור זה למנהל בלבד.</div>';return;}
+  const rabbis=S.orgs.filter(o=>o.type==='rabbi').sort((a,b)=>a.name.localeCompare(b.name,'he'));
+  const insts=S.orgs.filter(o=>o.type!=='rabbi').sort((a,b)=>a.name.localeCompare(b.name,'he'));
+  const lessons=[...S.lessons].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+  const progs=S.playlists.filter(p=>p.official);
+  const hidN=S.lessons.filter(l=>l.hidden).length;
+  const sec=(k,title,count,body)=>`<details class="adm" data-sec="${k}" ${ADM_OPEN&&ADM_OPEN.has(k)?'open':''}><summary><span class="adm-t">${title}</span>${count!=null?`<span class="adm-n">${count}</span>`:''}</summary><div class="adm-b">${body}</div></details>`;
+  const search=(id,ph)=>`<input type="search" class="admQ" data-for="${id}" placeholder="${ph}" aria-label="${ph}">`;
+  const instOpts=sel=>`<option value="">ללא שיוך</option>${insts.map(x=>`<option value="${x.id}" ${x.id===sel?'selected':''}>${esc(x.name)}</option>`).join('')}`;
+  const actBtns=o=>`<a class="btn ghost sm" href="${orgHref(o)}?edit=1">עריכה</a> <button class="ib" data-act="delOrg" data-id="${o.id}" aria-label="מחיקת ${esc(o.name)}" title="מחיקה">✕</button>`;
+  const lessonChecklist=(cls,listId,sel)=>`${search(listId,'סינון שיעורים…')}<div class="chk-list" id="${listId}">${lessons.map(l=>`<label class="row" data-q="${esc((l.title+' '+(org(l.rabbiId)?.name||'')+' '+(l.series||'')).toLowerCase())}"><input type="checkbox" class="${cls}" value="${l.id}" ${sel&&sel.includes(l.id)?'checked':''}> ${esc(l.title)} <span class="muted small">${esc(org(l.rabbiId)?.name||'')}</span></label>`).join('')}</div>`;
   $('#app').innerHTML=`
     <h1>ניהול הפלטפורמה</h1>
-    <h2>הרשאות</h2>
-    <section class="panel">
-      <table class="tbl"><tr><th>חשבון Google</th><th>תפקיד</th><th>מוסד</th><th></th></tr>
-      ${S.permissions.map((p,i)=>`<tr><td>${esc(p.email)}</td><td>${ROLE_NAMES[p.role]}</td><td>${p.orgId?esc(org(p.orgId)?.name):'—'}</td><td><button class="ib" data-act="delPerm" data-i="${i}" title="הסרה" aria-label="הסרת הרשאה">✕</button></td></tr>`).join('')}
-      </table>
+    <div class="adm-wrap">
+    ${sec('rabbis','רבנים',rabbis.length,`
+      ${rabbis.length>6?search('admRabbis','חיפוש רב…'):''}
+      <div class="tblw"><table class="tbl resp" id="admRabbis"><tr><th></th><th>שם</th><th>מוסד</th><th>שיעורים</th><th></th></tr>
+      ${rabbis.map(o=>`<tr data-q="${esc(o.name.toLowerCase())}"><td><img class="${imgCls(o)} adm-img" src="${orgImg(o)}" alt=""></td><td><a href="${orgHref(o)}">${esc(o.name)}</a></td>
+        <td><select data-chg="setParent" data-id="${o.id}" aria-label="המוסד של ${esc(o.name)}">${instOpts(o.parent)}</select></td>
+        <td>${orgLessons(o,S.lessons).length}</td><td class="nw">${actBtns(o)}</td></tr>`).join('')||'<tr><td colspan="5" class="muted">אין רבנים עדיין.</td></tr>'}
+      </table></div>
+      <details class="more-box"><summary>+ הוספת רב</summary>
+        <div class="two"><div><label for="nrName">שם הרב</label><input id="nrName" placeholder="הרב …"></div>
+        <div><label for="nrParent">מוסד</label><select id="nrParent">${instOpts('')}</select></div></div>
+        <label>תמונת הרב <span class="muted small">(חובה)</span></label>${imgPickerHTML('nrImgPick','','rabbi')}
+        <button class="btn" data-act="addOrg" data-p="nr" data-type="rabbi" style="margin-top:10px">יצירת דף רב</button>
+      </details>`)}
+    ${sec('insts','מוסדות',insts.length,`
+      ${insts.length>6?search('admInsts','חיפוש מוסד…'):''}
+      <div class="tblw"><table class="tbl resp" id="admInsts"><tr><th></th><th>שם</th><th>רבני המוסד</th><th>שיעורים</th><th></th></tr>
+      ${insts.map(o=>`<tr data-q="${esc(o.name.toLowerCase())}"><td><img class="${imgCls(o)} adm-img" src="${orgImg(o)}" alt=""></td><td><a href="${orgHref(o)}">${esc(o.name)}</a>${o.slug?`<div class="muted small" style="direction:ltr;text-align:right">/${esc(o.slug)}</div>`:''}</td>
+        <td>${linkBoxHTML(o)}</td><td>${orgLessons(o,S.lessons).length}</td><td class="nw">${actBtns(o)}</td></tr>`).join('')||'<tr><td colspan="5" class="muted">אין מוסדות עדיין.</td></tr>'}
+      </table></div>
+      <details class="more-box"><summary>+ הוספת מוסד</summary>
+        <label for="niName">שם המוסד</label><input id="niName" placeholder="ישיבת …">
+        <label>לוגו המוסד <span class="muted small">(חובה)</span></label>${imgPickerHTML('niImgPick','','org')}
+        <button class="btn" data-act="addOrg" data-p="ni" data-type="yeshiva" style="margin-top:10px">יצירת דף מוסד</button>
+      </details>`)}
+    ${sec('lessons','שיעורים',S.lessons.length+(hidN?` · ${hidN} נסתרים`:''),`
+      <div class="filters">
+        ${search('admLessons','חיפוש לפי כותרת, רב או סדרה…')}
+        <select id="admLR" aria-label="סינון לפי רב"><option value="">כל הרבנים</option>${rabbis.map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')}</select>
+        <select id="admLS" aria-label="סינון לפי מצב"><option value="">כל המצבים</option><option value="pub">גלויים</option><option value="hid">נסתרים</option><option value="imp">בייבוא</option></select>
+        <a class="btn sm" href="#/upload">+ העלאת שיעור</a>
+      </div>
+      <div class="muted small" style="margin:6px 0">שיעור <b>נסתר</b> (לא רשום) לא מופיע ברשימות, בחיפוש ובדפי הרבנים — אבל מי שיש לו קישור ישיר עדיין יכול להאזין לו.</div>
+      <div class="tblw"><table class="tbl resp" id="admLessons"><tr><th>שיעור</th><th>רב</th><th>תאריך</th><th>מצב</th><th></th></tr>
+      ${lessons.map(l=>{const r=org(l.rabbiId);const st=l.hidden?'hid':(l.src&&l.src.type==='ytimport'?'imp':'pub');
+        return `<tr data-q="${esc((l.title+' '+(r?r.name:'')+' '+(l.series||'')).toLowerCase())}" data-r="${l.rabbiId||''}" data-s="${st}">
+        <td><a href="#/lesson/${l.id}">${esc(l.title)}</a>${l.series?`<div class="muted small">${esc(l.series)}${l.num?' · '+l.num:''}</div>`:''}</td>
+        <td>${r?esc(r.name):'—'}</td><td class="nw">${l.date?hebDate(l.date):''}</td>
+        <td><span class="st st-${st}">${st==='hid'?'נסתר':st==='imp'?'בייבוא':'גלוי'}</span></td>
+        <td class="nw"><a class="btn ghost sm" href="#/edit/${l.id}">עריכה</a> <button class="btn ghost sm" data-act="toggleHidden" data-id="${l.id}">${l.hidden?'הצגה':'הסתרה'}</button> <button class="ib" data-act="delLesson" data-id="${l.id}" aria-label="מחיקת ${esc(l.title)}" title="מחיקה">✕</button></td></tr>`;}).join('')||'<tr><td colspan="5" class="muted">אין שיעורים עדיין.</td></tr>'}
+      </table></div>`)}
+    ${sec('progs','תכניות לימוד',progs.length,`
+      <div class="muted small" style="margin-bottom:8px">מסלולי לימוד רשמיים — רשימת שיעורים לפי סדר, שמוצגת לכל המשתמשים וניתן לבחור בה כ"שיעור יומי".</div>
+      ${progs.map(p=>`<details class="prog-row"><summary><b>${esc(p.name)}</b> <span class="muted small">${p.lessonIds.filter(lesson).length} שיעורים</span></summary>
+        <label for="pgName_${p.id}">שם התכנית</label><input id="pgName_${p.id}" value="${esc(p.name)}">
+        <label>שיעורים בתכנית</label>${lessonChecklist('pgChk_'+p.id,'pgList_'+p.id,p.lessonIds)}
+        <div class="row" style="margin-top:10px;justify-content:space-between"><div class="row"><button class="btn" data-act="saveOfficial" data-id="${p.id}">שמירה</button><a class="btn ghost" href="#/playlist/${p.id}">צפייה</a></div>
+        <button class="btn ghost" data-act="delOfficial" data-id="${p.id}" style="color:var(--danger);border-color:var(--danger)">מחיקת התכנית</button></div>
+      </details>`).join('')||'<div class="muted">אין תכניות לימוד עדיין.</div>'}
+      <details class="more-box"><summary>+ תכנית לימוד חדשה</summary>
+        <label for="olName">שם התכנית</label><input id="olName" placeholder="למשל: הלכות שבת לפי הסדר">
+        <label>שיעורים</label>${lessonChecklist('olChk','olList')}
+        <button class="btn" data-act="addOfficial" style="margin-top:10px">יצירת תכנית</button>
+      </details>`)}
+    ${sec('perms','הרשאות',S.permissions.length,`
+      <div class="tblw"><table class="tbl"><tr><th>חשבון Google</th><th>תפקיד</th><th>מוסד</th><th></th></tr>
+      ${S.permissions.map((p,i)=>`<tr><td style="direction:ltr;text-align:right">${esc(p.email)}</td><td>${ROLE_NAMES[p.role]}</td><td>${p.orgId?esc(org(p.orgId)?.name||''):'—'}</td><td><button class="ib" data-act="delPerm" data-i="${i}" title="הסרה" aria-label="הסרת הרשאה">✕</button></td></tr>`).join('')||'<tr><td colspan="4" class="muted">אין הרשאות נוספות.</td></tr>'}
+      </table></div>
       <div class="filters" style="margin-top:12px">
-        <input id="pEmail" placeholder="כתובת Gmail">
+        <input id="pEmail" placeholder="כתובת Gmail" style="direction:ltr">
         <select id="pRole"><option value="rep">נציג מוסד</option><option value="admin">מנהל</option></select>
         <select id="pOrg">${S.orgs.map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')}</select>
         <button class="btn" data-act="addPerm">הוספת הרשאה</button>
       </div>
-    </section>
-    <h2>מוסדות ורבנים</h2>
-    <section class="panel">
-      <table class="tbl"><tr><th>שם</th><th>סוג</th><th>שייך ל</th><th>שיעורים</th><th>כתובת</th><th></th></tr>
-      ${S.orgs.map(o=>`<tr><td><a href="${orgHref(o)}">${esc(o.name)}</a></td><td>${o.type==='rabbi'?'רב':'מוסד'}</td><td>${o.parent?esc(org(o.parent)?.name):'—'}</td><td>${S.lessons.filter(l=>l.rabbiId===o.id||l.orgId===o.id).length}</td><td style="direction:ltr;text-align:right">${o.slug?esc(o.slug):'<span class="muted">—</span>'}</td><td><button class="ib" data-act="delOrg" data-id="${o.id}" aria-label="מחיקת ${esc(o.name)}" title="מחיקה">✕</button></td></tr>`).join('')}
-      </table>
-      <div class="filters" style="margin-top:12px">
-        <input id="nName" placeholder="שם הרב או המוסד">
-
-        <select id="nType"><option value="yeshiva">מוסד / ישיבה</option><option value="rabbi">רב</option></select>
-        <select id="nParent"><option value="">ללא שיוך</option>${S.orgs.filter(o=>o.type!=='rabbi').map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')}</select>
-        <button class="btn" data-act="addOrg">יצירת דף</button>
-      </div>
-      <label>תמונה / לוגו <span class="muted small">(חובה)</span></label>${imgPickerHTML('nImgPick','','org')}
-    </section>
-    <h2>מסלול לימוד רשמי חדש</h2>
-    <section class="panel">
-      <input id="olName" placeholder="שם המסלול, למשל: הלכות שבת לפי הסדר">
-      <div style="margin-top:10px;max-height:220px;overflow:auto">${S.lessons.map(l=>`<label class="row" style="font-weight:400;margin:4px 0"><input type="checkbox" class="olChk" value="${l.id}" style="width:auto"> ${esc(l.title)}</label>`).join('')}</div>
-      <button class="btn" data-act="addOfficial" style="margin-top:10px">יצירת מסלול</button>
-    </section>
-    <h2>העלאה אוטומטית ל-GitHub</h2>
-    <section class="panel">
+      <div class="muted small" style="margin-top:6px">נציג מוסד יכול להעלות ולערוך שיעורים של המוסד שלו ושל רבניו, ולערוך את דף המוסד.</div>`)}
+    <div class="adm-sep">הגדרות נוספות</div>
+    ${sec('gh','העלאה אוטומטית ל-GitHub',null,`<section class="panel">
       <div class="muted small">כשמפתח שמור כאן, קבצים שתעלו יכווצו ויישמרו אוטומטית בתיקייה <b style="direction:ltr;display:inline-block">${esc(CONFIG.github.folder)}/</b> במאגר <b style="direction:ltr;display:inline-block">${esc(CONFIG.github.owner)}/${esc(CONFIG.github.repo)}</b>. המפתח נשמר רק בדפדפן הזה — לא בשרת ולא בקוד.</div>
       <div style="margin-top:8px">${ghToken()?'<span style="color:var(--ok);font-weight:700">✓ מפתח שמור בדפדפן הזה</span>':'<span class="muted">אין מפתח שמור</span>'}</div>
       <div class="row" style="margin-top:8px"><input id="ghTok" type="password" placeholder="github_pat_…" style="flex:1;direction:ltr"><button class="btn" data-act="ghSave">שמירה ובדיקה</button>${ghToken()?'<button class="btn ghost" data-act="ghRemove">הסרת המפתח</button>':''}</div>
-    </section>
-    <h2>ייבוא אוטומטי מיוטיוב</h2>
-    <section class="panel">
+    </section>`)}
+    ${sec('yt','ייבוא אוטומטי מיוטיוב',(S.ytSources||[]).length,`<section class="panel">
       <div class="muted small">ערוצים ופלייליסטים של רבנים שנתנו אישור. כל כמה שעות נבדק אם עלה שיעור חדש: השמע יורד, מכווץ, נשמר במאגר ומתווסף כשיעור עם ההגדרות שקבעתם. גם קישורי יוטיוב בודדים מדף ההעלאה עוברים בתהליך הזה.</div>
       ${(()=>{const st=S.ytStatus;if(!FB)return '<div class="notice" style="margin-top:8px">מצב הדגמה: הייבוא האוטומטי עובד רק כשהאתר מחובר ל-Firebase.</div>';
         if(!st)return '<div class="notice" style="margin-top:8px">התהליך עוד לא רץ אף פעם. אחרי ההתקנה החד-פעמית (קובץ ההוראות) הוא ירוץ לבד.</div>';
@@ -1671,15 +1798,29 @@ function vAdmin(){
         <div class="row" style="margin-top:10px"><button class="btn" data-act="ytAdd">הוספת מקור</button></div>
       </details>
       <div class="row" style="margin-top:12px"><button class="btn ghost" data-act="ytRun">ייבא עכשיו</button><a class="small" href="https://github.com/${esc(CONFIG.github.owner)}/${esc(CONFIG.github.repo)}/actions" target="_blank" rel="noopener">יומן הריצות ב-GitHub</a></div>
-    </section>
-    <h2>גיבוי</h2>
-    <section class="panel"><div class="muted small">הורדת קובץ גיבוי של כל השיעורים, הרבנים, המוסדות, המסלולים וההרשאות. מומלץ פעם בשבוע. קובצי האודיו עצמם שמורים בנפרד (ב-GitHub הם מגובים בהיסטוריית המאגר).</div>
-      <div class="row" style="margin-top:8px"><button class="btn" data-act="backupDl">הורדת גיבוי</button><label class="btn ghost" style="cursor:pointer">שחזור מגיבוי<input type="file" id="restoreFile" accept="application/json" hidden></label></div></section>
-    <h2>נתונים</h2>
-    ${FB?`<section class="panel"><div class="muted small">האתר מחובר ל-Firebase: כל השינויים נשמרים בשרת ומשותפים לכל המשתמשים.</div>
+    </section>`)}
+    ${sec('backup','גיבוי ושחזור',null,`<section class="panel"><div class="muted small">הורדת קובץ גיבוי של כל השיעורים, הרבנים, המוסדות, המסלולים וההרשאות. מומלץ פעם בשבוע. קובצי האודיו עצמם שמורים בנפרד (ב-GitHub הם מגובים בהיסטוריית המאגר).</div>
+      <div class="row" style="margin-top:8px"><button class="btn" data-act="backupDl">הורדת גיבוי</button><label class="btn ghost" style="cursor:pointer">שחזור מגיבוי<input type="file" id="restoreFile" accept="application/json" hidden></label></div></section>`)}
+    ${sec('data','נתונים',null,FB?`<section class="panel"><div class="muted small">האתר מחובר ל-Firebase: כל השינויים נשמרים בשרת ומשותפים לכל המשתמשים.</div>
       <button class="btn ghost" data-act="importDemo" style="margin-top:8px">ייבוא שיעורי דוגמה לבדיקה</button></section>`
-    :`<section class="panel"><div class="muted small">מצב הדגמה: הנתונים נשמרים בדפדפן שלכם בלבד.</div><button class="btn danger" data-act="reset" style="margin-top:8px">איפוס לנתוני הדוגמה</button></section>`}`;
+    :`<section class="panel"><div class="muted small">מצב הדגמה: הנתונים נשמרים בדפדפן שלכם בלבד.</div><button class="btn danger" data-act="reset" style="margin-top:8px">איפוס לנתוני הדוגמה</button></section>`)}
+    </div>`;
+  ['admLR','admLS'].forEach(k=>$('#'+k)?.addEventListener('change',()=>admFilter('admLessons')));
 }
+/* זכירת המקטעים הפתוחים בניהול */
+var ADM_OPEN=new Set(['lessons']);
+try{const v=JSON.parse(localStorage.getItem('torah_adm_open')||'null');if(Array.isArray(v))ADM_OPEN=new Set(v);}catch(e){}
+document.addEventListener('toggle',e=>{const d=e.target;if(!d.matches||!d.matches('details.adm[data-sec]'))return;
+  d.open?ADM_OPEN.add(d.dataset.sec):ADM_OPEN.delete(d.dataset.sec);try{localStorage.setItem('torah_adm_open',JSON.stringify([...ADM_OPEN]))}catch(e){}},true);
+/* סינון טבלאות ורשימות בניהול */
+function admFilter(id){const box=document.getElementById(id);if(!box)return;
+  const q=(document.querySelector(`.admQ[data-for="${id}"]`)?.value||'').trim().toLowerCase();
+  const r=id==='admLessons'?($('#admLR')?.value||''):'',s=id==='admLessons'?($('#admLS')?.value||''):'';
+  box.querySelectorAll('[data-q]').forEach(el=>{el.hidden=(q&&!el.dataset.q.includes(q))||(r&&el.dataset.r!==r)||(s&&el.dataset.s!==s);});}
+document.addEventListener('input',e=>{if(e.target.classList&&e.target.classList.contains('admQ'))admFilter(e.target.dataset.for);});
+document.addEventListener('change',e=>{const s=e.target.closest&&e.target.closest('[data-chg]');if(!s||!isAdmin())return;
+  if(s.dataset.chg==='setParent'){const o=org(s.dataset.id);if(!o)return;o.parent=s.value||null;save();toast(o.parent?`${o.name} שויך ל${org(o.parent).name}`:`${o.name} נותק מהמוסד`);route(true);}
+  else if(s.dataset.chg==='linkRabbi'){const r=org(s.value),i=org(s.dataset.org);if(!r||!i)return;r.parent=i.id;save();toast(`${r.name} שויך ל${i.name}`);route(true);}});
 
 /* =========================================================
    אזור אישי — התחברות, פלייליסטים, שיעור יומי, סימניות
@@ -1746,7 +1887,7 @@ function vSeries(name){
 }
 function vAllSeries(){$('#app').innerHTML=`<h1>סדרות</h1><div class="gridm">${allSeries().map(seriesCard).join('')||'<div class="muted">אין סדרות עדיין.</div>'}</div>`;}
 function vRabbis(){
-  const rs=S.orgs.filter(o=>o.type==='rabbi').sort((a,b)=>S.lessons.filter(l=>l.rabbiId===b.id).length-S.lessons.filter(l=>l.rabbiId===a.id).length);
+  const rs=S.orgs.filter(o=>o.type==='rabbi').sort((a,b)=>orgLessons(b).length-orgLessons(a).length);
   const insts=S.orgs.filter(o=>o.type!=='rabbi');
   $('#app').innerHTML=`<h1>רבנים</h1><div class="gridm">${rs.map(rabbiCircle).join('')}</div>${insts.length?`<div class="row-h"><h2>מוסדות</h2></div><div class="gridm">${insts.map(rabbiCircle).join('')}</div>`:''}`;
 }
@@ -1764,7 +1905,7 @@ function myRow(l){
   return `<div class="it" data-q="${esc((l.title+' '+(r?r.name:'')+' '+(l.series||'')).toLowerCase())}">
     <img class="${imgCls(lessonImgOrg(l))}" src="${lessonImg(l)}" alt="" style="width:44px;height:44px;border-radius:8px;object-fit:cover">
     <div class="t"><a href="#/lesson/${l.id}">${esc(l.title)}</a>
-      <div class="meta">${r?esc(r.name)+' · ':''}${l.series?esc(l.series)+(l.num?' '+l.num:'')+' · ':''}${l.date?hebDate(l.date):''}${pend?' · <b style="color:var(--gold-text)">בייבוא מיוטיוב</b>':''}</div></div>
+      <div class="meta">${r?esc(r.name)+' · ':''}${l.series?esc(l.series)+(l.num?' '+l.num:'')+' · ':''}${l.date?hebDate(l.date):''}${pend?' · <b style="color:var(--gold-text)">בייבוא מיוטיוב</b>':''}${l.hidden?' · <span class="st st-hid">נסתר</span>':''}</div></div>
     <a class="btn ghost sm" href="#/edit/${l.id}">עריכה</a></div>`;
 }
 function vEdit(id){
@@ -1783,6 +1924,7 @@ function vEdit(id){
         <div><label for="eCat">קטגוריה</label><select id="eCat">${CATS.map(c=>`<option value="${c.id}" ${c.id===l.category?'selected':''}>${c.name}</option>`).join('')}</select></div>
         <div><label for="eSeries">סדרה <span class="muted small">(לא חובה)</span></label><input id="eSeries" list="eSeriesList" value="${esc(l.series||'')}"><datalist id="eSeriesList">${[...new Set(S.lessons.map(x=>x.series).filter(Boolean))].map(x=>`<option value="${esc(x)}">`).join('')}</datalist></div>
       </div>
+      <label class="row hid-opt"><input type="checkbox" id="eHidden" style="width:auto" ${l.hidden?'checked':''}> <span><b>שיעור נסתר (לא רשום)</b><br><span class="muted small">לא יופיע ברשימות, בחיפוש ובדף הרב — רק מי שיש לו קישור ישיר יוכל להאזין.</span></span></label>
       <details class="more-box" open>
         <summary>פרטים נוספים</summary>
         <label>תגיות</label><div id="eTags"></div>
@@ -1894,7 +2036,7 @@ document.addEventListener('click',e=>{
     dedicate:()=>{if(FB&&!S.user)return toast('יש להתחבר כדי להקדיש שיעור');const n=$('#dedName').value.trim();if(!n)return toast('הזינו שם');(S.dedications[id]=S.dedications[id]||[]).push({kind:$('#dedKind').value,name:n});save();route();},
     copy:()=>copy(b.dataset.url),
     toggleStyle:()=>b.classList.toggle('on'),
-    saveOrg:()=>{const o=org(id);if(isAdmin()&&$('#oSlug')){const sl=$('#oSlug').value.trim().toLowerCase();if(sl){if(!SLUG_RE.test(sl))return toast('סיומת לא תקינה: 2–40 תווים, אותיות, ספרות ומקפים');if(S.orgs.some(x=>x.id!==o.id&&(x.slug===sl||x.id===sl)))return toast('הסיומת הזו כבר תפוסה');}o.slug=sl;}o.name=$('#oName').value.trim()||o.name;o.image=getImg('oImgPick');o.showOnLessons=$('#oShow').checked;o.about=$('#oAbout').value;o.donate=$('#oDonate').value.trim();o.styles=[...document.querySelectorAll('#oStyles .chip.on')].map(c=>c.dataset.s);o.defaults={category:$('#oDefCat').value,tags:o.defaults?.tags||[]};save();toast('הדף נשמר');if(location.hash!==orgHref(o))location.hash=orgHref(o);else route();},
+    saveOrg:()=>{const o=org(id);if(isAdmin()&&$('#oSlug')){const sl=$('#oSlug').value.trim().toLowerCase();if(sl){if(!SLUG_RE.test(sl))return toast('סיומת לא תקינה: 2–40 תווים, אותיות, ספרות ומקפים');if(S.orgs.some(x=>x.id!==o.id&&(x.slug===sl||x.id===sl)))return toast('הסיומת הזו כבר תפוסה');}o.slug=sl;}o.name=$('#oName').value.trim()||o.name;o.image=getImg('oImgPick');o.showOnLessons=$('#oShow').checked;o.about=$('#oAbout').value;o.donate=$('#oDonate').value.trim();o.styles=[...document.querySelectorAll('#oStyles .chip.on')].map(c=>c.dataset.s);o.defaults={category:$('#oDefCat').value,tags:o.defaults?.tags||[]};if(isAdmin()&&$('#oParent'))o.parent=$('#oParent').value||null;save();toast('הדף נשמר');if(location.hash!==orgHref(o))location.hash=orgHref(o);else route();},
     doUpload,
     lessonPlay:()=>{if(P.l&&P.l.id===id){P.toggle();setTimeout(updDock,50);}else play(id,b.dataset.t!=null?+b.dataset.t:null);},
     dlLesson:async()=>{const l=lesson(id);if(!l||!l.allowDownload||l.src.type!=='file')return;
@@ -1925,6 +2067,7 @@ document.addEventListener('click',e=>{
       l.num=l.series?(+$('#eNum').value||0):0;l.tags=window._eTags.get();l.desc=$('#eDesc').value.trim();
       l.date=$('#eDate').value||l.date;l.sourceRef=$('#eRef').value.trim();l.sourceText=$('#eSrcText').value.trim();l.transcript=$('#eTrans').value.trim();
       if($('#eOrg'))l.orgId=$('#eOrg').value||null;
+      l.hidden=$('#eHidden').checked;
       l.allowDownload=$('#eDl').checked;const dm=+$('#eDur').value;if(dm>=0)l.duration=Math.round(dm*60)||l.duration;
       const ns=$('#eSrc').value.trim();const cur=l.src.type==='youtube'||l.src.type==='ytimport'?'https://www.youtube.com/watch?v='+l.src.ytId:(l.src.url||'');
       if(ns&&ns!==cur){const y=ytId(ns);
@@ -1969,16 +2112,26 @@ document.addEventListener('click',e=>{
       }catch(e){toast('לא ניתן לבדוק את המפתח כרגע');}},
     ghRemove:()=>{try{localStorage.removeItem(GH_KEY)}catch(e){}toast('המפתח הוסר');route(true);},
     compressDl,
-    addPerm:()=>{const em=$('#pEmail').value.trim().toLowerCase();if(!em.includes('@'))return toast('כתובת לא תקינה');S.permissions=S.permissions.filter(p=>p.email!==em);const r=$('#pRole').value;S.permissions.push({email:em,role:r,orgId:r==='rep'?$('#pOrg').value:null});save();route();},
-    delPerm:()=>{S.permissions.splice(+b.dataset.i,1);save();route();},
-    addOrg:()=>{const n=$('#nName').value.trim();if(!n)return toast('הזינו שם');const im=getImg('nImgPick');if(!im)return toast('חובה להוסיף תמונה של הרב או לוגו של המוסד');const oid=uid('o');S.orgs.push({id:oid,type:$('#nType').value,name:n,parent:$('#nParent').value||null,image:im,showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});save();location.hash='#/org/'+oid;},
-    addOfficial:()=>{const n=$('#olName').value.trim();const ids=[...document.querySelectorAll('.olChk:checked')].map(c=>c.value);if(!n||!ids.length)return toast('בחרו שם ושיעורים');S.playlists.push({id:uid('pl'),name:n,lessonIds:ids,official:true,owner:S.user.email});save();toast('המסלול נוצר');route();},
+    addPerm:()=>{const em=$('#pEmail').value.trim().toLowerCase();if(!em.includes('@'))return toast('כתובת לא תקינה');S.permissions=S.permissions.filter(p=>p.email!==em);const r=$('#pRole').value;S.permissions.push({email:em,role:r,orgId:r==='rep'?$('#pOrg').value:null});save();toast('ההרשאה נוספה');route(true);},
+    delPerm:()=>{const p=S.permissions[+b.dataset.i];if(!p||!confirm(`להסיר את ההרשאה של ${p.email}?`))return;S.permissions.splice(+b.dataset.i,1);save();route(true);},
+    addOrg:()=>{if(!isAdmin())return;const p=b.dataset.p||'n';const n=$('#'+p+'Name').value.trim();const type=b.dataset.type||'yeshiva';
+      if(!n)return toast(type==='rabbi'?'הזינו את שם הרב':'הזינו את שם המוסד');const im=getImg(p+'ImgPick');if(!im)return toast(type==='rabbi'?'חובה להוסיף תמונה של הרב':'חובה להוסיף לוגו של המוסד');
+      S.orgs.push({id:uid('o'),type,name:n,parent:($('#'+p+'Parent')&&$('#'+p+'Parent').value)||null,image:im,showOnLessons:true,donate:'',about:'',styles:[],defaults:{category:'',tags:[]}});
+      save();toast(`נוצר דף ל${n}`);route(true);},
+    scrollEdit:()=>{const el=$('#orgEdit');if(el){el.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>$('#oName')?.focus({preventScroll:true}),400);}},
+    unlinkRabbi:()=>{if(!isAdmin())return;const r=org(id);if(!r)return;const i=org(r.parent);r.parent=null;save();toast(`${r.name} נותק${i?' מ'+i.name:''}`);route(true);},
+    toggleHidden:()=>{const l=lesson(id);if(!l||!canEditLesson(l))return toast('אין הרשאה');l.hidden=!l.hidden;save();toast(l.hidden?'השיעור הוסתר — נגיש רק בקישור ישיר':'השיעור מוצג שוב לכולם');route(true);},
+    addOfficial:()=>{const n=$('#olName').value.trim();const ids=[...document.querySelectorAll('.olChk:checked')].map(c=>c.value);if(!n||!ids.length)return toast('בחרו שם ושיעורים');S.playlists.push({id:uid('pl'),name:n,lessonIds:ids,official:true,owner:S.user.email});save();toast('התכנית נוצרה');route(true);},
+    saveOfficial:()=>{const p=S.playlists.find(x=>x.id===id);if(!p||!isAdmin())return;const n=$('#pgName_'+id).value.trim();if(!n)return toast('הזינו שם');
+      const chosen=new Set([...document.querySelectorAll('.pgChk_'+id+':checked')].map(c=>c.value));
+      p.name=n;p.lessonIds=[...p.lessonIds.filter(x=>chosen.has(x)),...[...chosen].filter(x=>!p.lessonIds.includes(x))];save();toast('התכנית נשמרה');route(true);},
+    delOfficial:()=>{const p=S.playlists.find(x=>x.id===id);if(!p||!isAdmin())return;if(!confirm(`למחוק את תכנית הלימוד "${p.name}"? השיעורים עצמם לא יימחקו.`))return;S.playlists=S.playlists.filter(x=>x.id!==id);if(S.daily===id)S.daily=null;save();toast('התכנית נמחקה');route(true);},
     reset:()=>{if(confirm('לאפס את כל הנתונים?')){const u=S.user;S=seed();S.user=u;save();route();}},
     login:()=>{if(FB){FB.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(err=>{if(err.code!=='auth/popup-closed-by-user'&&err.code!=='auth/cancelled-popup-request')toast(err.code==='auth/unauthorized-domain'?'הדומיין לא מאושר ב-Firebase (ראו הדרכה)':'ההתחברות נכשלה');});return;}const em=$('#lEmail').value.trim().toLowerCase();if(!em.includes('@'))return toast('הזינו כתובת');S.user={email:em};save();route();},
     loginAs:()=>{S.user={email:b.dataset.e};save();route();},
     logout:()=>{if(FB){flushUser();FB.auth.signOut();location.hash='#/';return;}S.user=null;save();route();},
     importDemo:()=>{if(!confirm('לייבא שיעורי דוגמה? אפשר למחוק אותם אחר כך.'))return;const d=seed();d.orgs.forEach(o=>{if(!org(o.id))S.orgs.push(o);});d.lessons.forEach(l=>{if(!lesson(l.id))S.lessons.push(l);});d.playlists.forEach(p=>{if(!S.playlists.find(x=>x.id===p.id))S.playlists.push({...p,owner:S.user.email});});save();toast('שיעורי הדוגמה יובאו');},
-    delLesson:()=>{if(!confirm('למחוק את השיעור לצמיתות?'))return;const dl=lesson(id);if(FB&&FB.storage&&dl&&dl.src&&dl.src.storagePath)FB.storage.ref(dl.src.storagePath).delete().catch(e=>console.error(e));if(dl&&dl.src&&dl.src.ghPath&&ghActive())ghDelete(dl.src.ghPath).catch(e=>console.error(e));S.lessons=S.lessons.filter(x=>x.id!==id);S.playlists.forEach(p=>{if(isAdmin()||p.owner===S.user.email)p.lessonIds=p.lessonIds.filter(x=>x!==id);});save();toast('השיעור נמחק');location.hash='#/';},
+    delLesson:()=>{const dl=lesson(id);if(!dl||!canEditLesson(dl))return toast('אין הרשאה');if(!confirm(`למחוק לצמיתות את "${dl.title}"?\nאם רק רוצים שלא יופיע ברשימות — אפשר במקום זה להסתיר אותו.`))return;if(FB&&FB.storage&&dl&&dl.src&&dl.src.storagePath)FB.storage.ref(dl.src.storagePath).delete().catch(e=>console.error(e));if(dl&&dl.src&&dl.src.ghPath&&ghActive())ghDelete(dl.src.ghPath).catch(e=>console.error(e));S.lessons=S.lessons.filter(x=>x.id!==id);S.playlists.forEach(p=>{if(isAdmin()||p.owner===S.user.email)p.lessonIds=p.lessonIds.filter(x=>x!==id);});save();toast('השיעור נמחק');if(location.hash.startsWith('#/admin'))route(true);else location.hash=isAdmin()?'#/admin':'#/me';},
     newPl:()=>{const n=$('#newPl').value.trim();if(!n)return;S.playlists.push({id:uid('pl'),name:n,lessonIds:[],official:false,owner:S.user.email});save();route();},
     delPl:()=>{if(confirm('למחוק את הפלייליסט?')){S.playlists=S.playlists.filter(p=>p.id!==id);if(S.daily===id)S.daily=null;save();location.hash='#/me';}},
     rmFromPl:()=>{e.preventDefault();const p=S.playlists.find(x=>x.id===b.dataset.pl);p.lessonIds=p.lessonIds.filter(x=>x!==id);save();route();}
